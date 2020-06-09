@@ -1,0 +1,69 @@
+##\
+# This file is a part of the phpMussel\Core package.
+# Homepage: https://phpmussel.github.io/
+#
+# PHPMUSSEL COPYRIGHT 2013 AND BEYOND BY THE PHPMUSSEL TEAM.
+#
+# License: GNU/GPLv2
+# @see LICENSE.txt
+#
+# This file: Hindi language data (last modified: 2020.06.14).
+##/
+
+# Language settings.
+Local Name: "हिंदी"
+Text Direction: "ltr"
+IntegerRule: "int2Type3"
+FractionRule: "fraction2Type2"
+
+SafeBrowseLookup_200: "संभावित हानिकारक URL का पता चला"
+SafeBrowseLookup_400: "API अनुरोध त्रुटि"
+SafeBrowseLookup_401: "API प्राधिकरण त्रुटि"
+SafeBrowseLookup_503: "API सेवा उप्लब्ध् नहीं है"
+SafeBrowseLookup_999: "अज्ञात API त्रुटि"
+_exclamation: "%s! "
+_exclamation_final: "%s!"
+_fullstop: "। "
+_fullstop_final: "।"
+corrupted: "भ्रष्ट PE का पता चला"
+data_not_available: "डेटा उपलब्ध नहीं।"
+detected: "%s का पता चला"
+detected_control_characters: "पता चला नियंत्रण अक्षर"
+encrypted_archive: "पता चला एन्क्रिप्टेड संग्रह; एन्क्रिप्ट किए गए अभिलेखागार की अनुमति नहीं है"
+error_log_header: "यदि निम्न में से कोई एक त्रुटि उत्पन्न होती रहती है, उन्हें रिपोर्ट करने के लिए, या समर्थन प्राप्त करने के लिए, कृपया GitHub में phpMussel issues पृष्ठ पर एक नया issue बनाएँ, और किसी भी अन्य प्रासंगिक जानकारी के साथ प्रश्न में त्रुटियों को शामिल करें। धन्यवाद।"
+failed_to_access: ""%s" तक पहुंचने में विफल!"
+field_date: "समय"
+field_header_hash_reconstruction: "हैश हस्ताक्षर पुनर्निर्माण"
+field_header_pe_reconstruction: "PE अनुभागीय हस्ताक्षर पुनर्निर्माण"
+field_header_scan_results_why_flagged: "स्कैन परिणाम (ध्वजांकित क्यों)"
+field_ip_address: "IP पता"
+file: "फाइल"
+filesize_limit_exceeded: "फाइल आकार सीमा पार हो गई"
+filetype_blacklisted: "काली सूची पर फाइल प्रकार"
+finished: "ख़त्म होना"
+generated_by: "जनरेटर"
+image: "छवि"
+invalid_data: "अमान्य डेटा!"
+invalid_file: "अवैध फाइल"
+invalid_url: "अवैध URL!"
+macros_not_permitted: "मैक्रोज़ की अनुमति नहीं है"
+ok: "OK"
+only_allow_images: "केवल छवियों की अनुमति है"
+quarantined_as: ""/vault/quarantine/%s.qfu" के रूप में क्वारंटाइन।"
+recursive: "पुनरावर्ती गहराई सीमा पार हो गई"
+scan_chameleon: "%s गिरगिट के हमले का पता चला"
+scan_checking: "जाँच हो रही है"
+scan_command_injection: "कमान इंजेक्शन प्रयास का पता चला"
+scan_complete: "पूर्ण"
+scan_extensions_missing: "अनुत्तीर्ण होना (आवश्यक एक्सटेंशन लापता)!"
+scan_filename_manipulation_detected: "फाइलनाम हेरफेर का पता चला"
+scan_missing_filename: "गुम फाइल नाम"
+scan_no_problems_found: "कोई समस्या नहीं मिली।"
+scan_not_archive: "अनुत्तीर्ण होना (खाली या नहीं एक संग्रह)!"
+scan_reading: "पढ़ना"
+scan_signature_file_missing: "हस्ताक्षर फाइल लापता है"
+scan_tampering: "संभावित खतरनाक फाइल छेड़छाड़ की गई"
+started: "शुरू कर दिया है"
+too_many_files_in_archive: "पुरालेख में बहुत सारी फाइलें"
+too_many_urls: "बहुत सारे URL"
+x_does_not_exist: "%s मौजूद नहीं है"

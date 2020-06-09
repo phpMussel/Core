@@ -1,0 +1,69 @@
+##\
+# This file is a part of the phpMussel\Core package.
+# Homepage: https://phpmussel.github.io/
+#
+# PHPMUSSEL COPYRIGHT 2013 AND BEYOND BY THE PHPMUSSEL TEAM.
+#
+# License: GNU/GPLv2
+# @see LICENSE.txt
+#
+# This file: Indonesian language data (last modified: 2020.06.14).
+##/
+
+# Language settings.
+Local Name: "Bahasa Indonesia"
+Text Direction: "ltr"
+IntegerRule: "int1"
+FractionRule: "int1"
+
+SafeBrowseLookup_200: "Berpotensi URL berbahaya terdeteksi"
+SafeBrowseLookup_400: "Kesalahan permintaan API"
+SafeBrowseLookup_401: "Kesalahan otorisasi API"
+SafeBrowseLookup_503: "Layanan API tidak tersedia"
+SafeBrowseLookup_999: "Kesalahan API tidak diketahui"
+_exclamation: "%s! "
+_exclamation_final: "%s!"
+_fullstop: ". "
+_fullstop_final: "."
+corrupted: "Terdeteksi rusak PE"
+data_not_available: "Data tidak tersedia."
+detected: "Terdeteksi %s"
+detected_control_characters: "Terdeteksi kontrol karakter"
+encrypted_archive: "Terdeteksi arsip dienkripsi; Arsip dienkripsi tidak diizinkan"
+error_log_header: "Jika kesalahan berikut terus terjadi, untuk melaporkannya atau mencari dukungan, tolong buat issue baru di halaman issue untuk phpMussel di GitHub ketika Anda punya waktu luang, dengan kesalahan yang menjadi perhatian bersama dengan semua informasi terkait terlampir. Terima kasih."
+failed_to_access: "Gagal mengakses "%s"!"
+field_date: "Tanggal"
+field_header_hash_reconstruction: "Rekonstruksi tanda tangan hash"
+field_header_pe_reconstruction: "Rekonstruksi tanda tangan PE sectional"
+field_header_scan_results_why_flagged: "Hasil pindai (mengapa ditandai)"
+field_ip_address: "Alamat IP"
+file: "File"
+filesize_limit_exceeded: "File ukuran batas melebihi"
+filetype_blacklisted: "File jenis pada hitam daftar"
+finished: "Selesai"
+generated_by: "Dihasilkan oleh"
+image: "Gambar"
+invalid_data: "Data tidak valid!"
+invalid_file: "File tidak valid"
+invalid_url: "URL tidak valid!"
+macros_not_permitted: "Makro tidak diizinkan"
+ok: "Oke"
+only_allow_images: "Hanya file gambar diizinkan"
+quarantined_as: "Dikarantina sebagai "/vault/quarantine/%s.qfu"."
+recursive: "Batas kedalaman rekursi melebihi"
+scan_chameleon: "Bunglon %s serangan terdeteksi"
+scan_checking: "Memeriksa"
+scan_command_injection: "Perintah injeksi terdeteksi"
+scan_complete: "Selesai"
+scan_extensions_missing: "Gagal (hilang ekstensi yang dibutuhkan)!"
+scan_filename_manipulation_detected: "File nama manipulasi terdeteksi"
+scan_missing_filename: "Hilang nama file"
+scan_no_problems_found: "Tidak ada masalah yang diketahui."
+scan_not_archive: "Gagal (kosong atau tidak sebuah arsip)!"
+scan_reading: "Bacaan"
+scan_signature_file_missing: "Tanda tangan file hilang"
+scan_tampering: "Terdeteksi perubahan berpotensi berbahaya dalam file"
+started: "Dimulai"
+too_many_files_in_archive: "Terlalu banyak file dalam arsip"
+too_many_urls: "Terlalu banyak URL"
+x_does_not_exist: "%s tidak ada"

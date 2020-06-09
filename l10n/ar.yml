@@ -1,0 +1,69 @@
+##\
+# This file is a part of the phpMussel\Core package.
+# Homepage: https://phpmussel.github.io/
+#
+# PHPMUSSEL COPYRIGHT 2013 AND BEYOND BY THE PHPMUSSEL TEAM.
+#
+# License: GNU/GPLv2
+# @see LICENSE.txt
+#
+# This file: Arabic language data (last modified: 2020.06.14).
+##/
+
+# Language settings.
+Local Name: "العربية"
+Text Direction: "rtl"
+IntegerRule: "int6Type1"
+FractionRule: "int1"
+
+SafeBrowseLookup_200: "يحتمل أن تكون ضارة URL الكشف"
+SafeBrowseLookup_400: "API خطأ طلب"
+SafeBrowseLookup_401: "API خطأ ترخيص"
+SafeBrowseLookup_503: "API الخدمة غير متوفرة"
+SafeBrowseLookup_999: "خطأ API غير معروف"
+_exclamation: "%s! "
+_exclamation_final: "%s!"
+_fullstop: ". "
+_fullstop_final: "."
+corrupted: "الكشف PE تلف"
+data_not_available: "البيانات غير متوفرة."
+detected: "الكشف %s"
+detected_control_characters: "الكشف أحرف التحكم"
+encrypted_archive: "كشف أرشيف المشفرة؛ أرشيف المشفرة غير مسموح"
+error_log_header: "إذا استمرت أي من الأخطاء التالية، من أجل الإبلاغ عنها، أو لطلب الدعم, قم بالاتصال في صفحة قضايا phpMussel في GitHub. قم بتضمين الأخطاء المعنية بالإضافة إلى أي معلومات أخرى ذات صلة. شكر."
+failed_to_access: "فشل في الوصول إلى "%s"!"
+field_date: "التاريخ"
+field_header_hash_reconstruction: "إعادة بناء التواقيع التجزئة"
+field_header_pe_reconstruction: "إعادة بناء التوقيعات القطاعية PE"
+field_header_scan_results_why_flagged: "نتائج المسح (لماذا تم الإبلاغ عنها)"
+field_ip_address: "عنوان IP"
+file: "ملف"
+filesize_limit_exceeded: "تجاوز حد حجم ملف"
+filetype_blacklisted: "نوع الملف في القائمة السوداء"
+finished: "انتهى"
+generated_by: "الناتج"
+image: "صورة"
+invalid_data: "بيانات غير صالحة!"
+invalid_file: "ملف غير صالح"
+invalid_url: "URL غير صالح!"
+macros_not_permitted: "وحدات الماكرو غير مسموح بها"
+ok: "حسنا"
+only_allow_images: "يسمح بملفات الصور فقط"
+quarantined_as: "الحجر الصحي بأنه "/vault/quarantine/%s.qfu"."
+recursive: "تجاوزت الحد عمق العودية"
+scan_chameleon: "الكشف هجوم الحرباء %s"
+scan_checking: "فحص"
+scan_command_injection: "الكشف محاولة حقن القيادة"
+scan_complete: "تم الانتهاء من"
+scan_extensions_missing: "فشل (مفقود ملحقات المطلوبة)!"
+scan_filename_manipulation_detected: "الكشف تلاعب اسم الملف"
+scan_missing_filename: "مفقود اسم الملف"
+scan_no_problems_found: "الكشف لا مشاكل."
+scan_not_archive: "فشل (فارغة أو ليس أرشيفا)!"
+scan_reading: "قراءة"
+scan_signature_file_missing: "مفقود ملف التوقيع"
+scan_tampering: "الكشف العبث ملف يحتمل أن تكون خطرة"
+started: "بدأت"
+too_many_files_in_archive: "ملفات كثيرة جدا في الأرشيف"
+too_many_urls: "عدد كبير جدا من عناوين المواقع"
+x_does_not_exist: "لا يوجد %s"

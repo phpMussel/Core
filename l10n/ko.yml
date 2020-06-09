@@ -1,0 +1,69 @@
+##\
+# This file is a part of the phpMussel\Core package.
+# Homepage: https://phpmussel.github.io/
+#
+# PHPMUSSEL COPYRIGHT 2013 AND BEYOND BY THE PHPMUSSEL TEAM.
+#
+# License: GNU/GPLv2
+# @see LICENSE.txt
+#
+# This file: Korean language data (last modified: 2020.06.14).
+##/
+
+# Language settings.
+Local Name: "한국어"
+Text Direction: "ltr"
+IntegerRule: "int1"
+FractionRule: "int1"
+
+SafeBrowseLookup_200: "잠재적으로 유해한 URL이 감지되었습니다"
+SafeBrowseLookup_400: "API 요청이 부정"
+SafeBrowseLookup_401: "API 인증 오류"
+SafeBrowseLookup_503: "API 서비스 이용 불가"
+SafeBrowseLookup_999: "알 수없는 API 오류"
+_exclamation: "%s! "
+_exclamation_final: "%s!"
+_fullstop: ". "
+_fullstop_final: "."
+corrupted: "손상 PE를 발견했습니다"
+data_not_available: "데이터를 사용할 수 없습니다."
+detected: "%s을 발견했습니다"
+detected_control_characters: "제어 문자를 발견했습니다"
+encrypted_archive: "암호화 된 아카이브 검색 : 암호화 된 아카이브는 허용되지 않습니다"
+error_log_header: "다음과 같은 오류가 계속 발생하면, 여가 시간이있을 때, GitHub의 phpMussel issues 페이지를 문제를보고하거나 도움을 요청하기 위해. 오류 및 기타 관련 정보를 포함하십시오. 감사."
+failed_to_access: ""%s"에 액세스하지 못했습니다!"
+field_date: "날짜 "
+field_header_hash_reconstruction: "해시 서명 재구성"
+field_header_pe_reconstruction: "PE 단면 서명 재구성"
+field_header_scan_results_why_flagged: "스캔 결과 (신고 된 이유)"
+field_ip_address: "IP 주소 "
+file: "파일"
+filesize_limit_exceeded: "용 범위를 벗어난 파일 크기입니다"
+filetype_blacklisted: "파일 형식이 블랙리스트입니다"
+finished: "완료"
+generated_by: "작성자"
+image: "이미지"
+invalid_data: "유효하지 않은 데이터!"
+invalid_file: "유효하지 않은 파일"
+invalid_url: "유효하지 않은 URL!"
+macros_not_permitted: "매크로는 허용되지 않습니다"
+ok: "괜찮아"
+only_allow_images: "이미지 파일 만 허용"
+quarantined_as: ""/vault/quarantine/%s.qfu"로 격리."
+recursive: "재귀 정의 호출의 반복 횟수를 초과했습니다"
+scan_chameleon: "%s 카멜레온 공격이 감지되었습니다"
+scan_checking: "현재 분석 중 :"
+scan_command_injection: "명령 주입 공격이 감지되었습니다"
+scan_complete: "완료"
+scan_extensions_missing: "실패 (요청한 확장자가 없습니다)!"
+scan_filename_manipulation_detected: "파일 네이무 조작이 감지되었습니다"
+scan_missing_filename: "파일 이름이 존재하지 않습니다"
+scan_no_problems_found: "문제는 발견되지 않았습니다."
+scan_not_archive: "실패 (내용이 없거나 보관하지 않습니다)!"
+scan_reading: "로드 중입니다"
+scan_signature_file_missing: "서명 파일이 없습니다"
+scan_tampering: "검색된 잠재적으로 위험한 파일 변조"
+started: "시작합니다"
+too_many_files_in_archive: "아카이브에 파일이 너무 많습니다"
+too_many_urls: "URL이 너무 많습니다"
+x_does_not_exist: "%s는 존재하지 않습니다"

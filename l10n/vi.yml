@@ -1,0 +1,69 @@
+##\
+# This file is a part of the phpMussel\Core package.
+# Homepage: https://phpmussel.github.io/
+#
+# PHPMUSSEL COPYRIGHT 2013 AND BEYOND BY THE PHPMUSSEL TEAM.
+#
+# License: GNU/GPLv2
+# @see LICENSE.txt
+#
+# This file: Vietnamese language data (last modified: 2020.06.14).
+##/
+
+# Language settings.
+Local Name: "Tiếng Việt"
+Text Direction: "ltr"
+IntegerRule: "int1"
+FractionRule: "int1"
+
+SafeBrowseLookup_200: "URL đó là có khả năng có hại đã được phát hiện"
+SafeBrowseLookup_400: "Lỗi yêu cầu API"
+SafeBrowseLookup_401: "Lỗi ủy quyền API"
+SafeBrowseLookup_503: "Dịch vụ của API không có sẵn"
+SafeBrowseLookup_999: "Lỗi API không xác định"
+_exclamation: "%s! "
+_exclamation_final: "%s!"
+_fullstop: ". "
+_fullstop_final: "."
+corrupted: "Lối của PE đã được phát hiện ra"
+data_not_available: "Dữ liệu không có sẵn."
+detected: "Đã được phát hiện %s"
+detected_control_characters: "Ký tự điều khiển đã được phát hiện"
+encrypted_archive: "Kho đã mã hóa đã được phát hiện; Kho đã mã hóa chưa có sự cho phép"
+error_log_header: "Nếu bất kỳ lỗi nào sau đây tiếp tục xảy ra, để báo cáo họ, hoặc để tìm kiếm sự hỗ trợ, vui lòng tạo một issue mới tại trang các issue phpMussel tại GitHub khi bạn có thời gian rảnh, với các lỗi trong câu hỏi cùng với bất kỳ thông tin thích hợp khác được đính kèm. Cảm ơn."
+failed_to_access: "Không thể truy cập "%s"!"
+field_date: "Ngày"
+field_header_hash_reconstruction: "Tái thiết chữ ký băm"
+field_header_pe_reconstruction: "Tái thiết chữ ký phần PE"
+field_header_scan_results_why_flagged: "Kết quả quét (tại sao được gắn cờ)"
+field_ip_address: "Địa chỉ IP"
+file: "Tập tin"
+filesize_limit_exceeded: "Cở của tập tin đã bị quá giới hạn"
+filetype_blacklisted: "Loại tập tin đã vào danh sách đen"
+finished: "Hoàn thành"
+generated_by: "Được tạo bởi"
+image: "Hình ảnh"
+invalid_data: "Dữ liệu không hợp lệ!"
+invalid_file: "Tập tin không hợp lệ"
+invalid_url: "URL không hợp lệ!"
+macros_not_permitted: "Macro không được phép"
+ok: "OK"
+only_allow_images: "Chỉ cho phép tập tin hình ảnh"
+quarantined_as: "Đã được kiểm dịch là "/vault/quarantine/%s.qfu"."
+recursive: "Độ sâu đệ quy bị quá giới hạn"
+scan_chameleon: "%s tấn công tắc kè hoa được phát hiện"
+scan_checking: "Đang kiểm tra"
+scan_command_injection: "Nỗ lực lệnh chích được phát hiện"
+scan_complete: "Đã hoàn toàn"
+scan_extensions_missing: "Thất bại (phần nối cần thiết bị thiểu)!"
+scan_filename_manipulation_detected: "Sự thay đổi của tên tập tin được phát hiện"
+scan_missing_filename: "Tên tập tin bị thiểu"
+scan_no_problems_found: "Không tiềm được vấn đề."
+scan_not_archive: "Thất bại (tróng hoạc không phải trong kho lưu trữ)!"
+scan_reading: "Đang đọc"
+scan_signature_file_missing: "Tập tin quan trọng bị mất"
+scan_tampering: "Tập tin có khả năng gây nguy hiểm được phát hiện"
+started: "Đã bắt đầu"
+too_many_files_in_archive: "Quá nhiều tập tin trong kho lưu trữ"
+too_many_urls: "Quá nhiều URL"
+x_does_not_exist: "%s không tồn tại"

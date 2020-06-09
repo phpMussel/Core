@@ -1,6 +1,6 @@
 {
-    "name": "phpmussel/phpmussel",
-    "description": "PHP-based anti-virus anti-trojan anti-malware solution.",
+    "name": "phpmussel/core",
+    "description": "phpMussel core",
     "keywords": ["anti-virus","anti-trojan","anti-malware","anti-exploit","anti-spam","antivirus","uploads","security","protection"],
     "homepage": "https://phpmussel.github.io/",
     "license": "GPL-2.0-or-later",
@@ -13,10 +13,10 @@
     },
     "require": {
         "php": ">=7.2.0",
+        "maikuolan/common": "^2.3",
         "ext-pcre": "*"
     },
     "suggest": {
-        "cidram/cidram": "Classless Inter-Domain Routing Access Manager (works great in conjunction with phpMussel).",
         "ext-bz2": "*",
         "ext-curl": "*",
         "ext-lzf": "*",

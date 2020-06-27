@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2020.06.22).
+ * This file: The scanner (last modified: 2020.06.27).
  */
 
 namespace phpMussel\Core;
@@ -56,7 +56,10 @@ class Scanner
          */
         $this->Loader->Events->addHandler('writeToSerialLog', function (): bool {
             /** Guard. */
-            if (!$File = $this->Loader->buildPath($this->Loader->Configuration['core']['scan_log_serialized'])) {
+            if (
+                !$this->Loader->Configuration['core']['scan_log_serialized'] ||
+                !($File = $this->Loader->buildPath($this->Loader->Configuration['core']['scan_log_serialized']))
+            ) {
                 return false;
             }
 
@@ -110,7 +113,10 @@ class Scanner
          */
         $this->Loader->Events->addHandler('writeToScanLog', function (string $Data): bool {
             /** Guard. */
-            if (!$File = $this->Loader->buildPath($this->Loader->Configuration['core']['scan_log'])) {
+            if (
+                !$this->Loader->Configuration['core']['scan_log'] ||
+                !($File = $this->Loader->buildPath($this->Loader->Configuration['core']['scan_log']))
+            ) {
                 return false;
             }
 
@@ -212,7 +218,11 @@ class Scanner
 
         /** Update statistics. */
         if (!empty($this->Loader->InstanceCache['StatisticsModified'])) {
-            $this->Loader->InstanceCache['Statistics'] = $this->Loader->saveCache('Statistics', -1, serialize($this->Loader->InstanceCache['Statistics']));
+            $this->Loader->InstanceCache['Statistics'] = $this->Loader->Cache->setEntry(
+                'Statistics',
+                serialize($this->Loader->InstanceCache['Statistics']),
+                0
+            );
         }
 
         /** Exit scan process. */
@@ -1974,7 +1984,7 @@ class Scanner
 
                 /** Fetch the cache entry for hpHosts, if it doesn't already exist. */
                 if (!isset($this->Loader->InstanceCache['urlscanner_domains'])) {
-                    $this->Loader->InstanceCache['urlscanner_domains'] = $this->Loader->fetchCache('urlscanner_domains');
+                    $this->Loader->InstanceCache['urlscanner_domains'] = $this->Loader->Cache->getEntry('urlscanner_domains');
                 }
 
                 $URLScanner['y'] = $this->Loader->Time + $this->Loader->Configuration['urlscanner']['cache_time'];
@@ -2052,7 +2062,7 @@ class Scanner
                     }
                     $this->Loader->InstanceCache['urlscanner_domains'] .= $URLScanner['Domains'][$i] . $URLScanner['y'] . ':;';
                 }
-                $this->Loader->saveCache('urlscanner_domains', $URLScanner['y'], $this->Loader->InstanceCache['urlscanner_domains']);
+                $this->Loader->Cache->setEntry('urlscanner_domains', $this->Loader->InstanceCache['urlscanner_domains'], $URLScanner['y']);
             }
 
             $URLScanner['URLsCount'] = count($URLScanner['URLParts']);
@@ -2365,7 +2375,7 @@ class Scanner
             if ($DoScan) {
                 $VTWeight = ['weight' => 0, 'cli' => '', 'web' => ''];
                 if (!isset($this->Loader->InstanceCache['vt_quota'])) {
-                    $this->Loader->InstanceCache['vt_quota'] = $this->Loader->fetchCache('vt_quota');
+                    $this->Loader->InstanceCache['vt_quota'] = $this->Loader->Cache->getEntry('vt_quota');
                 }
                 $x = 0;
                 if (!empty($this->Loader->InstanceCache['vt_quota'])) {
@@ -2397,7 +2407,7 @@ class Scanner
                     while (substr_count($this->Loader->InstanceCache['vt_quota'], ';;')) {
                         $this->Loader->InstanceCache['vt_quota'] = str_ireplace(';;', ';', $this->Loader->InstanceCache['vt_quota']);
                     }
-                    $this->Loader->saveCache('vt_quota', $y + 60, $this->Loader->InstanceCache['vt_quota']);
+                    $this->Loader->Cache->setEntry('vt_quota', $this->Loader->InstanceCache['vt_quota'], $y + 60);
                     if (isset($VTJSON['response_code'])) {
                         $VTJSON['response_code'] = (int)$VTJSON['response_code'];
                         if (
@@ -2918,7 +2928,7 @@ class Scanner
         }
 
         $this->Loader->InstanceCache['StatisticsModified'] = false;
-        if ($this->Loader->InstanceCache['Statistics'] = ($this->Loader->fetchCache('Statistics') ?: [])) {
+        if ($this->Loader->InstanceCache['Statistics'] = ($this->Loader->Cache->getEntry('Statistics') ?: [])) {
             if (is_string($this->Loader->InstanceCache['Statistics'])) {
                 unserialize($this->Loader->InstanceCache['Statistics']) ?: [];
             }
@@ -2959,26 +2969,16 @@ class Scanner
     }
 
     /**
-     * Fetch information about signature files and prepare for use with the
-     * scan process.
+     * Fetch information about signature files for the scan process.
      */
     private function organiseSigFiles()
     {
-        $LastActive = $this->Loader->fetchCache('active') ?: '';
-        if (
-            empty($this->Loader->Configuration['signatures']['active']) ||
-            !$this->Loader->SignaturesPath
-        ) {
+        /** Guard. */
+        if (empty($this->Loader->Configuration['signatures']['active']) || !$this->Loader->SignaturesPath) {
             return;
         }
-        if ($this->Loader->Configuration['signatures']['active'] !== $LastActive) {
-            if (isset($this->Loader->Cache) && $this->Loader->Cache->Using) {
-                $this->Loader->Cache->deleteEntry('active');
-            } else {
-                $this->Loader->saveCache('active', -1, $this->Loader->Configuration['signatures']['active']);
-            }
-        }
 
+        /** Supported signature file classes. */
         $Classes = [
             'General_Command_Detections',
             'Filename',
@@ -2995,8 +2995,7 @@ class Scanner
             'URL_Scanner'
         ];
 
-        $List = explode(',', $this->Loader->Configuration['signatures']['active']);
-        foreach ($List as $File) {
+        foreach (explode(',', $this->Loader->Configuration['signatures']['active']) as $File) {
             $File = (strpos($File, ':') === false) ? $File : substr($File, strpos($File, ':') + 1);
             $Handle = fopen($this->Loader->SignaturesPath . $File, 'rb');
             if (fread($Handle, 9) !== 'phpMussel') {
@@ -3643,7 +3642,7 @@ class Scanner
         $Arr = json_encode([
             'client' => [
                 'clientId' => 'phpMussel',
-                'clientVersion' => $this->ScriptVersion
+                'clientVersion' => $this->Loader->ScriptVersion
             ],
             'threatInfo' => [
                 'threatTypes' => [
@@ -3661,7 +3660,7 @@ class Scanner
 
         /** Fetch the cache entry for Google Safe Browsing, if it doesn't already exist. */
         if (!isset($this->Loader->InstanceCache['urlscanner_google'])) {
-            $this->Loader->InstanceCache['urlscanner_google'] = $this->Loader->fetchCache('urlscanner_google');
+            $this->Loader->InstanceCache['urlscanner_google'] = $this->Loader->Cache->getEntry('urlscanner_google');
         }
 
         /** Generate a reference for the cache entry for this lookup. */
@@ -3797,7 +3796,7 @@ class Scanner
 
         /** Update the cache entry for Google Safe Browsing. */
         $this->Loader->InstanceCache['urlscanner_google'] .= $cacheRef . ':' . $newExpiry . ':' . $returnVal . ';';
-        $this->Loader->saveCache('urlscanner_google', $newExpiry, $this->Loader->InstanceCache['urlscanner_google']);
+        $this->Loader->Cache->setEntry('urlscanner_google', $newExpiry, $this->Loader->InstanceCache['urlscanner_google']);
 
         return $returnVal;
     }

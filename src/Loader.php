@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2020.06.22).
+ * This file: The loader (last modified: 2020.06.27).
  */
 
 namespace phpMussel\Core;
@@ -174,7 +174,8 @@ class Loader
      * @param string $ConfigurationPath Custom-defined path to phpMussel's
      *      configuration file (optional).
      * @param string $CachePath An optional, custom-defined path to phpMussel's
-     *      cache data.
+     *      cache data (this is also where files may be stored temporarily when
+     *      it's needed).
      * @param string $QuarantinePath An optional, custom-defined path to
      *      phpMussel's quarantine directory.
      * @param string $SignaturesPath An optional, custom-defined path to
@@ -313,6 +314,9 @@ class Loader
 
         /** Load phpMussel core L10N data. */
         $this->loadL10N($this->L10NPath);
+
+        /** Initialise the cache. */
+        $this->initialiseCache();
 
         /**
          * Writes to the default error log.
@@ -1132,7 +1136,7 @@ class Loader
      * @throws Exception if using flatfiles for caching and if an appropriate
      *      cache directory hasn't been specified or can't be written to.
      */
-    public function initialiseCache()
+    private function initialiseCache()
     {
         /** Exit early if already initialised. */
         if ($this->Cache instanceof \Maikuolan\Common\Cache) {
@@ -1153,188 +1157,16 @@ class Loader
         $this->Cache->PDOdsn = $this->Configuration['supplementary_cache_options']['pdo_dsn'];
         $this->Cache->PDOusername = $this->Configuration['supplementary_cache_options']['pdo_username'];
         $this->Cache->PDOpassword = $this->Configuration['supplementary_cache_options']['pdo_password'];
-        $this->Cache->connect();
 
-        /** Guard against missing cache directory. */
-        if (!$this->Cache->Using && !$this->CachePath) {
-            throw new \Exception('No valid cache path available.');
-        }
-    }
-
-    /**
-     * Deletes expired cache entries and regenerates cache files.
-     *
-     * @param string $Delete Forcibly delete a specific cache entry (optional).
-     * @return bool Operation succeeded (true) or failed (false).
-     */
-    public function cleanCache(string $Delete = ''): bool
-    {
-        if (!empty($this->InstanceCache['CacheCleaned'])) {
-            return true;
-        }
-        $this->InstanceCache['CacheCleaned'] = true;
-        $CacheFiles = [];
-        $FileIndex = $this->CachePath . 'index.dat';
-        if (!is_readable($FileIndex)) {
-            return false;
-        }
-        $FileDataOld = $FileData = $this->readFileBlocks($FileIndex);
-        if (strpos($FileData, ';') !== false) {
-            $FileData = explode(';', $FileData);
-            foreach ($FileData as &$ThisData) {
-                if (strpos($ThisData, ':') === false) {
-                    $ThisData = '';
-                    continue;
-                }
-                $ThisData = explode(':', $ThisData, 3);
-                if (($Delete && $Delete === $ThisData[0]) || ($ThisData[1] > 0 && $this->Time > $ThisData[1])) {
-                    $FileKey = bin2hex(substr($ThisData[0], 0, 1));
-                    if (!isset($CacheFiles[$FileKey])) {
-                        $CacheFiles[$FileKey] = $this->readFileBlocks($this->CachePath . $FileKey . '.tmp');
-                    }
-                    while (strpos($CacheFiles[$FileKey], $ThisData[0] . ':') !== false) {
-                        $CacheFiles[$FileKey] = str_ireplace($ThisData[0] . ':' . $this->substrBeforeFirst(
-                            $this->substrAfterFirst($CacheFiles[$FileKey], $ThisData[0] . ':'), ';'
-                        ) . ';', '', $CacheFiles[$FileKey]);
-                    }
-                    $ThisData = '';
-                    continue;
-                }
-                $ThisData = $ThisData[0] . ':' . $ThisData[1];
-            }
-            $FileData = str_replace(';;', ';', implode(';', array_filter($FileData)) . ';');
-            if ($FileDataOld !== $FileData) {
-                $Handle = fopen($FileIndex, 'wb');
-                fwrite($Handle, $FileData);
-                fclose($Handle);
-            }
-        }
-        foreach ($CacheFiles as $CacheEntryKey => $CacheEntryValue) {
-            if (strlen($CacheEntryValue) < 2) {
-                if (file_exists($this->CachePath . $CacheEntryKey . '.tmp')) {
-                    unlink($this->CachePath . $CacheEntryKey . '.tmp');
-                }
-                continue;
-            }
-            $Handle = fopen($this->CachePath . $CacheEntryKey . '.tmp', 'wb');
-            fwrite($Handle, $CacheEntryValue);
-            fclose($Handle);
-        }
-        return true;
-    }
-
-    /**
-     * Retrieves cache entries.
-     *
-     * @param string|array $Entry The name of the cache entr(y/ies) to retrieve;
-     *      Can be a string to specify a single entry, or an array of strings to
-     *      specify multiple entries.
-     * @return string|array Contents of the cache entr(y/ies).
-     */
-    public function fetchCache($Entry = '')
-    {
-        $this->cleanCache();
-        $this->initialiseCache();
-
-        /** Override if using a different preferred caching mechanism. */
-        if ($this->Cache->Using) {
-            if (is_array($Entry)) {
-                $Out = [];
-                foreach ($Entry as $ThisKey => $ThisEntry) {
-                    $Out[$ThisKey] = $this->Cache->getEntry($ThisEntry);
-                }
-                return $Out;
-            }
-            return $this->Cache->getEntry($Entry);
+        /** Assign cache path. */
+        if ($this->CachePath) {
+            $this->Cache->FFDefault = $this->CachePath . DIRECTORY_SEPARATOR . 'cache.dat';
         }
 
-        /** Default process. */
-        if (!$Entry) {
-            return '';
+        /** Attempt to connect. */
+        if (!$this->Cache->connect()) {
+            throw new \Exception('Cache connect failed.');
         }
-        if (is_array($Entry)) {
-            $Out = [];
-            foreach ($Entry as $Key => $Value) {
-                $Out[$Key] = $this->fetchCache($Value);
-            }
-            return $Out;
-        }
-        $File = $this->CachePath . bin2hex(substr($Entry, 0, 1)) . '.tmp';
-        if (!$FileData = $this->readFileBlocks($File)) {
-            return '';
-        }
-        if (!$Item = strpos($FileData, $Entry . ':') !== false ? $Entry . ':' . $this->substrBeforeFirst(
-            $this->substrAfterFirst($FileData, $Entry . ':'), ';'
-        ) . ';' : '') {
-            return '';
-        }
-        $Expiry = $this->substrBeforeFirst($this->substrAfterFirst($Item, $Entry . ':'), ':');
-        if ($Expiry > 0 && $this->Time > $Expiry) {
-            while (strpos($FileData, $Entry . ':') !== false) {
-                $FileData = str_ireplace($Item, '', $FileData);
-            }
-            $Handle = fopen($File, 'wb');
-            fwrite($Handle, $FileData);
-            fclose($Handle);
-            return '';
-        }
-        if (!$ItemData = $this->substrBeforeFirst($this->substrAfterFirst($Item, $Entry . ':' . $Expiry . ':'), ';')) {
-            return '';
-        }
-        return gzinflate($this->hexSafe($ItemData)) ?: '';
-    }
-
-    /**
-     * Creates a cache entry and saves it to the cache.
-     *
-     * @param string $Entry Name of the cache entry to create.
-     * @param int $Expiry Unix time until the cache entry expires.
-     * @param string $ItemData Contents of the cache entry.
-     * @return bool True on success; False on failure.
-     */
-    public function saveCache(string $Entry = '', int $Expiry = 0, string $ItemData = ''): bool
-    {
-        $this->cleanCache();
-        $this->initialiseCache();
-
-        /** Override if using a different preferred caching mechanism. */
-        if ($this->Cache->Using) {
-            if ($Expiry <= 0) {
-                $Expiry = 0;
-            } elseif ($Expiry > $this->Time) {
-                $Expiry = $Expiry - $this->Time;
-            }
-            return $this->Cache->setEntry($Entry, $ItemData, $Expiry);
-        }
-
-        /** Default process. */
-        if (!$Entry || !$ItemData) {
-            return false;
-        }
-        if (!$Expiry) {
-            $Expiry = $this->Time;
-        }
-        $File = $this->CachePath . bin2hex($Entry[0]) . '.tmp';
-        $Data = $this->readFileBlocks($File) ?: '';
-        while (strpos($Data, $Entry . ':') !== false) {
-            $Data = str_ireplace($Entry . ':' . $this->substrBeforeFirst($this->substrAfterFirst($Data, $Entry . ':'), ';') . ';', '', $Data);
-        }
-        $Data .= $Entry . ':' . $Expiry . ':' . bin2hex(gzdeflate($ItemData,9)) . ';';
-        $Handle = fopen($File, 'wb');
-        fwrite($Handle, $Data);
-        fclose($Handle);
-        $IndexFile = $this->CachePath . 'index.dat';
-        $IndexNewData = $IndexData = $this->readFileBlocks($IndexFile) ?: '';
-        while (strpos($IndexNewData, $Entry . ':') !== false) {
-            $IndexNewData = str_ireplace($Entry . ':' . $this->substrBeforeFirst($this->substrAfterFirst($IndexNewData, $Entry . ':'), ';') . ';', '', $IndexNewData);
-        }
-        $IndexNewData .= $Entry . ':' . $Expiry . ';';
-        if ($IndexNewData !== $IndexData) {
-            $IndexHandle = fopen($IndexFile, 'wb');
-            fwrite($IndexHandle, $IndexNewData);
-            fclose($IndexHandle);
-        }
-        return true;
     }
 
     /**

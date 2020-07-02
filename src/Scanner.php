@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2020.06.27).
+ * This file: The scanner (last modified: 2020.07.01).
  */
 
 namespace phpMussel\Core;
@@ -431,7 +431,7 @@ class Scanner
                         $this->Loader->L10N->getString('ok') . ' (' .
                         $this->Loader->L10N->getString('filesize_limit_exceeded') . ").\n";
                 }
-                $this->Loader->HashReference .= '--FILESIZE-LIMIT--------NO-HASH-:' . $fS . ':' . $OriginalFilename . "\n";
+                $this->Loader->HashReference .= str_repeat('-', 64) . ':' . $fS . ':' . $OriginalFilename . "\n";
                 $this->Loader->WhyFlagged .= sprintf(
                     $this->Loader->L10N->getString('_exclamation'),
                     $this->Loader->L10N->getString('filesize_limit_exceeded') . ' (' . $OriginalFilenameSafe . ')'
@@ -449,7 +449,7 @@ class Scanner
         if (!$this->Loader->Configuration['files']['allow_leading_trailing_dots'] && (
             substr($OriginalFilename, 0, 1) === '.' || substr($OriginalFilename, -1) === '.'
         )) {
-            $this->Loader->HashReference .= '--FILENAME-MANIPULATION-NO-HASH-:' . $fS . ':' . $OriginalFilename . "\n";
+            $this->Loader->HashReference .= str_repeat('-', 64) . ':' . $fS . ':' . $OriginalFilename . "\n";
             $this->Loader->WhyFlagged .= sprintf(
                 $this->Loader->L10N->getString('_exclamation'),
                 $this->Loader->L10N->getString('scan_filename_manipulation_detected') . ' (' . $OriginalFilenameSafe . ')'
@@ -482,7 +482,7 @@ class Scanner
         if ($this->containsMustAssert([
             $this->Loader->Configuration['files']['filetype_blacklist']
         ], [$xt, $xts, $gzxt, $gzxts], ',', true, true)) {
-            $this->Loader->HashReference .= '--FILETYPE-BLACKLISTED--NO-HASH-:' . $fS . ':' . $OriginalFilename . "\n";
+            $this->Loader->HashReference .= str_repeat('-', 64) . ':' . $fS . ':' . $OriginalFilename . "\n";
             $this->Loader->WhyFlagged .= sprintf(
                 $this->Loader->L10N->getString('_exclamation'),
                 $this->Loader->L10N->getString('filetype_blacklisted') . ' (' . $OriginalFilenameSafe . ')'
@@ -501,7 +501,7 @@ class Scanner
         if (!empty($this->Loader->Configuration['files']['filetype_greylist']) && $this->containsMustAssert([
             $this->Loader->Configuration['files']['filetype_greylist']
         ], [$xt, $xts, $gzxt, $gzxts])) {
-            $this->Loader->HashReference .= '----FILETYPE--NOT-GREYLISTED----:' . $fS . ':' . $OriginalFilename . "\n";
+            $this->Loader->HashReference .= str_repeat('-', 64) . ':' . $fS . ':' . $OriginalFilename . "\n";
             $this->Loader->WhyFlagged .= sprintf(
                 $this->Loader->L10N->getString('_exclamation'),
                 $this->Loader->L10N->getString('filetype_blacklisted') . ' (' . $OriginalFilenameSafe . ')'
@@ -527,7 +527,7 @@ class Scanner
 
         /** Check for non-image items. */
         if (!empty($in) && $this->Loader->Configuration['files']['only_allow_images'] && !$this->imageIndicators($xt, bin2hex(substr($in, 0, 16)))) {
-            $this->Loader->HashReference .= md5($in) . ':' . $fS . ':' . $OriginalFilename . "\n";
+            $this->Loader->HashReference .= hash('sha256', $in) . ':' . $fS . ':' . $OriginalFilename . "\n";
             $this->Loader->WhyFlagged .= sprintf(
                 $this->Loader->L10N->getString('_exclamation'),
                 $this->Loader->L10N->getString('only_allow_images') . ' (' . $OriginalFilenameSafe . ')'
@@ -726,14 +726,14 @@ class Scanner
         $Out = '';
 
         /** There's no point bothering to scan zero-byte files. */
-        if (!$str_len = strlen($str)) {
+        if (!$StringLength = strlen($str)) {
             return [1, ''];
         }
 
         $md5 = md5($str);
-        $sha = sha1($str);
+        $sha1 = sha1($str);
         $sha256 = hash('sha256', $str);
-        $crc = hash('crc32b', $str);
+        $crc32b = hash('crc32b', $str);
 
         /** $fourcc: First four bytes of the scan target in hexadecimal notation. */
         $fourcc = strtolower(bin2hex(substr($str, 0, 4)));
@@ -745,10 +745,13 @@ class Scanner
          * $CoExMeta: Contains metadata pertaining to the scan target, intended to
          * be used by the "complex extended" signatures.
          */
-        $CoExMeta =
-            '$OriginalFilename:' . $OriginalFilename . ';md5($OriginalFilename):' . md5($OriginalFilename) . ';$Depth:' . $Depth .
-            ';$str_len:' . $str_len . ';$md5:' . $md5 . ';$sha:' . $sha .
-            ';$crc:' . $crc . ';$fourcc:' . $fourcc . ';$twocc:' . $twocc . ';';
+        $CoExMeta = '';
+        foreach (['OriginalFilename', 'Depth', 'StringLength', 'md5', 'sha1', 'sha256', 'crc32b', 'fourcc', 'twocc'] as $AppendToCoExMeta) {
+            if (!empty($$$AppendToCoExMeta)) {
+                $CoExMeta .= '$' . $AppendToCoExMeta . ':' . $$AppendToCoExMeta . ';';
+            }
+        }
+        unset($AppendToCoExMeta);
 
         /** Indicates whether a signature is considered a "weighted" signature. */
         $this->Loader->InstanceCache['weighted'] = false;
@@ -758,7 +761,7 @@ class Scanner
 
         /** Scan target has no name? That's a little suspicious. */
         if (!$OriginalFilename) {
-            $this->Loader->HashReference .= $md5 . ':' . $str_len . ":\n";
+            $this->Loader->HashReference .= $sha256 . ':' . $StringLength . ":\n";
             $this->Loader->InstanceCache['detections_count']++;
             $Out .= $lnap . sprintf(
                 $this->Loader->L10N->getString('_exclamation_final'),
@@ -788,10 +791,10 @@ class Scanner
 
         if (
             $this->Loader->Configuration['files']['scannable_threshold'] > 0 &&
-            $str_len > $this->Loader->readBytes($this->Loader->Configuration['files']['scannable_threshold'])
+            $StringLength > $this->Loader->readBytes($this->Loader->Configuration['files']['scannable_threshold'])
         ) {
-            $str_len = $this->Loader->readBytes($this->Loader->Configuration['files']['scannable_threshold']);
-            $str = substr($str, 0, $str_len);
+            $StringLength = $this->Loader->readBytes($this->Loader->Configuration['files']['scannable_threshold']);
+            $str = substr($str, 0, $StringLength);
             $str_cut = 1;
         } else {
             $str_cut = 0;
@@ -800,14 +803,14 @@ class Scanner
         /** Indicates whether we need to decode the contents of the scan target. */
         $decode_or_not = ((
             $this->Loader->Configuration['files']['decode_threshold'] > 0 &&
-            $str_len > $this->Loader->readBytes($this->Loader->Configuration['files']['decode_threshold'])
-        ) || $str_len < 16) ? 0 : 1;
+            $StringLength > $this->Loader->readBytes($this->Loader->Configuration['files']['decode_threshold'])
+        ) || $StringLength < 16) ? 0 : 1;
 
         /** These are sometimes used by the "CoEx" ("complex extended") signatures. */
-        $len_kb = ($str_len > 1024) ? 1 : 0;
-        $len_hmb = ($str_len > 524288) ? 1 : 0;
-        $len_mb = ($str_len > 1048576) ? 1 : 0;
-        $len_hgb = ($str_len > 536870912) ? 1 : 0;
+        $len_kb = ($StringLength > 1024) ? 1 : 0;
+        $len_hmb = ($StringLength > 524288) ? 1 : 0;
+        $len_mb = ($StringLength > 1048576) ? 1 : 0;
+        $len_hgb = ($StringLength > 536870912) ? 1 : 0;
         $phase = $this->Loader->InstanceCache['phase'];
         $container = $this->Loader->InstanceCache['container'];
         $pdf_magic = ($fourcc == '25504446');
@@ -835,7 +838,7 @@ class Scanner
 
         /** Input ($str) as hexadecimal data. */
         $str_hex = bin2hex($str);
-        $str_hex_len = $str_len * 2;
+        $str_hex_len = $StringLength * 2;
 
         /** Input ($str) normalised. */
         $str_norm = $this->normalise($str, false, $decode_or_not);
@@ -1028,8 +1031,8 @@ class Scanner
                     }
                 } elseif (
                     ($Fragment[0] === 'FN' && !preg_match('/(?:' . $Fragment[1] . ')/i', $OriginalFilename)) ||
-                    ($Fragment[0] === 'FS-MIN' && $str_len < $Fragment[1]) ||
-                    ($Fragment[0] === 'FS-MAX' && $str_len > $Fragment[1]) ||
+                    ($Fragment[0] === 'FS-MIN' && $StringLength < $Fragment[1]) ||
+                    ($Fragment[0] === 'FS-MAX' && $StringLength > $Fragment[1]) ||
                     ($Fragment[0] === 'FD' && strpos($str_hex, $Fragment[1]) === false) ||
                     ($Fragment[0] === 'FD-RX' && !preg_match('/(?:' . $Fragment[1] . ')/i', $str_hex)) ||
                     ($Fragment[0] === 'FD-NORM' && strpos($str_hex_norm, $Fragment[1]) === false) ||
@@ -1079,26 +1082,25 @@ class Scanner
         /** Number of PE sections in the file. */
         $NumOfSections = 0;
 
-        $PEFileDescription =
-        $PEFileVersion =
-        $PEProductName =
-        $PEProductVersion =
-        $PECopyright =
-        $PEOriginalFilename =
+        $PEFileDescription = '';
+        $PEFileVersion = '';
+        $PEProductName = '';
+        $PEProductVersion = '';
+        $PECopyright = '';
+        $PEOriginalFilename = '';
         $PECompanyName = '';
         if (
             !empty($this->Loader->InstanceCache['PE_Sectional']) ||
             !empty($this->Loader->InstanceCache['PE_Extended']) ||
             $this->Loader->Configuration['files']['corrupted_exe']
         ) {
-            $PEArr = [];
-            $PEArr['SectionArr'] = [];
+            $PEArr = ['SectionArr' => []];
             if ($twocc === '4d5a') {
                 $PEArr['Offset'] = $this->Loader->unpackSafe('S', substr($str, 60, 4));
                 $PEArr['Offset'] = isset($PEArr['Offset'][1]) ? $PEArr['Offset'][1] : 0;
                 while (true) {
                     $PEArr['DoScan'] = true;
-                    if ($PEArr['Offset'] < 1 || $PEArr['Offset'] > 16384 || $PEArr['Offset'] > $str_len) {
+                    if ($PEArr['Offset'] < 1 || $PEArr['Offset'] > 16384 || $PEArr['Offset'] > $StringLength) {
                         $PEArr['DoScan'] = false;
                         break;
                     }
@@ -1124,7 +1126,7 @@ class Scanner
                 if (!$PEArr['DoScan']) {
                     if ($this->Loader->Configuration['files']['corrupted_exe']) {
                         if (!$flagged) {
-                            $this->Loader->HashReference .= $md5 . ':' . $str_len . ':' . $OriginalFilename . "\n";
+                            $this->Loader->HashReference .= $sha256 . ':' . $StringLength . ':' . $OriginalFilename . "\n";
                             $flagged = true;
                         }
                         $heur['detections']++;
@@ -1163,22 +1165,26 @@ class Scanner
                         $PointerToRawData = $PointerToRawData[1];
                         $PEArr['SectionArr'][$PEArr['k']]['SectionData'] = substr($str, $PointerToRawData, $SizeOfRawData);
                         $SectionOffsets[$PEArr['k']] = [$PointerToRawData, $SizeOfRawData];
-                        $PEArr['SectionArr'][$PEArr['k']]['MD5'] = md5(
-                            $PEArr['SectionArr'][$PEArr['k']]['SectionData']
-                        );
+                        foreach(['md5', 'sha1', 'sha256'] as $TryHash) {
+                            $PEArr['SectionArr'][$PEArr['k']][$TryHash] = hash($TryHash, $PEArr['SectionArr'][$PEArr['k']]['SectionData']);
+                        }
                         $this->Loader->PEData .=
                             $SizeOfRawData . ':' .
-                            $PEArr['SectionArr'][$PEArr['k']]['MD5'] . ':' . $OriginalFilename . '-' .
+                            $PEArr['SectionArr'][$PEArr['k']]['sha256'] . ':' . $OriginalFilename . '-' .
                             $PEArr['SectionArr'][$PEArr['k']]['SectionName'] . "\n";
                         $CoExMeta .= sprintf(
-                            'SectionName:%s;VirtualSize:%s;VirtualAddress:%s;SizeOfRawData:%s;MD5:%s;',
+                            'SectionName:%s;VirtualSize:%s;VirtualAddress:%s;SizeOfRawData:%s;SHA256:%s;',
                             $PEArr['SectionArr'][$PEArr['k']]['SectionName'],
                             $PEArr['SectionArr'][$PEArr['k']]['VirtualSize'],
                             $PEArr['SectionArr'][$PEArr['k']]['VirtualAddress'],
                             $SizeOfRawData,
-                            $PEArr['SectionArr'][$PEArr['k']]['MD5']
+                            $PEArr['SectionArr'][$PEArr['k']]['sha256']
                         );
-                        $PEArr['SectionArr'][$PEArr['k']] = $SizeOfRawData . ':' . $PEArr['SectionArr'][$PEArr['k']]['MD5'] . ':';
+                        $PEArr['SectionArr'][$PEArr['k']] = [
+                            $SizeOfRawData . ':' . $PEArr['SectionArr'][$PEArr['k']]['md5'] . ':',
+                            $SizeOfRawData . ':' . $PEArr['SectionArr'][$PEArr['k']]['sha1'] . ':',
+                            $SizeOfRawData . ':' . $PEArr['SectionArr'][$PEArr['k']]['sha256'] . ':'
+                        ];
                     }
                     if (strpos($str, "V\x00a\x00r\x00F\x00i\x00l\x00e\x00I\x00n\x00f\x00o\x00\x00\x00\x00\x00\x24") !== false) {
                         $PEArr['Parts'] = $this->Loader->substrAfterLast($str, "V\x00a\x00r\x00F\x00i\x00l\x00e\x00I\x00n\x00f\x00o\x00\x00\x00\x00\x00\x24");
@@ -1198,7 +1204,14 @@ class Scanner
                                     "\x00\x00\x00"
                                 )))
                             )) {
-                                $PEArr['FINFO'][] = '$' . $PEVars[1] . ':' . md5(${$PEVars[1]}) . ':' . strlen(${$PEVars[1]}) . ':';
+                                foreach(['md5', 'sha1', 'sha256'] as $TryHash) {
+                                    $PEArr['FINFO'][] = sprintf(
+                                        '$%s:%s:%d:',
+                                        $PEVars[1],
+                                        $TryHash = hash($TryHash, ${$PEVars[1]}),
+                                        strlen(${$PEVars[1]})
+                                    );
+                                }
                             }
                         }
                         unset($PEVars, $PEArr['Parts']);
@@ -1227,11 +1240,11 @@ class Scanner
                 'Filename' => $OriginalFilename,
                 'FromCache' => false,
                 'Depth' => $Depth,
-                'Size' => $str_len,
+                'Size' => $StringLength,
                 'MD5' => $md5,
-                'SHA1' => $sha,
+                'SHA1' => $sha1,
                 'SHA256' => $sha256,
-                'CRC32B' => $crc,
+                'CRC32B' => $crc32b,
                 '2CC' => $twocc,
                 '4CC' => $fourcc,
                 'ScanPhase' => $phase,
@@ -1393,7 +1406,7 @@ class Scanner
                     $this->Loader->InstanceCache['scan_errors']++;
                     if (!$this->Loader->Configuration['signatures']['fail_silently']) {
                         if (!$flagged) {
-                            $this->Loader->HashReference .= $md5 . ':' . $str_len . ":\n";
+                            $this->Loader->HashReference .= $sha256 . ':' . $StringLength . ":\n";
                         }
                         $this->Loader->WhyFlagged .= sprintf(
                             $this->Loader->L10N->getString('_exclamation'),
@@ -1412,7 +1425,7 @@ class Scanner
                     foreach ($ArrayCSV as $ItemCSV) {
                         if (strpos($str_hex_norm, $ItemCSV) !== false) {
                             if (!$flagged) {
-                                $this->Loader->HashReference .= $md5 . ':' . $str_len . ':' . $OriginalFilename . "\n";
+                                $this->Loader->HashReference .= $sha256 . ':' . $StringLength . ':' . $OriginalFilename . "\n";
                                 $flagged = true;
                             }
                             $heur['detections']++;
@@ -1429,9 +1442,9 @@ class Scanner
                     }
                     unset($ItemCSV, $ArrayCSV);
                 } elseif ($ThisConf[1] === 1) {
-                    foreach ([$md5, $sha, $sha256] as $CheckThisHash) {
-                        if (strpos($this->Loader->InstanceCache[$SigFile], "\n" . $CheckThisHash . ':' . $str_len . ':') !== false) {
-                            $xSig = $this->Loader->substrAfterFirst($this->Loader->InstanceCache[$SigFile], "\n" . $CheckThisHash . ':' . $str_len . ':');
+                    foreach ([$md5, $sha1, $sha256] as $CheckThisHash) {
+                        if (strpos($this->Loader->InstanceCache[$SigFile], "\n" . $CheckThisHash . ':' . $StringLength . ':') !== false) {
+                            $xSig = $this->Loader->substrAfterFirst($this->Loader->InstanceCache[$SigFile], "\n" . $CheckThisHash . ':' . $StringLength . ':');
                             if (strpos($xSig, "\n") !== false) {
                                 $xSig = $this->Loader->substrBeforeFirst($xSig, "\n");
                             }
@@ -1440,23 +1453,28 @@ class Scanner
                                 strpos($this->Loader->InstanceCache['Greylist'], ',' . $xSig . ',') === false &&
                                 empty($this->Loader->InstanceCache['ignoreme'])
                             ) {
-                                $this->detected($heur, $lnap, $xSig, $OriginalFilename, $OriginalFilenameSafe, $Out, $flagged, $md5, $str_len);
+                                $this->detected($heur, $lnap, $xSig, $OriginalFilename, $OriginalFilenameSafe, $Out, $flagged, $md5, $StringLength);
                             }
                         }
                     }
                 } elseif ($ThisConf[1] === 2) {
                     for ($PEArr['k'] = 0; $PEArr['k'] < $NumOfSections; $PEArr['k']++) {
-                        if (strpos($this->Loader->InstanceCache[$SigFile], $PEArr['SectionArr'][$PEArr['k']]) !== false) {
-                            $xSig = $this->Loader->substrAfterFirst($this->Loader->InstanceCache[$SigFile], $PEArr['SectionArr'][$PEArr['k']]);
-                            if (strpos($xSig, "\n") !== false) {
-                                $xSig = $this->Loader->substrBeforeFirst($xSig, "\n");
-                            }
-                            $xSig = $this->getShorthand($xSig);
-                            if (
-                                strpos($this->Loader->InstanceCache['Greylist'], ',' . $xSig . ',') === false &&
-                                empty($this->Loader->InstanceCache['ignoreme'])
-                            ) {
-                                $this->detected($heur, $lnap, $xSig, $OriginalFilename, $OriginalFilenameSafe, $Out, $flagged, $md5, $str_len);
+                        if (!isset($PEArr['SectionArr'][$PEArr['k']]) || !is_array($PEArr['SectionArr'][$PEArr['k']])) {
+                            continue;
+                        }
+                        foreach ($PEArr['SectionArr'][$PEArr['k']] as $TryThis) {
+                            if (strpos($this->Loader->InstanceCache[$SigFile], $TryThis) !== false) {
+                                $xSig = $this->Loader->substrAfterFirst($this->Loader->InstanceCache[$SigFile], $TryThis);
+                                if (strpos($xSig, "\n") !== false) {
+                                    $xSig = $this->Loader->substrBeforeFirst($xSig, "\n");
+                                }
+                                $xSig = $this->getShorthand($xSig);
+                                if (
+                                    strpos($this->Loader->InstanceCache['Greylist'], ',' . $xSig . ',') === false &&
+                                    empty($this->Loader->InstanceCache['ignoreme'])
+                                ) {
+                                    $this->detected($heur, $lnap, $xSig, $OriginalFilename, $OriginalFilenameSafe, $Out, $flagged, $md5, $StringLength);
+                                }
                             }
                         }
                     }
@@ -1473,7 +1491,7 @@ class Scanner
                                     !substr_count($this->Loader->InstanceCache['Greylist'], ',' . $xSig . ',') &&
                                     empty($this->Loader->InstanceCache['ignoreme'])
                                 ) {
-                                    $this->detected($heur, $lnap, $xSig, $OriginalFilename, $OriginalFilenameSafe, $Out, $flagged, $md5, $str_len);
+                                    $this->detected($heur, $lnap, $xSig, $OriginalFilename, $OriginalFilenameSafe, $Out, $flagged, $md5, $StringLength);
                                 }
                             }
                         }
@@ -1511,7 +1529,7 @@ class Scanner
                                     !substr_count($this->Loader->InstanceCache['Greylist'], ',' . $xSig . ',') &&
                                     empty($this->Loader->InstanceCache['ignoreme'])
                                 ) {
-                                    $this->detected($heur, $lnap, $xSig, $OriginalFilename, $OriginalFilenameSafe, $Out, $flagged, $md5, $str_len);
+                                    $this->detected($heur, $lnap, $xSig, $OriginalFilename, $OriginalFilenameSafe, $Out, $flagged, $md5, $StringLength);
                                 }
                             }
                         }
@@ -1528,7 +1546,7 @@ class Scanner
                         'PEProductName',
                         'PEProductVersion',
                         'container',
-                        'crc',
+                        'crc32b',
                         'fileswitch',
                         'fourcc',
                         'is_elf',
@@ -1544,9 +1562,9 @@ class Scanner
                         'is_swf',
                         'md5',
                         'phase',
-                        'sha',
+                        'sha1',
                         'sha256',
-                        'str_len',
+                        'StringLength',
                         'twocc',
                         'xt',
                         'xts'
@@ -1699,10 +1717,10 @@ class Scanner
                                         !preg_match('/(?:' . $ThisSigPart[1] . ')/i', $OriginalFilename)
                                     ) || (
                                         $ThisSigPart[0] == 'FS-MIN' &&
-                                        $str_len < $ThisSigPart[1]
+                                        $StringLength < $ThisSigPart[1]
                                     ) || (
                                         $ThisSigPart[0] == 'FS-MAX' &&
-                                        $str_len > $ThisSigPart[1]
+                                        $StringLength > $ThisSigPart[1]
                                     ) || (
                                         $ThisSigPart[0] == 'FD' &&
                                         strpos($str_hex, $ThisSigPart[1]) === false
@@ -1744,7 +1762,7 @@ class Scanner
                                     strpos($this->Loader->InstanceCache['Greylist'], ',' . $SigName . ',') === false &&
                                     empty($this->Loader->InstanceCache['ignoreme'])
                                 ) {
-                                    $this->detected($heur, $lnap, $SigName, $OriginalFilename, $OriginalFilenameSafe, $Out, $flagged, $md5, $str_len);
+                                    $this->detected($heur, $lnap, $SigName, $OriginalFilename, $OriginalFilenameSafe, $Out, $flagged, $md5, $StringLength);
                                 }
                             }
                         }
@@ -1788,7 +1806,7 @@ class Scanner
                     $this->Loader->InstanceCache['scan_errors']++;
                     if (!$this->Loader->Configuration['signatures']['fail_silently']) {
                         if (!$flagged) {
-                            $this->Loader->HashReference .= $md5 . ':' . $str_len . ":\n";
+                            $this->Loader->HashReference .= $sha256 . ':' . $StringLength . ":\n";
                         }
                         $this->Loader->WhyFlagged .= sprintf(
                             $this->Loader->L10N->getString('_exclamation'),
@@ -1820,14 +1838,14 @@ class Scanner
                                 $SigNum = $ThisSig[3] - 1;
                             }
                         } elseif ($ThisSig[1] == 'FS-MIN') {
-                            if ($str_len < $ThisSig[2]) {
+                            if ($StringLength < $ThisSig[2]) {
                                 if ($ThisSig[3] <= $SigNum) {
                                     break;
                                 }
                                 $SigNum = $ThisSig[3] - 1;
                             }
                         } elseif ($ThisSig[1] == 'FS-MAX') {
-                            if ($str_len > $ThisSig[2]) {
+                            if ($StringLength > $ThisSig[2]) {
                                 if ($ThisSig[3] <= $SigNum) {
                                     break;
                                 }
@@ -1897,7 +1915,7 @@ class Scanner
                                 empty($this->Loader->InstanceCache['ignoreme'])
                             ) {
                                 if (preg_match('/(?:' . $ThisSig . ')/i', $OriginalFilename)) {
-                                    $this->detected($heur, $lnap, $VN, $OriginalFilename, $OriginalFilenameSafe, $Out, $flagged, $md5, $str_len);
+                                    $this->detected($heur, $lnap, $VN, $OriginalFilename, $OriginalFilenameSafe, $Out, $flagged, $md5, $StringLength);
                                 }
                             }
                         } elseif ($ThisConf[3] === 0 || $ThisConf[3] === 1) {
@@ -1966,7 +1984,7 @@ class Scanner
                                         }
                                     }
                                 }
-                                $this->detected($heur, $lnap, $VN, $OriginalFilename, $OriginalFilenameSafe, $Out, $flagged, $md5, $str_len);
+                                $this->detected($heur, $lnap, $VN, $OriginalFilename, $OriginalFilenameSafe, $Out, $flagged, $md5, $StringLength);
                             }
                         }
                     }
@@ -2007,7 +2025,7 @@ class Scanner
                     ) {
                         if ($this->Loader->Configuration['urlscanner']['maximum_api_lookups_response']) {
                             if (!$flagged) {
-                                $this->Loader->HashReference .= $md5 . ':' . $str_len . ':' . $OriginalFilename . "\n";
+                                $this->Loader->HashReference .= $sha256 . ':' . $StringLength . ':' . $OriginalFilename . "\n";
                                 $flagged = true;
                             }
                             $Out .= $lnap . sprintf(
@@ -2035,7 +2053,7 @@ class Scanner
                                 continue 2;
                             }
                             $URLScanner['Class'] = $this->getShorthand($URLScanner['Class']);
-                            $this->detected($heur, $lnap, $URLScanner['Class'], $OriginalFilename, $OriginalFilenameSafe, $Out, $flagged, $md5, $str_len);
+                            $this->detected($heur, $lnap, $URLScanner['Class'], $OriginalFilename, $OriginalFilenameSafe, $Out, $flagged, $md5, $StringLength);
                         }
                         $this->Loader->InstanceCache['urlscanner_domains'] =
                             str_ireplace($URLScanner['This'] . $URLScanner['Class'] . ';', '', $this->Loader->InstanceCache['urlscanner_domains']);
@@ -2058,7 +2076,7 @@ class Scanner
                             $URLScanner['y'] . ':' .
                             $URLScanner['Class'] . ';';
                         $URLScanner['Class'] = $this->getShorthand($URLScanner['Class']);
-                        $this->detected($heur, $lnap, $URLScanner['Class'], $OriginalFilename, $OriginalFilenameSafe, $Out, $flagged, $md5, $str_len);
+                        $this->detected($heur, $lnap, $URLScanner['Class'], $OriginalFilename, $OriginalFilenameSafe, $Out, $flagged, $md5, $StringLength);
                     }
                     $this->Loader->InstanceCache['urlscanner_domains'] .= $URLScanner['Domains'][$i] . $URLScanner['y'] . ':;';
                 }
@@ -2082,7 +2100,7 @@ class Scanner
                     ) {
                         if ($this->Loader->Configuration['urlscanner']['maximum_api_lookups_response']) {
                             if (!$flagged) {
-                                $this->Loader->HashReference .= $md5 . ':' . $str_len . ':' . $OriginalFilename . "\n";
+                                $this->Loader->HashReference .= $sha256 . ':' . $StringLength . ':' . $OriginalFilename . "\n";
                                 $flagged = true;
                             }
                             $Out .= $lnap . sprintf(
@@ -2107,7 +2125,7 @@ class Scanner
                     /** Bad URLs found; Flag accordingly. */
                     if ($URLScanner['SafeBrowseLookup'] !== 204) {
                         if (!$flagged) {
-                            $this->Loader->HashReference .= $md5 . ':' . $str_len . ':' . $OriginalFilename . "\n";
+                            $this->Loader->HashReference .= $sha256 . ':' . $StringLength . ':' . $OriginalFilename . "\n";
                             $flagged = true;
                         }
                         $URLScanner['L10N'] = $this->Loader->L10N->getString(
@@ -2147,7 +2165,7 @@ class Scanner
                 $this->Loader->Configuration['files']['archive_file_extensions']
             ], [$xts, $gzxts, $xt, $gzxt]) && strpos($str_hex_norm, '3c3f706870') !== false) {
                 if (!$flagged) {
-                    $this->Loader->HashReference .= $md5 . ':' . $str_len . ':' . $OriginalFilename . "\n";
+                    $this->Loader->HashReference .= $sha256 . ':' . $StringLength . ':' . $OriginalFilename . "\n";
                     $flagged = true;
                 }
                 $heur['detections']++;
@@ -2192,7 +2210,7 @@ class Scanner
             }
             if ($Chameleon) {
                 if (!$flagged) {
-                    $this->Loader->HashReference .= $md5 . ':' . $str_len . ':' . $OriginalFilename . "\n";
+                    $this->Loader->HashReference .= $sha256 . ':' . $StringLength . ':' . $OriginalFilename . "\n";
                     $flagged = true;
                 }
                 $heur['detections']++;
@@ -2222,7 +2240,7 @@ class Scanner
             }
             if ($Chameleon) {
                 if (!$flagged) {
-                    $this->Loader->HashReference .= $md5 . ':' . $str_len . ':' . $OriginalFilename . "\n";
+                    $this->Loader->HashReference .= $sha256 . ':' . $StringLength . ':' . $OriginalFilename . "\n";
                     $flagged = true;
                 }
                 $heur['detections']++;
@@ -2243,7 +2261,7 @@ class Scanner
             if (strpos(',doc,dot,pps,ppt,xla,xls,wiz,', ',' . $xt . ',') !== false) {
                 if ($fourcc !== 'd0cf11e0') {
                     if (!$flagged) {
-                        $this->Loader->HashReference .= $md5 . ':' . $str_len . ':' . $OriginalFilename . "\n";
+                        $this->Loader->HashReference .= $sha256 . ':' . $StringLength . ':' . $OriginalFilename . "\n";
                         $flagged = true;
                     }
                     $heur['detections']++;
@@ -2274,7 +2292,7 @@ class Scanner
                 ($xt === 'xcf' && substr($str, 0, 8) !== 'gimp xcf')
             ) {
                 if (!$flagged) {
-                    $this->Loader->HashReference .= $md5 . ':' . $str_len . ':' . $OriginalFilename . "\n";
+                    $this->Loader->HashReference .= $sha256 . ':' . $StringLength . ':' . $OriginalFilename . "\n";
                     $flagged = true;
                 }
                 $heur['detections']++;
@@ -2294,7 +2312,7 @@ class Scanner
         if ($this->Loader->Configuration['files']['chameleon_to_pdf']) {
             if ($xt === 'pdf' && !$pdf_magic) {
                 if (!$flagged) {
-                    $this->Loader->HashReference .= $md5 . ':' . $str_len . ':' . $OriginalFilename . "\n";
+                    $this->Loader->HashReference .= $sha256 . ':' . $StringLength . ':' . $OriginalFilename . "\n";
                     $flagged = true;
                 }
                 $heur['detections']++;
@@ -2323,7 +2341,7 @@ class Scanner
                 $heur['detections']++;
                 $this->Loader->InstanceCache['detections_count']++;
                 if (!$flagged) {
-                    $this->Loader->HashReference .= $md5 . ':' . $str_len . ':' . $OriginalFilename . "\n";
+                    $this->Loader->HashReference .= $sha256 . ':' . $StringLength . ':' . $OriginalFilename . "\n";
                     $flagged = true;
                 }
                 $this->Loader->WhyFlagged .= sprintf(
@@ -2423,7 +2441,7 @@ class Scanner
                                         empty($this->Loader->InstanceCache['ignoreme'])
                                     ) {
                                         if (!$flagged) {
-                                            $this->Loader->HashReference .= $md5 . ':' . $str_len . ':' . $OriginalFilename . "\n";
+                                            $this->Loader->HashReference .= $sha256 . ':' . $StringLength . ':' . $OriginalFilename . "\n";
                                             $flagged = true;
                                         }
                                         $heur['detections']++;
@@ -2588,7 +2606,7 @@ class Scanner
         }
 
         /** Hash the current input data. */
-        $DataHash = md5($Data);
+        $DataHash = hash('sha256', $Data);
 
         /** Fetch length of current input data. */
         $DataLen = strlen($Data);
@@ -2796,7 +2814,7 @@ class Scanner
 
                     /** Fetch content and build hashes. */
                     $Content = $ArchiveObject->EntryRead($Filesize);
-                    $MD5 = md5($Content);
+                    $Hash = hash('sha256', $Content);
                     $NameCRC32 = hash('crc32b', $Filename);
                     $DataCRC32 = hash('crc32b', $Content);
                     $InternalCRC = $ArchiveObject->EntryCRC();
@@ -2807,7 +2825,7 @@ class Scanner
                         preg_replace('~^0+~', '', $DataCRC32) !== preg_replace('~^0+~', '', $InternalCRC)
                     )) {
                         $Results = 2;
-                        $this->Loader->HashReference .= $MD5 . ':' . $Filesize . ':' . $ThisItemRef . "\n";
+                        $this->Loader->HashReference .= $Hash . ':' . $Filesize . ':' . $ThisItemRef . "\n";
                         $this->Loader->WhyFlagged .= sprintf(
                             $this->Loader->L10N->getString('_exclamation'),
                             $this->Loader->L10N->getString('scan_tampering') . ' (' . $ThisItemRef . ')'
@@ -2830,7 +2848,7 @@ class Scanner
                     /** Executed if the recursion depth limit has been exceeded. */
                     if ($ScanDepth > $this->Loader->Configuration['files']['max_recursion']) {
                         $Results = 2;
-                        $this->Loader->HashReference .= $MD5 . ':' . $Filesize . ':' . $ThisItemRef . "\n";
+                        $this->Loader->HashReference .= $Hash . ':' . $Filesize . ':' . $ThisItemRef . "\n";
                         $this->Loader->WhyFlagged .= sprintf(
                             $this->Loader->L10N->getString('_exclamation'),
                             $this->Loader->L10N->getString('recursive') . ' (' . $ThisItemRef . ')'
@@ -2851,9 +2869,9 @@ class Scanner
                     }
 
                     /** Quine detection. */
-                    if ($this->quineDetector($ScanDepth, $DataHash, $DataLen, $MD5, $Filesize)) {
+                    if ($this->quineDetector($ScanDepth, $DataHash, $DataLen, $Hash, $Filesize)) {
                         $Results = 2;
-                        $this->Loader->HashReference .= $MD5 . ':' . $Filesize . ':' . $ThisItemRef . "\n";
+                        $this->Loader->HashReference .= $Hash . ':' . $Filesize . ':' . $ThisItemRef . "\n";
                         $this->Loader->WhyFlagged .= sprintf(
                             $this->Loader->L10N->getString('_exclamation'),
                             sprintf($this->Loader->L10N->getString('detected'), 'Quine') . ' (' . $ThisItemRef . ')'
@@ -2894,7 +2912,7 @@ class Scanner
                             $Filename,
                             $Content,
                             $ScanDepth,
-                            $MD5
+                            $Hash
                         );
                     } catch (\Exception $e) {
                         unset($ArchiveObject, $Pointer, $PointerObject);
@@ -3664,7 +3682,7 @@ class Scanner
         }
 
         /** Generate a reference for the cache entry for this lookup. */
-        $cacheRef = md5($Arr) . ':' . $Count . ':' . strlen($Arr) . ':';
+        $cacheRef = hash('sha256', $Arr) . ':' . $Count . ':' . strlen($Arr) . ':';
 
         /** Check if this lookup has already been performed. */
         while (strpos($this->Loader->InstanceCache['urlscanner_google'], $cacheRef) !== false) {
@@ -3822,10 +3840,10 @@ class Scanner
      * @param string $OriginalFilenameSafe
      * @param string $Out
      * @param bool $Flagged
-     * @param string $MD5
-     * @param int $StrLen
+     * @param string $Checksum
+     * @param int $StringLength
      */
-    public function detected(
+    private function detected(
         array &$Heuristic,
         string &$Indentation,
         string &$VN,
@@ -3833,15 +3851,15 @@ class Scanner
         string &$OriginalFilenameSafe,
         string &$Out,
         bool &$Flagged,
-        string &$MD5,
-        int &$StrLen
+        string &$Checksum,
+        int &$StringLength
     )
     {
         /** Fire event: "atStartOf_detected". */
-        $this->Loader->Events->fireEvent('atStartOf_detected', '', $Heuristic, $Indentation, $VN, $OriginalFilename, $OriginalFilenameSafe, $Out, $Flagged, $MD5, $StrLen);
+        $this->Loader->Events->fireEvent('atStartOf_detected', '', $Heuristic, $Indentation, $VN, $OriginalFilename, $OriginalFilenameSafe, $Out, $Flagged, $Checksum, $StringLength);
 
         if (!$Flagged) {
-            $this->Loader->HashReference .= $MD5 . ':' . $StrLen . ':' . $OriginalFilename . "\n";
+            $this->Loader->HashReference .= $Checksum . ':' . $StringLength . ':' . $OriginalFilename . "\n";
             $Flagged = true;
         }
         $Heuristic['detections']++;
@@ -3983,9 +4001,9 @@ class Scanner
      * @param string $Data The data to be scanned.
      * @param int $Depth The depth of the item being scanned in relation to its
      *      container and/or its hierarchy within the scan process.
-     * @param string $MD5 A hash for the content, inherited from the parent.
+     * @param string $Checksum A hash for the content, inherited from the parent.
      */
-    public function metaDataScan(string &$x, int &$r, string $Indent, string $ItemRef, string $Filename, string &$Data, int $Depth, string $MD5)
+    public function metaDataScan(string &$x, int &$r, string $Indent, string $ItemRef, string $Filename, string &$Data, int $Depth, string $Checksum)
     {
         /** Fire event: "atStartOf_metaDataScan". */
         $this->Loader->Events->fireEvent('atStartOf_metaDataScan');
@@ -4008,7 +4026,7 @@ class Scanner
                 return;
             }
             $r = 2;
-            $this->Loader->HashReference .= $MD5 . ':' . $Filesize . ':' . $ItemRef . "\n";
+            $this->Loader->HashReference .= $Checksum . ':' . $Filesize . ':' . $ItemRef . "\n";
             $this->Loader->WhyFlagged .= sprintf(
                 $this->Loader->L10N->getString('_exclamation'),
                 $this->Loader->L10N->getString('filesize_limit_exceeded') . ' (' . $ItemRef . ')'
@@ -4032,7 +4050,7 @@ class Scanner
                 $this->Loader->Configuration['files']['filetype_blacklist']
             ], [$xt, $xts], ',', true, true)) {
                 $r = 2;
-                $this->Loader->HashReference .= $MD5 . ':' . $Filesize . ':' . $ItemRef . "\n";
+                $this->Loader->HashReference .= $Checksum . ':' . $Filesize . ':' . $ItemRef . "\n";
                 $this->Loader->WhyFlagged .= sprintf(
                     $this->Loader->L10N->getString('_exclamation'),
                     $this->Loader->L10N->getString('filetype_blacklisted') . ' (' . $ItemRef . ')'
@@ -4046,7 +4064,7 @@ class Scanner
                 $this->Loader->Configuration['files']['filetype_greylist']
             ], [$xt, $xts])) {
                 $r = 2;
-                $this->Loader->HashReference .= $MD5 . ':' . $Filesize . ':' . $ItemRef . "\n";
+                $this->Loader->HashReference .= $Checksum . ':' . $Filesize . ':' . $ItemRef . "\n";
                 $this->Loader->WhyFlagged .= sprintf(
                     $this->Loader->L10N->getString('_exclamation'),
                     $this->Loader->L10N->getString('filetype_blacklisted') . ' (' . $ItemRef . ')'
@@ -4067,7 +4085,7 @@ class Scanner
         /** Handle macro detection and blocking. */
         if ($this->Loader->Configuration['files']['block_macros'] && $this->Loader->InstanceCache['file_is_macro']) {
             $r = 2;
-            $this->Loader->HashReference .= $MD5 . ':' . $Filesize . ':' . $ItemRef . "\n";
+            $this->Loader->HashReference .= $Checksum . ':' . $Filesize . ':' . $ItemRef . "\n";
             $this->Loader->WhyFlagged .= sprintf(
                 $this->Loader->L10N->getString('_exclamation'),
                 $this->Loader->L10N->getString('macros_not_permitted') . ' (' . $ItemRef . ')'

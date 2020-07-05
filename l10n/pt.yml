@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Portuguese language data (last modified: 2020.06.14).
+# This file: Portuguese language data (last modified: 2020.07.05).
 ##/
 
 # Language settings.
@@ -49,7 +49,7 @@ invalid_url: "URL inválido!"
 macros_not_permitted: "Macros não são permitidas"
 ok: "OK"
 only_allow_images: "Somente arquivos de imagem são permitidos"
-quarantined_as: "Em quarentena como "/vault/quarantine/%s.qfu"."
+quarantined_as: "Em quarentena como "%s.qfu"."
 recursive: "Recursão profundidade limite excedido"
 scan_chameleon: "%s camaleão ataque detectado"
 scan_checking: "Verificando"

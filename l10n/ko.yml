@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Korean language data (last modified: 2020.06.14).
+# This file: Korean language data (last modified: 2020.07.05).
 ##/
 
 # Language settings.
@@ -49,7 +49,7 @@ invalid_url: "유효하지 않은 URL!"
 macros_not_permitted: "매크로는 허용되지 않습니다"
 ok: "괜찮아"
 only_allow_images: "이미지 파일 만 허용"
-quarantined_as: ""/vault/quarantine/%s.qfu"로 격리."
+quarantined_as: ""%s.qfu"로 격리."
 recursive: "재귀 정의 호출의 반복 횟수를 초과했습니다"
 scan_chameleon: "%s 카멜레온 공격이 감지되었습니다"
 scan_checking: "현재 분석 중 :"

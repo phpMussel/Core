@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Arabic language data (last modified: 2020.06.14).
+# This file: Arabic language data (last modified: 2020.07.05).
 ##/
 
 # Language settings.
@@ -49,7 +49,7 @@ invalid_url: "URL غير صالح!"
 macros_not_permitted: "وحدات الماكرو غير مسموح بها"
 ok: "حسنا"
 only_allow_images: "يسمح بملفات الصور فقط"
-quarantined_as: "الحجر الصحي بأنه "/vault/quarantine/%s.qfu"."
+quarantined_as: "الحجر الصحي بأنه "%s.qfu"."
 recursive: "تجاوزت الحد عمق العودية"
 scan_chameleon: "الكشف هجوم الحرباء %s"
 scan_checking: "فحص"

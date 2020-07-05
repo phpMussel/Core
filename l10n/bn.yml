@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Bangla language data (last modified: 2020.06.14).
+# This file: Bangla language data (last modified: 2020.07.05).
 ##/
 
 # Language settings.
@@ -49,7 +49,7 @@ invalid_url: "অবৈধ URL!"
 macros_not_permitted: "ম্যাক্রো অনুমোদিত নয়"
 ok: "OK"
 only_allow_images: "কেবলমাত্র ইমেজ ফাইলগুলির অনুমতি রয়েছে"
-quarantined_as: "সংগ্রাহক মধ্যে "/vault/quarantine/%s.qfu" হিসাবে।"
+quarantined_as: "সংগ্রাহক মধ্যে "%s.qfu" হিসাবে।"
 recursive: "পুনরাবৃত্তি গভীরতা সীমা অতিক্রম করেছে"
 scan_chameleon: "%s বহুরুপী(chameleon) আক্রমণ সনাক্ত হয়েছে।"
 scan_checking: "পরীক্ষা করা হচ্ছে"

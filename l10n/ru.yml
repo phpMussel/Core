@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Russian language data (last modified: 2020.06.14).
+# This file: Russian language data (last modified: 2020.07.05).
 ##/
 
 # Language settings.
@@ -49,7 +49,7 @@ invalid_url: "Неверный URL!"
 macros_not_permitted: "Макросы не разрешены"
 ok: "Хорошо"
 only_allow_images: "Разрешены только файлы изображений"
-quarantined_as: "Помещен на карантин в «/vault/quarantine/%s.qfu»."
+quarantined_as: "Помещен на карантин в «%s.qfu»."
 recursive: "Лимит глубины рекурсии превышена"
 scan_chameleon: "Обнаружена %s хамелеон-атака"
 scan_checking: "Проверить"

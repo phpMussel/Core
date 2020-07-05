@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2020.07.02).
+ * This file: The loader (last modified: 2020.07.04).
  */
 
 namespace phpMussel\Core;
@@ -83,7 +83,7 @@ class Loader
     /**
      * @var string phpMussel version number (SemVer).
      */
-    public $ScriptVersion = '3.0.0-alpha1';
+    public $ScriptVersion = '3.0.0-alpha2';
 
     /**
      * @var string phpMussel version identifier (complete notation).
@@ -358,8 +358,6 @@ class Loader
             if (is_resource($Handle)) {
                 fwrite($Handle, $Data);
                 fclose($Handle);
-            }
-            if ($WriteMode === 'wb') {
                 $this->logRotation($this->Configuration['core']['error_log']);
             }
             return true;
@@ -1058,8 +1056,7 @@ class Loader
      * GZ-compress a file (used by log rotation).
      *
      * @param string $File The file to GZ-compress.
-     * @return bool True if the file exists, is readable, and is not empty;
-     *      False otherwise.
+     * @return bool True on success; False on failure.
      */
     public function gZCompressFile(string $File): bool
     {
@@ -1068,25 +1065,20 @@ class Loader
             return false;
         }
 
-        $BlocksToRead = ($Filesize && $this->Blocksize) ? ceil($Filesize / $this->Blocksize) : 0;
-        if ($BlocksToRead > 0) {
-            $Handle = fopen($File, 'rb');
-            if (!is_resource($Handle)) {
-                return false;
-            }
-            $HandleGZ = gzopen($File . '.gz', 'wb');
-            if (!is_resource($HandleGZ)) {
-                return false;
-            }
-            $Block = 0;
-            while ($Block < $BlocksToRead) {
-                $Data = fread($Handle, $this->Blocksize);
-                gzwrite($HandleGZ, $Data);
-                $Block++;
-            }
-            gzclose($HandleGZ);
-            fclose($Handle);
+        $Handle = fopen($File, 'rb');
+        if (!is_resource($Handle)) {
+            return false;
         }
+        $HandleGZ = gzopen($File . '.gz', 'wb');
+        if (!is_resource($HandleGZ)) {
+            return false;
+        }
+        while (!feof($Handle)) {
+            $Data = fread($Handle, $this->Blocksize);
+            gzwrite($HandleGZ, $Data);
+        }
+        gzclose($HandleGZ);
+        fclose($Handle);
         return true;
     }
 
@@ -1108,13 +1100,12 @@ class Loader
      */
     public function deleteDirectory(string $Dir)
     {
-        while (strrpos($Dir, '/') !== false || strrpos($Dir, "\\") !== false) {
-            $Separator = (strrpos($Dir, '/') !== false) ? '/' : "\\";
-            $Dir = substr($Dir, 0, strrpos($Dir, $Separator));
-            if (!is_dir($this->AssetsPath . $Dir) || !$this->isDirEmpty($this->AssetsPath . $Dir)) {
+        while (strrpos($Dir, DIRECTORY_SEPARATOR) !== false) {
+            $Dir = substr($Dir, 0, strrpos($Dir, DIRECTORY_SEPARATOR));
+            if (!is_dir($Dir) || !$this->isDirEmpty($Dir)) {
                 break;
             }
-            rmdir($this->AssetsPath . $Dir);
+            rmdir($Dir);
         }
     }
 
@@ -1126,41 +1117,44 @@ class Loader
      */
     public function logRotation(string $Pattern): bool
     {
-        $Action = empty($this->Configuration['core']['log_rotation_action']) ? '' : $this->Configuration['core']['log_rotation_action'];
-        $Limit = empty($this->Configuration['core']['log_rotation_limit']) ? 0 : $this->Configuration['core']['log_rotation_limit'];
-        if (!$Limit || ($Action !== 'Delete' && $Action !== 'Archive')) {
+        $Limit = $this->Configuration['core']['log_rotation_limit'] ?? 0;
+        $Action = $this->Configuration['core']['log_rotation_action'] ?? '';
+        if ($Limit < 1 || ($Action !== 'Delete' && $Action !== 'Archive')) {
             return false;
         }
-        //$Pattern = $this->buildLogPattern($Pattern);
         $Arr = [];
-        $Offset = strlen($this->AssetsPath);
-        $List = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->AssetsPath), \RecursiveIteratorIterator::SELF_FIRST);
-        foreach ($List as $Item => $List) {
-            $ItemFixed = str_replace("\\", '/', substr($Item, $Offset));
-            if ($ItemFixed && preg_match($Pattern, $ItemFixed) && is_readable($Item)) {
-                $Arr[$ItemFixed] = filemtime($Item);
+        if ((strpos($Pattern, '{') === false && strpos($Pattern, '}') === false)) {
+            if (is_file($Pattern)) {
+                $Arr[] = realpath($Pattern);
+            }
+        } else {
+            foreach ($this->resolvePaths($Pattern, true, false) as $Item) {
+                $Arr[] = $Item;
             }
         }
-        unset($ItemFixed, $List, $Offset);
-        $Count = count($Arr);
+        $Files = [];
+        foreach ($Arr as $Item) {
+            if ($Item && is_file($Item) && is_readable($Item)) {
+                $Files[$Item] = filemtime($Item);
+            }
+        }
+        $Count = count($Files);
         $Err = 0;
         if ($Count > $Limit) {
-            asort($Arr, SORT_NUMERIC);
-            foreach ($Arr as $Item => $Modified) {
+            asort($Files, SORT_NUMERIC);
+            foreach ($Files as $Item => $Modified) {
                 if ($Action === 'Archive') {
-                    $Err += !$this->gZCompressFile($this->AssetsPath . $Item);
+                    $Err += !$this->gZCompressFile($Item);
                 }
-                $Err += !unlink($this->AssetsPath . $Item);
-                if (!preg_match('~[\\\/]~', $Item)) {
-                    $this->deleteDirectory($Item);
-                }
+                $Err += !unlink($Item);
+                $this->deleteDirectory($Item);
                 $Count--;
                 if (!($Count > $Limit)) {
                     break;
                 }
             }
         }
-        return $Err ? false : true;
+        return $Err === 0;
     }
 
     /**
@@ -1187,15 +1181,18 @@ class Loader
         if (!$BaseFrom || !is_dir($BaseFrom) || !is_readable($BaseFrom)) {
             return;
         }
+        if ($Remainder && $LastStep) {
+            $LastStep = DIRECTORY_SEPARATOR . $LastStep;
+        }
         $Steps = preg_replace(
             ['~\\\{(?:dd|mm|yy|hh|ii|ss)\\\}~i', '~\\\{yyyy\\\}~i', '~\\\{(?:Day|Mon)\\\}~i', '~\\\{tz\\\}~i', '~\\\{t\\\:z\\\}~i'],
             ['\d{2}', '\d{4}', '\w{3}', '.{1,2}\d{4}', '.{1,2}\d{2}\:\d{2}'],
-            preg_quote($Remainder) . ($LastStep ? preg_quote(DIRECTORY_SEPARATOR . $LastStep) . ($GZ ? '(?:\.gz)?' : '') . '$' : '')
+            preg_quote($Remainder) . ($LastStep ? preg_quote($LastStep) . ($GZ ? '(?:\.gz)?' : '') . '$' : '')
         );
         $Pattern = '~^' . preg_quote($BaseFrom) . $Steps . '~i';
         $List = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($BaseFrom), \RecursiveIteratorIterator::SELF_FIRST);
         foreach ($List as $Name => $SplData) {
-            if (preg_match($Pattern, $Name)) {
+            if (preg_match($Pattern, $Name) && ($Name = realpath($Name))) {
                 yield $Name;
             }
         }
@@ -1309,7 +1306,6 @@ class Loader
      */
     public function updateConfiguration(): bool
     {
-        /** Determine the format for the configuration file. */
         if (preg_match('~\.ini$~i', $this->ConfigurationPath)) {
             $Reconstructed = '';
             foreach ($this->Configuration as $CatKey => $CatValue) {
@@ -1344,5 +1340,23 @@ class Loader
         $Err = fwrite($Handle, $Reconstructed);
         fclose($Handle);
         return $Err !== false;
+    }
+
+    /**
+     * Load shorthand data.
+     *
+     * @return bool Whether succeeded or failed.
+     */
+    public function loadShorthandData(): bool
+    {
+        if (isset($this->InstanceCache['shorthand.yml'])) {
+            return true;
+        }
+        if (!$ShorthandData = $this->readFile($this->AssetsPath . 'shorthand.yml')) {
+            return false;
+        }
+        $this->InstanceCache['shorthand.yml'] = [];
+        $this->YAML->process($ShorthandData, $this->InstanceCache['shorthand.yml']);
+        return true;
     }
 }

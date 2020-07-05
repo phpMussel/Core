@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Norwegian language data (last modified: 2020.06.14).
+# This file: Norwegian language data (last modified: 2020.07.05).
 ##/
 
 # Language settings.
@@ -49,7 +49,7 @@ invalid_url: "Ugyldig URL!"
 macros_not_permitted: "Makroer er ikke tillatt"
 ok: "Greit"
 only_allow_images: "Bare bildefiler er tillatt"
-quarantined_as: "Plassert i karantene som "/vault/quarantine/%s.qfu"."
+quarantined_as: "Plassert i karantene som "%s.qfu"."
 recursive: "Grensen for rekursjonsdybde overskredet"
 scan_chameleon: "%s-kameleonangrep oppdaget"
 scan_checking: "Kontrollere"

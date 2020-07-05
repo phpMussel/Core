@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Polish language data (last modified: 2020.06.14).
+# This file: Polish language data (last modified: 2020.07.05).
 ##/
 
 # Language settings.
@@ -49,7 +49,7 @@ invalid_url: "Niepoprawny URL!"
 macros_not_permitted: "Makra są niedozwolone"
 ok: "Dobrze"
 only_allow_images: "Dozwolone są tylko pliki graficzne"
-quarantined_as: "Poddany kwarantannie jako „/vault/quarantine/%s.qfu”."
+quarantined_as: "Poddany kwarantannie jako „%s.qfu”."
 recursive: "Przekroczono limit głębokości rekurencji"
 scan_chameleon: "Wykryto atak kameleona %s"
 scan_checking: "Sprawdzam"

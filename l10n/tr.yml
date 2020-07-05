@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Turkish language data (last modified: 2020.06.14).
+# This file: Turkish language data (last modified: 2020.07.05).
 ##/
 
 # Language settings.
@@ -49,7 +49,7 @@ invalid_url: "Geçersiz URL!"
 macros_not_permitted: "Makrolara izin verilmez"
 ok: "Tamam"
 only_allow_images: "Yalnızca resim dosyalarına izin verilir"
-quarantined_as: ""/vault/quarantine/%s.qfu" olarak karantinaya alındı."
+quarantined_as: ""%s.qfu" olarak karantinaya alındı."
 recursive: "Yineleme derinliği sınırı aşıldı"
 scan_chameleon: "%s bukalemun saldırısı tespit edildi"
 scan_checking: "Kontrol etme"

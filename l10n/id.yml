@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Indonesian language data (last modified: 2020.06.14).
+# This file: Indonesian language data (last modified: 2020.07.05).
 ##/
 
 # Language settings.
@@ -49,7 +49,7 @@ invalid_url: "URL tidak valid!"
 macros_not_permitted: "Makro tidak diizinkan"
 ok: "Oke"
 only_allow_images: "Hanya file gambar diizinkan"
-quarantined_as: "Dikarantina sebagai "/vault/quarantine/%s.qfu"."
+quarantined_as: "Dikarantina sebagai "%s.qfu"."
 recursive: "Batas kedalaman rekursi melebihi"
 scan_chameleon: "Bunglon %s serangan terdeteksi"
 scan_checking: "Memeriksa"

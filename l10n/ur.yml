@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Urdu language data (last modified: 2020.06.14).
+# This file: Urdu language data (last modified: 2020.07.05).
 ##/
 
 # Language settings.
@@ -49,7 +49,7 @@ invalid_url: "غلط URL!"
 macros_not_permitted: "میکرو کی اجازت نہیں ہے"
 ok: "ٹھیک ہے"
 only_allow_images: "صرف تصویری فائلوں کی اجازت ہے"
-quarantined_as: "یہ طور قرنطینہ میں "/vault/quarantine/%s.qfu" کے."
+quarantined_as: "یہ طور قرنطینہ میں "%s.qfu" کے."
 recursive: "تکرار کی گہرائی کی حد سے تجاوز کر گئی"
 scan_chameleon: "%s گرگٹ حملے کا پتہ چلا"
 scan_checking: "پڑتال کر رہا ہے"

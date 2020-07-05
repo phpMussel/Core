@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2020.07.01).
+ * This file: The scanner (last modified: 2020.07.04).
  */
 
 namespace phpMussel\Core;
@@ -99,9 +99,7 @@ class Scanner
             $Stream = fopen($File, $WriteMode);
             fwrite($Stream, $Data);
             fclose($Stream);
-            if ($WriteMode === 'wb') {
-                $this->Loader->logRotation($this->Loader->Configuration['core']['scan_log_serialized']);
-            }
+            $this->Loader->logRotation($this->Loader->Configuration['core']['scan_log_serialized']);
             return true;
         });
 
@@ -133,9 +131,7 @@ class Scanner
             $Handle = fopen($File, 'ab');
             fwrite($Handle, $Data);
             fclose($Handle);
-            if ($WriteMode === 'wb') {
-                $this->Loader->logRotation($this->Loader->Configuration['core']['scan_log']);
-            }
+            $this->Loader->logRotation($this->Loader->Configuration['core']['scan_log']);
             return true;
         });
     }
@@ -170,6 +166,11 @@ class Scanner
         /** Fire event: "atStartOf_scan". */
         $this->Loader->Events->fireEvent('atStartOf_scan');
 
+        /** Useful counters for CLI and plugins. */
+        $this->Loader->InstanceCache['ThisScanTotal'] = 0;
+        $this->Loader->InstanceCache['ThisScanDone'] = 0;
+        $this->Loader->Events->fireEvent('countersChanged');
+
         /** Prepare signature files for the scan process. */
         if (empty($this->Loader->InstanceCache['OrganisedSigFiles'])) {
             $this->organiseSigFiles();
@@ -189,7 +190,7 @@ class Scanner
             $this->Loader->InstanceCache['StartTime'],
             $this->Loader->Configuration['core']['time_format']
         );
-        $Results = $this->Recursor($Files, $Format, $Flatness, $Depth, $OriginalFilename);
+        $Results = $this->recursor($Files, $Format, $Flatness, $Depth, $OriginalFilename);
         $this->Loader->InstanceCache['EndTime'] = time() + ($this->Loader->Configuration['core']['time_offset'] * 60);
         $this->Loader->InstanceCache['end_time_2822'] = $this->Loader->timeFormat(
             $this->Loader->InstanceCache['EndTime'],
@@ -214,7 +215,9 @@ class Scanner
         }
 
         /** Register scan event. */
-        $this->statsIncrement($this->CalledFrom === 'Web' ? 'Web-Events' : 'API-Events', 1);
+        $this->statsIncrement($this->CalledFrom === 'Web' ? 'Web-Events' : (
+            $this->CalledFrom === 'CLI' ? 'CLI-Events' : 'API-Events'
+        ), 1);
 
         /** Update statistics. */
         if (!empty($this->Loader->InstanceCache['StatisticsModified'])) {
@@ -347,12 +350,15 @@ class Scanner
          * the recursor with each array element.
          */
         if (is_array($Files)) {
+            $SizeOfDir = count($Files);
+            if ($this->Loader->InstanceCache['ThisScanTotal'] === 0) {
+                $this->Loader->InstanceCache['ThisScanTotal'] = $SizeOfDir;
+            } else {
+                $this->Loader->InstanceCache['ThisScanTotal'] += $SizeOfDir - 1;
+            }
+            $this->Loader->Events->fireEvent('countersChanged');
             foreach ($Files as &$Current) {
-                try {
-                    $Current = $this->Recursor($Current, $n, false, $Depth, $Current);
-                } catch (\Exception $e) {
-                    throw new \Exception($e->getMessage());
-                }
+                $Current = $this->recursor($Current, $n, false, $Depth, $Current);
             }
             return ($n && $Flatness) ? $this->implodeMd($Files) : $Files;
         }
@@ -373,14 +379,23 @@ class Scanner
                 ) . "\n";
             }
             $Dir = $this->directoryRecursiveList($Files);
+            $SizeOfDir = count($Dir);
+            if ($this->Loader->InstanceCache['ThisScanTotal'] === 0) {
+                $this->Loader->InstanceCache['ThisScanTotal'] = $SizeOfDir;
+            } else {
+                $this->Loader->InstanceCache['ThisScanTotal'] += $SizeOfDir - 1;
+            }
+            $this->Loader->Events->fireEvent('countersChanged');
             foreach ($Dir as &$Sub) {
-                try {
-                    $Sub = $this->Recursor($Files . '/' . $Sub, $n, false, $Depth, $Sub);
-                } catch (\Exception $e) {
-                    throw new \Exception($e->getMessage());
-                }
+                $Sub = $this->recursor($Files . '/' . $Sub, $n, false, $Depth, $Sub);
             }
             return ($n && $Flatness) ? $this->implodeMd($Dir) : $Dir;
+        }
+
+        /** Increment counter. */
+        if ($this->Loader->InstanceCache['ThisScanTotal'] === 0) {
+            $this->Loader->InstanceCache['ThisScanTotal'] = 1;
+            $this->Loader->Events->fireEvent('countersChanged');
         }
 
         /** Define file phase. */
@@ -413,6 +428,8 @@ class Scanner
 
         /** Kill it here if the scan target isn't a valid file. */
         if (!$Files || !$d = is_file($Files)) {
+            $this->Loader->InstanceCache['ThisScanDone']++;
+            $this->Loader->Events->fireEvent('countersChanged');
             return (!$n) ? 0 :
                 $lnap . $this->Loader->L10N->getString('scan_checking') . ' \'' . $OriginalFilename .
                 '\' (FN: ' . $fnCRC . "):\n-" . $lnap . sprintf(
@@ -425,6 +442,8 @@ class Scanner
         if ($this->Loader->Configuration['files']['filesize_limit'] > 0) {
             if ($fS > $this->Loader->readBytes($this->Loader->Configuration['files']['filesize_limit'])) {
                 if (!$this->Loader->Configuration['files']['filesize_response']) {
+                    $this->Loader->InstanceCache['ThisScanDone']++;
+                    $this->Loader->Events->fireEvent('countersChanged');
                     return (!$n) ? 1 :
                         $lnap . $this->Loader->L10N->getString('scan_checking') . ' \'' .
                         $OriginalFilename . '\' (FN: ' . $fnCRC . "):\n-" . $lnap .
@@ -439,6 +458,8 @@ class Scanner
                 if ($this->Loader->Configuration['core']['delete_on_sight'] && is_readable($Files)) {
                     unlink($Files);
                 }
+                $this->Loader->InstanceCache['ThisScanDone']++;
+                $this->Loader->Events->fireEvent('countersChanged');
                 return (!$n) ? 2 :
                     $lnap . $this->Loader->L10N->getString('scan_checking') . ' \'' . $OriginalFilename .
                     '\' (FN: ' . $fnCRC . "):\n-" . $lnap .
@@ -457,6 +478,8 @@ class Scanner
             if ($this->Loader->Configuration['core']['delete_on_sight'] && is_readable($Files)) {
                 unlink($Files);
             }
+            $this->Loader->InstanceCache['ThisScanDone']++;
+            $this->Loader->Events->fireEvent('countersChanged');
             return (!$n) ? 2 :
                 $lnap . $this->Loader->L10N->getString('scan_checking') . ' \'' . $OriginalFilename .
                 '\' (FN: ' . $fnCRC . "):\n-" . $lnap . sprintf(
@@ -472,6 +495,8 @@ class Scanner
         if ($this->containsMustAssert([
             $this->Loader->Configuration['files']['filetype_whitelist']
         ], [$xt, $xts, $gzxt, $gzxts], ',', true, true)) {
+            $this->Loader->InstanceCache['ThisScanDone']++;
+            $this->Loader->Events->fireEvent('countersChanged');
             return (!$n) ? 1 :
                 $lnap . $this->Loader->L10N->getString('scan_checking') . ' \'' . $OriginalFilename .
                 '\' (FN: ' . $fnCRC . "):\n-" . $lnap .
@@ -490,6 +515,8 @@ class Scanner
             if ($this->Loader->Configuration['core']['delete_on_sight'] && is_readable($Files)) {
                 unlink($Files);
             }
+            $this->Loader->InstanceCache['ThisScanDone']++;
+            $this->Loader->Events->fireEvent('countersChanged');
             return (!$n) ? 2 :
                 $lnap . $this->Loader->L10N->getString('scan_checking') . ' \'' .
                 $OriginalFilename . '\' (FN: ' . $fnCRC . "):\n-" . $lnap .
@@ -509,6 +536,8 @@ class Scanner
             if ($this->Loader->Configuration['core']['delete_on_sight'] && is_readable($Files)) {
                 unlink($Files);
             }
+            $this->Loader->InstanceCache['ThisScanDone']++;
+            $this->Loader->Events->fireEvent('countersChanged');
             return (!$n) ? 2 :
                 $lnap . $this->Loader->L10N->getString('scan_checking') . ' \'' .
                 $OriginalFilename . '\' (FN: ' . $fnCRC . "):\n-" . $lnap .
@@ -535,6 +564,8 @@ class Scanner
             if ($this->Loader->Configuration['core']['delete_on_sight'] && is_readable($Files)) {
                 unlink($Files);
             }
+            $this->Loader->InstanceCache['ThisScanDone']++;
+            $this->Loader->Events->fireEvent('countersChanged');
             return (!$n) ? 2 :
                 $lnap . $this->Loader->L10N->getString('scan_checking') . ' \'' .
                 $OriginalFilename . '\' (FN: ' . $fnCRC . '; FD: ' . $fdCRC . "):\n-" .
@@ -587,7 +618,7 @@ class Scanner
                     $qfu =
                         $this->Loader->Time .
                         '-' .
-                        md5($this->Loader->Configuration['quarantine']['quarantine_key'] . $fdCRC . $this->Loader->Time);
+                        hash('md5', $this->Loader->Configuration['quarantine']['quarantine_key'] . $fdCRC . $this->Loader->Time);
                     $this->quarantine(
                         $in,
                         $this->Loader->Configuration['quarantine']['quarantine_key'],
@@ -604,6 +635,8 @@ class Scanner
             }
 
             /** Exit. */
+            $this->Loader->InstanceCache['ThisScanDone']++;
+            $this->Loader->Events->fireEvent('countersChanged');
             return !$n ? $z[0] : sprintf(
                 '%s%s \'%s\' (FN: %s; FD: %s):%s%s',
                 $lnap,
@@ -664,9 +697,7 @@ class Scanner
                 $this->Loader->Configuration['quarantine']['quarantine_key'] &&
                 strlen($in) < $this->Loader->readBytes($this->Loader->Configuration['quarantine']['quarantine_max_filesize'])
             ) {
-                $qfu = $this->Loader->Time . '-' . md5(
-                    $this->Loader->Configuration['quarantine']['quarantine_key'] . $fdCRC . $this->Loader->Time
-                );
+                $qfu = $this->Loader->Time . '-' . hash('md5', $this->Loader->Configuration['quarantine']['quarantine_key'] . $fdCRC . $this->Loader->Time);
                 $this->quarantine(
                     $in,
                     $this->Loader->Configuration['quarantine']['quarantine_key'],
@@ -683,6 +714,8 @@ class Scanner
         }
 
         /** Exit. */
+        $this->Loader->InstanceCache['ThisScanDone']++;
+        $this->Loader->Events->fireEvent('countersChanged');
         return !$n ? $Results : $x;
     }
 
@@ -730,10 +763,10 @@ class Scanner
             return [1, ''];
         }
 
-        $md5 = md5($str);
-        $sha1 = sha1($str);
-        $sha256 = hash('sha256', $str);
-        $crc32b = hash('crc32b', $str);
+        /** Generate hash variables. */
+        foreach (['md5', 'sha1', 'sha256', 'crc32b'] as $Algo) {
+            $$Algo = hash($Algo, $str);
+        }
 
         /** $fourcc: First four bytes of the scan target in hexadecimal notation. */
         $fourcc = strtolower(bin2hex(substr($str, 0, 4)));
@@ -813,7 +846,7 @@ class Scanner
         $len_hgb = ($StringLength > 536870912) ? 1 : 0;
         $phase = $this->Loader->InstanceCache['phase'];
         $container = $this->Loader->InstanceCache['container'];
-        $pdf_magic = ($fourcc == '25504446');
+        $pdf_magic = ($fourcc === '25504446');
 
         /** CoEx flags for configuration directives related to signatures. */
         foreach ([
@@ -1315,7 +1348,7 @@ class Scanner
                             '.'
                         ) . ':';
                     }
-                    $ThisURL = md5($ThisURL) . ':' . strlen($ThisURL) . ':';
+                    $ThisURL = hash('md5', $ThisURL) . ':' . strlen($ThisURL) . ':';
                     $URLScanner['Domains'][$URLScanner['Iterable']] = 'DOMAIN:' . $ThisURL;
                     $URLScanner['DomainsNoLookup'][$URLScanner['Iterable']] = 'DOMAIN-NOLOOKUP:' . $ThisURL;
                     $URLScanner['Iterable']++;
@@ -1340,14 +1373,14 @@ class Scanner
                     if (strlen($ThisURL) > 4096) {
                         $ThisURL = substr($ThisURL, 0, 4096);
                     }
-                    $URLScanner['This'] = md5($ThisURL) . ':' . strlen($ThisURL) . ':';
+                    $URLScanner['This'] = hash('md5', $ThisURL) . ':' . strlen($ThisURL) . ':';
                     $URLScanner['URLsNoLookup'][$URLScanner['Iterable']] = 'URL-NOLOOKUP:' . $URLScanner['This'];
                     $URLScanner['URLParts'][$URLScanner['Iterable']] = $ThisURL;
                     $URLScanner['URLs'][$URLScanner['Iterable']] = 'URL:' . $URLScanner['This'];
                     $URLScanner['Iterable']++;
                     if (preg_match('/[^\da-z.-]$/i', $ThisURL)) {
                         $URLScanner['x'] = preg_replace('/[^\da-z.-]+$/i', '', $ThisURL);
-                        $URLScanner['This'] = md5($URLScanner['x']) . ':' . strlen($URLScanner['x']) . ':';
+                        $URLScanner['This'] = hash('md5', $URLScanner['x']) . ':' . strlen($URLScanner['x']) . ':';
                         $URLScanner['URLsNoLookup'][$URLScanner['Iterable']] = 'URL-NOLOOKUP:' . $URLScanner['This'];
                         $URLScanner['URLParts'][$URLScanner['Iterable']] = $URLScanner['x'];
                         $URLScanner['URLs'][$URLScanner['Iterable']] = 'URL:' . $URLScanner['This'];
@@ -1355,12 +1388,12 @@ class Scanner
                     }
                     if (strpos($ThisURL, '?') !== false) {
                         $URLScanner['x'] = $this->Loader->substrBeforeFirst($ThisURL, '?');
-                        $URLScanner['This'] = md5($URLScanner['x']) . ':' . strlen($URLScanner['x']) . ':';
+                        $URLScanner['This'] = hash('md5', $URLScanner['x']) . ':' . strlen($URLScanner['x']) . ':';
                         $URLScanner['URLsNoLookup'][$URLScanner['Iterable']] = 'URL-NOLOOKUP:' . $URLScanner['This'];
                         $URLScanner['URLParts'][$URLScanner['Iterable']] = $URLScanner['x'];
                         $URLScanner['URLs'][$URLScanner['Iterable']] = 'URL:' . $URLScanner['This'];
                         $URLScanner['x'] = $this->Loader->substrAfterFirst($ThisURL, '?');
-                        $URLScanner['Queries'][$URLScanner['Iterable']] = 'QUERY:' . md5($URLScanner['x']) . ':' . strlen($URLScanner['x']) . ':';
+                        $URLScanner['Queries'][$URLScanner['Iterable']] = 'QUERY:' . hash('md5', $URLScanner['x']) . ':' . strlen($URLScanner['x']) . ':';
                         $URLScanner['Iterable']++;
                     }
                 }
@@ -1627,21 +1660,21 @@ class Scanner
                                     }
                                     if (isset($ThisSigPart[2])) {
                                         if (isset($ThisSigPart[3])) {
-                                            if ($ThisSigPart[2] == 'A') {
+                                            if ($ThisSigPart[2] === 'A') {
                                                 if (strpos(',FD,FD-RX,FD-NORM,FD-NORM-RX,META,', ',' . $ThisSigPart[0] . ',') === false || (
-                                                    $ThisSigPart[0] == 'FD' &&
+                                                    $ThisSigPart[0] === 'FD' &&
                                                     strpos("\x01" . substr($str_hex, 0, $ThisSigPart[3] * 2), "\x01" . $ThisSigPart[1]) === false
                                                 ) || (
-                                                    $ThisSigPart[0] == 'FD-RX' &&
+                                                    $ThisSigPart[0] === 'FD-RX' &&
                                                     !preg_match('/\A(?:' . $ThisSigPart[1] . ')/i', substr($str_hex, 0, $ThisSigPart[3] * 2))
                                                 ) || (
-                                                    $ThisSigPart[0] == 'FD-NORM' &&
+                                                    $ThisSigPart[0] === 'FD-NORM' &&
                                                     strpos("\x01" . substr($str_hex_norm, 0, $ThisSigPart[3] * 2), "\x01" . $ThisSigPart[1]) === false
                                                 ) || (
-                                                    $ThisSigPart[0] == 'FD-NORM-RX' &&
+                                                    $ThisSigPart[0] === 'FD-NORM-RX' &&
                                                     !preg_match('/\A(?:' . $ThisSigPart[1] . ')/i', substr($str_hex_norm, 0, $ThisSigPart[3] * 2))
                                                 ) || (
-                                                    $ThisSigPart[0] == 'META' &&
+                                                    $ThisSigPart[0] === 'META' &&
                                                     !preg_match('/\A(?:' . $ThisSigPart[1] . ')/i', substr($CoExMeta, 0, $ThisSigPart[3] * 2))
                                                 )) {
                                                     continue 2;
@@ -1649,43 +1682,43 @@ class Scanner
                                                 continue;
                                             }
                                             if (strpos(',FD,FD-RX,FD-NORM,FD-NORM-RX,META,', ',' . $ThisSigPart[0] . ',') === false || (
-                                                $ThisSigPart[0] == 'FD' &&
+                                                $ThisSigPart[0] === 'FD' &&
                                                 strpos(substr($str_hex, $ThisSigPart[2] * 2, $ThisSigPart[3] * 2), $ThisSigPart[1]) === false
                                             ) || (
-                                                $ThisSigPart[0] == 'FD-RX' &&
+                                                $ThisSigPart[0] === 'FD-RX' &&
                                                 !preg_match('/(?:' . $ThisSigPart[1] . ')/i', substr($str_hex, $ThisSigPart[2] * 2, $ThisSigPart[3] * 2))
                                             ) || (
-                                                $ThisSigPart[0] == 'FD-NORM' &&
+                                                $ThisSigPart[0] === 'FD-NORM' &&
                                                 strpos(substr($str_hex_norm, $ThisSigPart[2] * 2, $ThisSigPart[3] * 2), $ThisSigPart[1]) === false
                                             ) || (
-                                                $ThisSigPart[0] == 'FD-NORM-RX' &&
+                                                $ThisSigPart[0] === 'FD-NORM-RX' &&
                                                 !preg_match('/(?:' . $ThisSigPart[1] . ')/i', substr($str_hex_norm, $ThisSigPart[2] * 2, $ThisSigPart[3] * 2))
                                             ) || (
-                                                $ThisSigPart[0] == 'META' &&
+                                                $ThisSigPart[0] === 'META' &&
                                                 !preg_match('/(?:' . $ThisSigPart[1] . ')/i', substr($CoExMeta, $ThisSigPart[2] * 2, $ThisSigPart[3] * 2))
                                             )) {
                                                 continue 2;
                                             }
                                             continue;
                                         }
-                                        if ($ThisSigPart[2] == 'A') {
+                                        if ($ThisSigPart[2] === 'A') {
                                             if (strpos(',FN,FD,FD-RX,FD-NORM,FD-NORM-RX,META,', ',' . $ThisSigPart[0] . ',') === false || (
-                                                $ThisSigPart[0] == 'FN' &&
+                                                $ThisSigPart[0] === 'FN' &&
                                                 !preg_match('/\A(?:' . $ThisSigPart[1] . ')/i', $OriginalFilename)
                                             ) || (
-                                                $ThisSigPart[0] == 'FD' &&
+                                                $ThisSigPart[0] === 'FD' &&
                                                 strpos("\x01" . $str_hex, "\x01" . $ThisSigPart[1]) === false
                                             ) || (
-                                                $ThisSigPart[0] == 'FD-RX' &&
+                                                $ThisSigPart[0] === 'FD-RX' &&
                                                 !preg_match('/\A(?:' . $ThisSigPart[1] . ')/i', $str_hex)
                                             ) || (
-                                                $ThisSigPart[0] == 'FD-NORM' &&
+                                                $ThisSigPart[0] === 'FD-NORM' &&
                                                 strpos("\x01" . $str_hex_norm, "\x01" . $ThisSigPart[1]) === false
                                             ) || (
-                                                $ThisSigPart[0] == 'FD-NORM-RX' &&
+                                                $ThisSigPart[0] === 'FD-NORM-RX' &&
                                                 !preg_match('/\A(?:' . $ThisSigPart[1] . ')/i', $str_hex_norm)
                                             ) || (
-                                                $ThisSigPart[0] == 'META' &&
+                                                $ThisSigPart[0] === 'META' &&
                                                 !preg_match('/\A(?:' . $ThisSigPart[1] . ')/i', $CoExMeta)
                                             )) {
                                                 continue 2;
@@ -1693,19 +1726,19 @@ class Scanner
                                             continue;
                                         }
                                         if (strpos(',FD,FD-RX,FD-NORM,FD-NORM-RX,META,', ',' . $ThisSigPart[0] . ',') === false || (
-                                            $ThisSigPart[0] == 'FD' &&
+                                            $ThisSigPart[0] === 'FD' &&
                                             strpos(substr($str_hex, $ThisSigPart[2] * 2), $ThisSigPart[1]) === false
                                         ) || (
-                                            $ThisSigPart[0] == 'FD-RX' &&
+                                            $ThisSigPart[0] === 'FD-RX' &&
                                             !preg_match('/(?:' . $ThisSigPart[1] . ')/i', substr($str_hex, $ThisSigPart[2] * 2))
                                         ) || (
-                                            $ThisSigPart[0] == 'FD-NORM' &&
+                                            $ThisSigPart[0] === 'FD-NORM' &&
                                             strpos(substr($str_hex_norm, $ThisSigPart[2] * 2), $ThisSigPart[1]) === false
                                         ) || (
-                                            $ThisSigPart[0] == 'FD-NORM-RX' &&
+                                            $ThisSigPart[0] === 'FD-NORM-RX' &&
                                             !preg_match('/(?:' . $ThisSigPart[1] . ')/i', substr($str_hex_norm, $ThisSigPart[2] * 2))
                                         ) || (
-                                            $ThisSigPart[0] == 'META' &&
+                                            $ThisSigPart[0] === 'META' &&
                                             !preg_match('/(?:' . $ThisSigPart[1] . ')/i', substr($CoExMeta, $ThisSigPart[2] * 2))
                                         )) {
                                             continue 2;
@@ -1713,28 +1746,28 @@ class Scanner
                                         continue;
                                     }
                                     if ((
-                                        $ThisSigPart[0] == 'FN' &&
+                                        $ThisSigPart[0] === 'FN' &&
                                         !preg_match('/(?:' . $ThisSigPart[1] . ')/i', $OriginalFilename)
                                     ) || (
-                                        $ThisSigPart[0] == 'FS-MIN' &&
+                                        $ThisSigPart[0] === 'FS-MIN' &&
                                         $StringLength < $ThisSigPart[1]
                                     ) || (
-                                        $ThisSigPart[0] == 'FS-MAX' &&
+                                        $ThisSigPart[0] === 'FS-MAX' &&
                                         $StringLength > $ThisSigPart[1]
                                     ) || (
-                                        $ThisSigPart[0] == 'FD' &&
+                                        $ThisSigPart[0] === 'FD' &&
                                         strpos($str_hex, $ThisSigPart[1]) === false
                                     ) || (
-                                        $ThisSigPart[0] == 'FD-RX' &&
+                                        $ThisSigPart[0] === 'FD-RX' &&
                                         !preg_match('/(?:' . $ThisSigPart[1] . ')/i', $str_hex)
                                     ) || (
-                                        $ThisSigPart[0] == 'FD-NORM' &&
+                                        $ThisSigPart[0] === 'FD-NORM' &&
                                         strpos($str_hex_norm, $ThisSigPart[1]) === false
                                     ) || (
-                                        $ThisSigPart[0] == 'FD-NORM-RX' &&
+                                        $ThisSigPart[0] === 'FD-NORM-RX' &&
                                         !preg_match('/(?:' . $ThisSigPart[1] . ')/i', $str_hex_norm)
                                     ) || (
-                                        $ThisSigPart[0] == 'META' &&
+                                        $ThisSigPart[0] === 'META' &&
                                         !preg_match('/(?:' . $ThisSigPart[1] . ')/i', $CoExMeta)
                                     )) {
                                         continue 2;
@@ -1824,48 +1857,48 @@ class Scanner
                     if (!$ThisSig = $this->Loader->InstanceCache[$SigFile][$SigNum]) {
                         continue;
                     }
-                    if (substr($ThisSig, 0, 1) == '>') {
+                    if (substr($ThisSig, 0, 1) === '>') {
                         $ThisSig = explode('>', $ThisSig, 4);
                         if (!isset($ThisSig[1], $ThisSig[2], $ThisSig[3])) {
                             break;
                         }
                         $ThisSig[3] = (int)$ThisSig[3];
-                        if ($ThisSig[1] == 'FN') {
+                        if ($ThisSig[1] === 'FN') {
                             if (!preg_match('/(?:' . $ThisSig[2] . ')/i', $OriginalFilename)) {
                                 if ($ThisSig[3] <= $SigNum) {
                                     break;
                                 }
                                 $SigNum = $ThisSig[3] - 1;
                             }
-                        } elseif ($ThisSig[1] == 'FS-MIN') {
+                        } elseif ($ThisSig[1] === 'FS-MIN') {
                             if ($StringLength < $ThisSig[2]) {
                                 if ($ThisSig[3] <= $SigNum) {
                                     break;
                                 }
                                 $SigNum = $ThisSig[3] - 1;
                             }
-                        } elseif ($ThisSig[1] == 'FS-MAX') {
+                        } elseif ($ThisSig[1] === 'FS-MAX') {
                             if ($StringLength > $ThisSig[2]) {
                                 if ($ThisSig[3] <= $SigNum) {
                                     break;
                                 }
                                 $SigNum = $ThisSig[3] - 1;
                             }
-                        } elseif ($ThisSig[1] == 'FD') {
+                        } elseif ($ThisSig[1] === 'FD') {
                             if (strpos($$DataSource, $ThisSig[2]) === false) {
                                 if ($ThisSig[3] <= $SigNum) {
                                     break;
                                 }
                                 $SigNum = $ThisSig[3] - 1;
                             }
-                        } elseif ($ThisSig[1] == 'FD-RX') {
+                        } elseif ($ThisSig[1] === 'FD-RX') {
                             if (!preg_match('/(?:' . $ThisSig[2] . ')/i', $$DataSource)) {
                                 if ($ThisSig[3] <= $SigNum) {
                                     break;
                                 }
                                 $SigNum = $ThisSig[3] - 1;
                             }
-                        } elseif (substr($ThisSig[1], 0, 1) == '$') {
+                        } elseif (substr($ThisSig[1], 0, 1) === '$') {
                             $VarInSigFile = substr($ThisSig[1], 1);
                             if (isset($$VarInSigFile) && is_scalar($$VarInSigFile)) {
                                 if (!$this->matchVarInSigFile($ThisSig[2], $$VarInSigFile)) {
@@ -1880,7 +1913,7 @@ class Scanner
                                 break;
                             }
                             $SigNum = $ThisSig[3] - 1;
-                        } elseif (substr($ThisSig[1], 0, 2) == '!$') {
+                        } elseif (substr($ThisSig[1], 0, 2) === '!$') {
                             $VarInSigFile = substr($ThisSig[1], 2);
                             if (isset($$VarInSigFile) && is_scalar($$VarInSigFile)) {
                                 if ($this->matchVarInSigFile($ThisSig[2], $$VarInSigFile)) {
@@ -2039,7 +2072,7 @@ class Scanner
                         }
                         break;
                     }
-                    $URLScanner['This'] = md5($URLScanner['DomainParts'][$i]) . ':' . strlen($URLScanner['DomainParts'][$i]) . ':';
+                    $URLScanner['This'] = hash('md5', $URLScanner['DomainParts'][$i]) . ':' . strlen($URLScanner['DomainParts'][$i]) . ':';
                     while (substr_count($this->Loader->InstanceCache['urlscanner_domains'], $URLScanner['This'])) {
                         $URLScanner['Class'] =
                             $this->Loader->substrBeforeFirst($this->Loader->substrAfterLast($this->Loader->InstanceCache['urlscanner_domains'], $URLScanner['This']), ';');
@@ -2068,7 +2101,7 @@ class Scanner
                         12
                     );
                     $this->Loader->InstanceCache['LookupCount']++;
-                    if (substr($URLScanner['req_result'], 0, 6) == "Listed") {
+                    if (substr($URLScanner['req_result'], 0, 6) === 'Listed') {
                         $URLScanner['Class'] = substr($URLScanner['req_result'], 7, 3);
                         $URLScanner['Class'] = $URLScanner['classes'][$URLScanner['Class']] ?? "\x1a\x82\x10\x3fXXX";
                         $this->Loader->InstanceCache['urlscanner_domains'] .=
@@ -2491,14 +2524,11 @@ class Scanner
             $this->debugArr[$this->Loader->InstanceCache['DebugArrKey']]['Output'] = $Out;
         }
 
+        /** Register object flagged. */
         if ($Out) {
-
-            /** Register object flagged. */
-            if (isset($CLIArgs[1]) && $CLIArgs[1] == 'cli_scan') {
-                $this->statsIncrement('CLI-Flagged', 1);
-            } else {
-                $this->statsIncrement($this->CalledFrom === 'Web' ? 'Web-Blocked' : 'API-Flagged', 1);
-            }
+            $this->statsIncrement($this->CalledFrom === 'Web' ? 'Web-Blocked' : (
+                $this->CalledFrom === 'CLI' ? 'CLI-Flagged' : 'API-Flagged'
+            ), 1);
         }
 
         /** Exit data handler. */
@@ -3212,7 +3242,7 @@ class Scanner
         }
         $k = strlen($Key);
         $FileSize = strlen($In);
-        $Head = "\xa1phpMussel\x21" . $this->Loader->hexSafe(md5($In)) . pack('l*', $FileSize) . "\x01";
+        $Head = "\xa1phpMussel\x21" . $this->Loader->hexSafe(hash('md5', $In)) . pack('l*', $FileSize) . "\x01";
         $In = gzdeflate($In, 9);
         $Out = '';
         $i = 0;
@@ -3439,14 +3469,8 @@ class Scanner
         }
 
         /** Check whether shorthand data has been fetched. If it hasn't, fetch it. */
-        if (!isset($this->Loader->InstanceCache['shorthand.yml'])) {
-            $this->Loader->InstanceCache['shorthand.yml'] = [];
-            $ShorthandData = $this->Loader->readFile($this->AssetsPath . 'shorthand.yml');
-            if (!$ShorthandData) {
-                return $VN;
-            }
-            $this->Loader->YAML->process($ShorthandData, $this->Loader->InstanceCache['shorthand.yml']);
-            unset($ShorthandData);
+        if (!$this->Loader->loadShorthandData()) {
+            return $VN;
         }
 
         /** Will be populated by the signature name. */

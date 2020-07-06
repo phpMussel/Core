@@ -11,59 +11,25 @@ An ideal solution for shared hosting environments, where it's often not possible
 ---
 
 
-### Features:
-- Licensed as [GNU General Public License version 2.0](https://github.com/phpMussel/phpMussel/blob/v2/LICENSE.txt) (GPLv2).
-- Easy to install, easy to customise, easy to use.
-- Works for any system with PHP+PCRE installed, regardless of OS (PHP+PCRE required).
-- Fully configurable based on your needs.
-- Ideal solution for shared hosting services.
-- Ideal solution for forum systems in need of file upload protection.
-- Does NOT require shell access.
-- Does NOT require administrative privileges.
-- CLI mode available.
-- Good, strong, stable support base.
+### What's this repository for?
+
+This repository contains the phpMussel core codebase.
+
+```
+composer require phpmussel/core
+```
+
+#### See also:
+- [phpMussel/phpMussel](https://github.com/phpMussel/phpMussel) – The main phpMussel repository (you can get phpMussel versions prior to v3 from here).
+- [phpMussel/Core](https://github.com/phpMussel/Core) – phpMussel core (dedicated Composer version).
+- [phpMussel/CLI](https://github.com/phpMussel/CLI) – phpMussel CLI-mode (dedicated Composer version).
+- [phpMussel/FrontEnd](https://github.com/phpMussel/FrontEnd) – phpMussel front-end (dedicated Composer version).
+- [phpMussel/Web](https://github.com/phpMussel/Web) – phpMussel upload handler (dedicated Composer version).
+- [phpMussel/Examples](https://github.com/phpMussel/Examples) – Prebuilt examples for phpMussel (useful for users which don't want to use Composer to install phpMussel).
+- [phpMussel/plugin-boilerplates](https://github.com/phpMussel/plugin-boilerplates) – This repository contains boilerplate code which can be used to create new plugins for phpMussel.
+- [phpMussel/Plugin-PHPMailer](https://github.com/phpMussel/Plugin-PHPMailer) – Provides 2FA and email notifications support for phpMussel v3+.
 
 ---
 
 
-### Documentation:
-- **[English](https://github.com/phpMussel/Docs/blob/master/readme.en.md)**
-- **[العربية](https://github.com/phpMussel/Docs/blob/master/readme.ar.md)**
-- **[Deutsch](https://github.com/phpMussel/Docs/blob/master/readme.de.md)**
-- **[Español](https://github.com/phpMussel/Docs/blob/master/readme.es.md)**
-- **[Français](https://github.com/phpMussel/Docs/blob/master/readme.fr.md)**
-- **[Bahasa Indonesia](https://github.com/phpMussel/Docs/blob/master/readme.id.md)**
-- **[Italiano](https://github.com/phpMussel/Docs/blob/master/readme.it.md)**
-- **[日本語](https://github.com/phpMussel/Docs/blob/master/readme.ja.md)**
-- **[한국어](https://github.com/phpMussel/Docs/blob/master/readme.ko.md)**
-- **[Nederlandse](https://github.com/phpMussel/Docs/blob/master/readme.nl.md)**
-- **[Português](https://github.com/phpMussel/Docs/blob/master/readme.pt.md)**
-- **[Русский](https://github.com/phpMussel/Docs/blob/master/readme.ru.md)**
-- **[اردو](https://github.com/phpMussel/Docs/blob/master/readme.ur.md)**
-- **[Tiếng Việt](https://github.com/phpMussel/Docs/blob/master/readme.vi.md)**
-- **[中文（简体）](https://github.com/phpMussel/Docs/blob/master/readme.zh.md)**
-- **[中文（傳統）](https://github.com/phpMussel/Docs/blob/master/readme.zh-tw.md)**
-
-[\[CONTRIBUTING.md\] **Want to help?**](https://github.com/phpMussel/.github/blob/master/CONTRIBUTING.md)
-
-[\[PEOPLE.md\] **Learn about the people behind phpMussel.**](https://github.com/phpMussel/.github/blob/master/PEOPLE.md)
-
----
-
-
-### Current major version development status:
-
-⬇Stage reached⬇ ➡Major version➡ | v0 | v1-v2 | v3
-:--|:-:|:-:|:-:
-Pre-Alpha<em><br />- Exploring early concepts/ideas. No code written/available yet.</em> | ✔ | ✔ | ✔
-Alpha<em><br />- Branched, but unstable. Not production-ready (high risk if used).</em> | ✔ | ✔ | ✔
-Beta<em><br />- Branched, but unstable. Not production-ready (low risk if used).</em> | ✔ | ✔
-Stable<em><br />- First production-ready version has been tagged/released.</em> | ✔ | ✔
-Mature<em><br />- Multiple stable versions/releases exist.</em> | ✔ | ✔
-Locked<em><br />- Still maintained, but new features won't be implemented anymore.</em> | ✔
-EoL/Dead<em><br />- Not maintained anymore. If possible, stop using, and update ASAP.</em> | ✔
-
----
-
-
-Last Updated: 10 June 2020 (2020.06.10).
+Last Updated: 6 July 2020 (2020.07.06).

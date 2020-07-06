@@ -237,15 +237,15 @@ class Scanner
      * may be necessary for the case of archives and directories. It performs the
      * preparations necessary for scanning files using the "data handler" and the
      * "meta data scan" closures. Additionally, it performs some necessary
-     * whitelist, blacklist and greylist checks, filesize and file extension
-     * checks, and handles the processing and extraction of files from archives,
-     * fetching the files contained in archives being scanned in order to process
-     * those contained files as so that they, too, may be scanned.
+     * whitelist, blacklist and greylist checks, filesize and file extension checks,
+     * and handles the processing and extraction of files from archives, fetching
+     * the files contained in archives being scanned in order to process those
+     * contained files as so that they, too, may be scanned.
      *
      * When phpMussel is instructed to scan a directory or an array of multiple
-     * files, the recursor is the closure function responsible for iterating
-     * through that directory and/or array queued for scanning, and if necessary,
-     * will recurse itself (such as for when scanning a directory containing
+     * files, the recursor is the closure function responsible for iterating through
+     * that directory and/or array queued for scanning, and if necessary, will
+     * recurse itself (such as for when scanning a directory containing
      * sub-directories or when scanning a multidimensional array of multiple files
      * and/or directories).
      *
@@ -254,41 +254,43 @@ class Scanner
      *      string) represents the "temporary filename" of the file being scanned
      *      (the temporary filename, in this context, referring to the name
      *      temporarily assigned to the file by the server upon the file being
-     *      uploaded to the temporary uploads location assigned to the server).
-     *      When operating in the context of CLI mode, both $Files and $OriginalFilename represent
-     *      the scan target, as per specified by the CLI operator; The only
-     *      difference between the two is when the scan target is a directory,
-     *      rather than a single file; $Files will represent the full path to the file
-     *      (so, directory plus filename), whereas $OriginalFilename will represent only the
-     *      filename. This parameter can also accept an array of filenames.
+     *      uploaded to the temporary uploads location assigned to the server). When
+     *      operating in the context of CLI mode, both $Files and $OriginalFilename
+     *      represent the scan target, as per specified by the CLI operator; The
+     *      only difference between the two is when the scan target is a directory,
+     *      rather than a single file; $Files will represent the full path to the
+     *      file (so, directory plus filename), whereas $OriginalFilename will
+     *      represent only the filename. This parameter can also accept an array of
+     *      filenames.
      * @param bool $n This optional parameter is a boolean (defaults to false, but
      *      set to true during the initial scan of file uploads), indicating the
      *      format for returning the scan results. False instructs the function to
      *      return results as an integer; True instructs the function to return
      *      results as human readable text (refer to Section 3A of the README
      *      documentation, "HOW TO USE (FOR WEB SERVERS)", for more information).
-     * @param bool $Flatness This optional parameter is a boolean (defaults to false, but
-     *      set to true during the initial scan of file uploads), indicating to the
-     *      function whether or not arrayed results should be imploded prior to
-     *      being returned to the calling function. False instructs the function to
-     *      return the arrayed results as verbatim; True instructs the function to
-     *      return the arrayed results as an imploded string.
+     * @param bool $Flatness This optional parameter is a boolean (defaults to
+     *      false, but set to true during the initial scan of file uploads),
+     *      indicating to the function whether or not arrayed results should be
+     *      imploded prior to being returned to the calling function. False
+     *      instructs the function to return the arrayed results as verbatim; True
+     *      instructs the function to return the arrayed results as an imploded
+     *      string.
      * @param int $Depth Represents the current depth of recursion from which the
      *      function has been called. This information is used for determining how
      *      far to indent any entries generated for logging and for the display of
      *      scan results in CLI (you should never manually set this parameter
      *      yourself).
-     * @param string $OriginalFilename For the file upload scanning that phpMussel normally
-     *      performs by default, this parameter represents the "original filename"
-     *      of the file being scanned (the original filename, in this context,
-     *      referring to the name supplied by the upload client, as opposed to the
-     *      temporary filename assigned by the server or anything else).
-     *      When operating in the context of CLI mode, both $Files and $OriginalFilename represent
-     *      the scan target, as per specified by the CLI operator; The only
-     *      difference between the two is when the scan target is a directory,
-     *      rather than a single file; $Files will represent the full path to the file
-     *      (so, directory plus filename), whereas $OriginalFilename will represent only the
-     *      filename.
+     * @param string $OriginalFilename For the file upload scanning that phpMussel
+     *      normally performs by default, this parameter represents the "original
+     *      filename" of the file being scanned (the original filename, in this
+     *      context, referring to the name supplied by the upload client, as
+     *      opposed to the temporary filename assigned by the server or anything
+     *      else). When operating in the context of CLI mode, both $Files and
+     *      $OriginalFilename represent the scan target, as per specified by the CLI
+     *      operator; The only difference between the two is when the scan target is
+     *      a directory, rather than a single file; $Files will represent the full
+     *      path to the file (so, directory plus filename), whereas
+     *      $OriginalFilename will represent only the filename.
      * @return mixed The scan results, returned as an array when the $Files
      *      parameter is an array and when $n and/or $Flatness is/are false, and
      *      otherwise returned as per described by the README documentation. The

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is a part of the phpMussel\Core package.
  * Homepage: https://phpmussel.github.io/
@@ -83,18 +84,16 @@ class Scanner
                 $this->Loader->InstanceCache['scan_errors'] = 1;
             }
             $Data = serialize([
-                'start_time' => $this->Loader->InstanceCache['StartTime'] ?? '-',
-                'end_time' => $this->Loader->InstanceCache['EndTime'] ?? '-',
-                'origin' => $Origin,
-                'objects_scanned' => $this->Loader->InstanceCache['objects_scanned'] ?? 0,
-                'detections_count' => $this->Loader->InstanceCache['detections_count'] ?? 0,
-                'scan_errors' => $this->Loader->InstanceCache['scan_errors'] ?? 0,
-                'detections' => $ScanData
-            ]) . "\n";
-            $WriteMode = (!file_exists($File) || (
-                $this->Loader->Configuration['core']['truncate'] > 0 &&
-                filesize($File) >= $this->Loader->readBytes($this->Loader->Configuration['core']['truncate'])
-            )) ? 'wb' : 'ab';
+                    'start_time' => $this->Loader->InstanceCache['StartTime'] ?? '-',
+                    'end_time' => $this->Loader->InstanceCache['EndTime'] ?? '-',
+                    'origin' => $Origin,
+                    'objects_scanned' => $this->Loader->InstanceCache['objects_scanned'] ?? 0,
+                    'detections_count' => $this->Loader->InstanceCache['detections_count'] ?? 0,
+                    'scan_errors' => $this->Loader->InstanceCache['scan_errors'] ?? 0,
+                    'detections' => $ScanData
+                ]) . "\n";
+            $WriteMode = (!file_exists($File) || ($this->Loader->Configuration['core']['truncate'] > 0 &&
+                    filesize($File) >= $this->Loader->readBytes($this->Loader->Configuration['core']['truncate']))) ? 'wb' : 'ab';
 
             $Stream = fopen($File, $WriteMode);
             fwrite($Stream, $Data);
@@ -122,10 +121,8 @@ class Scanner
                 $Data = \phpMussel\Core\Loader::SAFETY . "\n" . $Data;
                 $WriteMode = 'wb';
             } else {
-                $WriteMode = (
-                    $this->Loader->Configuration['core']['truncate'] > 0 &&
-                    filesize($File) >= $this->Loader->readBytes($this->Loader->Configuration['core']['truncate'])
-                ) ? 'wb' : 'ab';
+                $WriteMode = ($this->Loader->Configuration['core']['truncate'] > 0 &&
+                    filesize($File) >= $this->Loader->readBytes($this->Loader->Configuration['core']['truncate'])) ? 'wb' : 'ab';
             }
 
             $Handle = fopen($File, 'ab');
@@ -215,9 +212,7 @@ class Scanner
         }
 
         /** Register scan event. */
-        $this->statsIncrement($this->CalledFrom === 'Web' ? 'Web-Events' : (
-            $this->CalledFrom === 'CLI' ? 'CLI-Events' : 'API-Events'
-        ), 1);
+        $this->statsIncrement($this->CalledFrom === 'Web' ? 'Web-Events' : ($this->CalledFrom === 'CLI' ? 'CLI-Events' : 'API-Events'), 1);
 
         /** Update statistics. */
         if (!empty($this->Loader->InstanceCache['StatisticsModified'])) {
@@ -311,11 +306,9 @@ class Scanner
 
         if ($this->CalledFrom !== 'Web') {
             $this->Loader->WhyFlagged = $this->Loader->HashReference = $this->Loader->PEData = '';
-            if ($Depth === 0 || !isset(
-                $this->Loader->InstanceCache['objects_scanned'],
-                $this->Loader->InstanceCache['detections_count'],
-                $this->Loader->InstanceCache['scan_errors']
-            )) {
+            if ($Depth === 0 || !isset($this->Loader->InstanceCache['objects_scanned'],
+                    $this->Loader->InstanceCache['detections_count'],
+                    $this->Loader->InstanceCache['scan_errors'])) {
                 $this->Loader->InstanceCache['objects_scanned'] = 0;
                 $this->Loader->InstanceCache['detections_count'] = 0;
                 $this->Loader->InstanceCache['scan_errors'] = 0;
@@ -330,11 +323,9 @@ class Scanner
             if (!isset($this->Loader->PEData)) {
                 $this->Loader->PEData = '';
             }
-            if (!isset(
-                $this->Loader->InstanceCache['objects_scanned'],
+            if (!isset($this->Loader->InstanceCache['objects_scanned'],
                 $this->Loader->InstanceCache['detections_count'],
-                $this->Loader->InstanceCache['scan_errors']
-            )) {
+                $this->Loader->InstanceCache['scan_errors'])) {
                 $this->Loader->InstanceCache['objects_scanned'] = 0;
                 $this->Loader->InstanceCache['detections_count'] = 0;
                 $this->Loader->InstanceCache['scan_errors'] = 0;
@@ -375,10 +366,11 @@ class Scanner
         if (is_dir($Files)) {
             if (!is_readable($Files)) {
                 $this->Loader->InstanceCache['scan_errors']++;
-                return !$n ? 0 : $lnap . sprintf(
-                    $this->Loader->L10N->getString('_exclamation_final'),
-                    sprintf($this->Loader->L10N->getString('failed_to_access'), $OriginalFilename)
-                ) . "\n";
+                return !$n ? 0 : [
+                    'flagged' => false,
+                    'file' => $OriginalFilename,
+                    'reason' => sprintf($this->Loader->L10N->getString('failed_to_access'), $OriginalFilename),
+                ];
             }
             $Dir = $this->directoryRecursiveList($Files);
             $SizeOfDir = count($Dir);
@@ -433,11 +425,12 @@ class Scanner
             $this->Loader->InstanceCache['ThisScanDone']++;
             $this->Loader->Events->fireEvent('countersChanged');
             return !$n ? 0 :
-                $lnap . $this->Loader->L10N->getString('scan_checking') . ' \'' . $OriginalFilename .
-                '\' (FN: ' . $fnCRC . "):\n-" . $lnap . sprintf(
-                    $this->Loader->L10N->getString('_exclamation_final'),
-                    $this->Loader->L10N->getString('invalid_file')
-                ) . "\n";
+                [
+                    'flagged' => false,
+                    'file' => $OriginalFilename,
+                    'reason' => $this->Loader->L10N->getString('invalid_file'),
+                ];
+
         }
 
         $fS = filesize($Files);
@@ -447,10 +440,11 @@ class Scanner
                     $this->Loader->InstanceCache['ThisScanDone']++;
                     $this->Loader->Events->fireEvent('countersChanged');
                     return !$n ? 1 :
-                        $lnap . $this->Loader->L10N->getString('scan_checking') . ' \'' .
-                        $OriginalFilename . '\' (FN: ' . $fnCRC . "):\n-" . $lnap .
-                        $this->Loader->L10N->getString('ok') . ' (' .
-                        $this->Loader->L10N->getString('filesize_limit_exceeded') . ").\n";
+                        [
+                            'flagged' => false,
+                            'file' => $OriginalFilename,
+                            'reason' => $this->Loader->L10N->getString('ok') . ' (' . $this->Loader->L10N->getString('filesize_limit_exceeded') . ")"
+                        ];
                 }
                 $this->Loader->HashReference .= str_repeat('-', 64) . ':' . $fS . ':' . $OriginalFilename . "\n";
                 $this->Loader->WhyFlagged .= sprintf(
@@ -463,15 +457,15 @@ class Scanner
                 $this->Loader->InstanceCache['ThisScanDone']++;
                 $this->Loader->Events->fireEvent('countersChanged');
                 return !$n ? 2 :
-                    $lnap . $this->Loader->L10N->getString('scan_checking') . ' \'' . $OriginalFilename .
-                    '\' (FN: ' . $fnCRC . "):\n-" . $lnap .
-                    $this->Loader->L10N->getString('filesize_limit_exceeded') .
-                    $this->Loader->L10N->getString('_fullstop_final') . "\n";
+                    [
+                        'flagged' => false,
+                        'file' => $OriginalFilename,
+                        'reason' => $this->Loader->L10N->getString('filesize_limit_exceeded')
+                    ];
+
             }
         }
-        if (!$this->Loader->Configuration['files']['allow_leading_trailing_dots'] && (
-            substr($OriginalFilename, 0, 1) === '.' || substr($OriginalFilename, -1) === '.'
-        )) {
+        if (!$this->Loader->Configuration['files']['allow_leading_trailing_dots'] && (substr($OriginalFilename, 0, 1) === '.' || substr($OriginalFilename, -1) === '.')) {
             $this->Loader->HashReference .= str_repeat('-', 64) . ':' . $fS . ':' . $OriginalFilename . "\n";
             $this->Loader->WhyFlagged .= sprintf(
                 $this->Loader->L10N->getString('_exclamation'),
@@ -483,11 +477,15 @@ class Scanner
             $this->Loader->InstanceCache['ThisScanDone']++;
             $this->Loader->Events->fireEvent('countersChanged');
             return !$n ? 2 :
-                $lnap . $this->Loader->L10N->getString('scan_checking') . ' \'' . $OriginalFilename .
-                '\' (FN: ' . $fnCRC . "):\n-" . $lnap . sprintf(
-                    $this->Loader->L10N->getString('_exclamation_final'),
-                    $this->Loader->L10N->getString('scan_filename_manipulation_detected')
-                ) . "\n";
+                [
+                    'flagged' => false,
+                    'file' => $OriginalFilename,
+                    'reason' => sprintf(
+                        $this->Loader->L10N->getString('_exclamation_final'),
+                        $this->Loader->L10N->getString('scan_filename_manipulation_detected')
+                    )
+                ];
+
         }
 
         /** Get file extensions. */
@@ -499,10 +497,12 @@ class Scanner
         ], [$xt, $xts, $gzxt, $gzxts], ',', true, true)) {
             $this->Loader->InstanceCache['ThisScanDone']++;
             $this->Loader->Events->fireEvent('countersChanged');
-            return !$n ? 1 :
-                $lnap . $this->Loader->L10N->getString('scan_checking') . ' \'' . $OriginalFilename .
-                '\' (FN: ' . $fnCRC . "):\n-" . $lnap .
-                $this->Loader->L10N->getString('scan_no_problems_found') . "\n";
+            return !$n ? 1 : [
+                'flagged' => false,
+                'file' => $OriginalFilename,
+                'reason' => $this->Loader->L10N->getString('scan_no_problems_found')
+            ];
+
         }
 
         /** Process filetype blacklisting. */
@@ -520,16 +520,19 @@ class Scanner
             $this->Loader->InstanceCache['ThisScanDone']++;
             $this->Loader->Events->fireEvent('countersChanged');
             return !$n ? 2 :
-                $lnap . $this->Loader->L10N->getString('scan_checking') . ' \'' .
-                $OriginalFilename . '\' (FN: ' . $fnCRC . "):\n-" . $lnap .
-                $this->Loader->L10N->getString('filetype_blacklisted') .
-                $this->Loader->L10N->getString('_fullstop_final') . "\n";
+                [
+                    'flagged' => false,
+                    'file' => $OriginalFilename,
+                    'reason' => $this->Loader->L10N->getString('filetype_blacklisted') .
+                        $this->Loader->L10N->getString('_fullstop_final')
+                ];
+
         }
 
         /** Process filetype greylisting (when relevant). */
         if (!empty($this->Loader->Configuration['files']['filetype_greylist']) && $this->containsMustAssert([
-            $this->Loader->Configuration['files']['filetype_greylist']
-        ], [$xt, $xts, $gzxt, $gzxts])) {
+                $this->Loader->Configuration['files']['filetype_greylist']
+            ], [$xt, $xts, $gzxt, $gzxts])) {
             $this->Loader->HashReference .= str_repeat('-', 64) . ':' . $fS . ':' . $OriginalFilename . "\n";
             $this->Loader->WhyFlagged .= sprintf(
                 $this->Loader->L10N->getString('_exclamation'),
@@ -540,18 +543,18 @@ class Scanner
             }
             $this->Loader->InstanceCache['ThisScanDone']++;
             $this->Loader->Events->fireEvent('countersChanged');
-            return !$n ? 2 :
-                $lnap . $this->Loader->L10N->getString('scan_checking') . ' \'' .
-                $OriginalFilename . '\' (FN: ' . $fnCRC . "):\n-" . $lnap .
-                $this->Loader->L10N->getString('filetype_blacklisted') .
-                $this->Loader->L10N->getString('_fullstop_final') . "\n";
+            return !$n ? 2 : [
+                'flagged' => false,
+                'file' => $OriginalFilename,
+                'reason' => $this->Loader->L10N->getString('filetype_blacklisted') .
+                    $this->Loader->L10N->getString('_fullstop_final')
+            ];
+
         }
 
         /** Read in the file to be scanned. */
-        $in = $this->Loader->readFileBlocks($Files, (
-            $this->Loader->Configuration['files']['scannable_threshold'] > 0 &&
-            $fS > $this->Loader->readBytes($this->Loader->Configuration['files']['scannable_threshold'])
-        ) ? $this->Loader->readBytes($this->Loader->Configuration['files']['scannable_threshold']) : $fS, true);
+        $in = $this->Loader->readFileBlocks($Files, ($this->Loader->Configuration['files']['scannable_threshold'] > 0 &&
+            $fS > $this->Loader->readBytes($this->Loader->Configuration['files']['scannable_threshold'])) ? $this->Loader->readBytes($this->Loader->Configuration['files']['scannable_threshold']) : $fS, true);
 
         /** Generate CRC for the file to be scanned. */
         $fdCRC = hash('crc32b', $in);
@@ -569,10 +572,13 @@ class Scanner
             $this->Loader->InstanceCache['ThisScanDone']++;
             $this->Loader->Events->fireEvent('countersChanged');
             return !$n ? 2 :
-                $lnap . $this->Loader->L10N->getString('scan_checking') . ' \'' .
-                $OriginalFilename . '\' (FN: ' . $fnCRC . '; FD: ' . $fdCRC . "):\n-" .
-                $lnap . $this->Loader->L10N->getString('only_allow_images') .
-                $this->Loader->L10N->getString('_fullstop_final') . "\n";
+                [
+                    'flagged' => false,
+                    'file' => $OriginalFilename,
+                    'reason' => $this->Loader->L10N->getString('only_allow_images') .
+                        $this->Loader->L10N->getString('_fullstop_final')
+                ];
+
         }
 
         /** Increment objects scanned count. */
@@ -637,16 +643,22 @@ class Scanner
             /** Exit. */
             $this->Loader->InstanceCache['ThisScanDone']++;
             $this->Loader->Events->fireEvent('countersChanged');
-            return !$n ? $z[0] : sprintf(
-                '%s%s \'%s\' (FN: %s; FD: %s):%s%s',
-                $lnap,
-                $this->Loader->L10N->getString('scan_checking'),
-                $OriginalFilename,
-                $fnCRC,
-                $fdCRC,
-                "\n",
-                $z[1]
-            );
+            return !$n ? $z[0] :
+                [
+                    'flagged' => false,
+                    'file' => $OriginalFilename,
+                    'reason' => $z[1]
+                ];
+//            sprintf(
+//                '%s%s \'%s\' (FN: %s; FD: %s):%s%s',
+//                $lnap,
+//                $this->Loader->L10N->getString('scan_checking'),
+//                $OriginalFilename,
+//                $fnCRC,
+//                $fdCRC,
+//                "\n",
+//                $z[1]
+//            );
         }
 
         $x = sprintf(
@@ -727,7 +739,11 @@ class Scanner
         /** Exit. */
         $this->Loader->InstanceCache['ThisScanDone']++;
         $this->Loader->Events->fireEvent('countersChanged');
-        return !$n ? $Results : $x;
+        return !$n ? $Results : [
+            'flagged' => false,
+            'file' => $OriginalFilename,
+            'reason' => $x
+        ];
     }
 
     /**
@@ -808,9 +824,9 @@ class Scanner
             $this->Loader->HashReference .= $sha256 . ':' . $StringLength . ":\n";
             $this->Loader->InstanceCache['detections_count']++;
             $Out .= $lnap . sprintf(
-                $this->Loader->L10N->getString('_exclamation_final'),
-                $this->Loader->L10N->getString('scan_missing_filename')
-            ) . "\n";
+                    $this->Loader->L10N->getString('_exclamation_final'),
+                    $this->Loader->L10N->getString('scan_missing_filename')
+                ) . "\n";
             $this->Loader->WhyFlagged .= sprintf(
                 $this->Loader->L10N->getString('_exclamation'),
                 $this->Loader->L10N->getString('scan_missing_filename')
@@ -833,14 +849,16 @@ class Scanner
         ) {
             /** 0: (int) {-4...2}; 1: For CLI+API; 2: For Web. */
             if (($HashCacheEntry = json_decode($HashCacheEntry, true, 2)) === false) {
-                $HashCacheEntry = [-2, $lnap . sprintf(
-                    $this->Loader->L10N->getString('_exclamation_final'),
-                    $this->Loader->L10N->getString('corrupted')
-                ) . "\n",
-                sprintf(
-                    $this->Loader->L10N->getString('_exclamation'),
-                    $this->Loader->L10N->getString('corrupted') . ' (' . $OriginalFilenameSafe . ')'
-                )];
+                $HashCacheEntry = [
+                    -2, $lnap . sprintf(
+                        $this->Loader->L10N->getString('_exclamation_final'),
+                        $this->Loader->L10N->getString('corrupted')
+                    ) . "\n",
+                    sprintf(
+                        $this->Loader->L10N->getString('_exclamation'),
+                        $this->Loader->L10N->getString('corrupted') . ' (' . $OriginalFilenameSafe . ')'
+                    )
+                ];
             }
 
             /** Add to hash references if something was detected. */
@@ -873,9 +891,7 @@ class Scanner
 
             /** Register object flagged. */
             if ($HashCacheEntry[0] !== 1) {
-                $this->statsIncrement($this->CalledFrom === 'Web' ? 'Web-Blocked' : (
-                    $this->CalledFrom === 'CLI' ? 'CLI-Flagged' : 'API-Flagged'
-                ), 1);
+                $this->statsIncrement($this->CalledFrom === 'Web' ? 'Web-Blocked' : ($this->CalledFrom === 'CLI' ? 'CLI-Flagged' : 'API-Flagged'), 1);
             }
 
             /** Exit data handler. */
@@ -906,10 +922,8 @@ class Scanner
         }
 
         /** Indicates whether we need to decode the contents of the scan target. */
-        $decode_or_not = ((
-            $this->Loader->Configuration['files']['decode_threshold'] > 0 &&
-            $StringLength > $this->Loader->readBytes($this->Loader->Configuration['files']['decode_threshold'])
-        ) || $StringLength < 16) ? 0 : 1;
+        $decode_or_not = (($this->Loader->Configuration['files']['decode_threshold'] > 0 &&
+                $StringLength > $this->Loader->readBytes($this->Loader->Configuration['files']['decode_threshold'])) || $StringLength < 16) ? 0 : 1;
 
         /** These are sometimes used by the "CoEx" ("complex extended") signatures. */
         $len_kb = ($StringLength > 1024) ? 1 : 0;
@@ -922,14 +936,14 @@ class Scanner
 
         /** CoEx flags for configuration directives related to signatures. */
         foreach ([
-            'detect_adware',
-            'detect_joke_hoax',
-            'detect_pua_pup',
-            'detect_packer_packed',
-            'detect_shell',
-            'detect_deface',
-            'detect_encryption'
-        ] as $Flag) {
+                     'detect_adware',
+                     'detect_joke_hoax',
+                     'detect_pua_pup',
+                     'detect_packer_packed',
+                     'detect_shell',
+                     'detect_deface',
+                     'detect_encryption'
+                 ] as $Flag) {
             $$Flag = $this->Loader->Configuration['signatures'][$Flag] ? 1 : 0;
         }
 
@@ -969,25 +983,26 @@ class Scanner
 
         /** Look for potential HTML indicators. */
         $is_html = (strpos(
-            ',asp*,dht*,eml*,hta*,htm*,jsp*,php*,sht*,',
-            ',' . $xts . ','
-        ) !== false || preg_match(
-            '/3c(?:21646f6374797065|6(?:120|26f6479|8656164|8746d6c|96672616d65|96d67|f626a656374)|7(?:36372697074|461626c65|469746c65))/i',
-            $str_hex_norm
-        ) || preg_match(
-            '/(?:6(?:26f6479|8656164|8746d6c)|7(?:36372697074|461626c65|469746c65))3e/i',
-            $str_hex_norm
-        ));
+                ',asp*,dht*,eml*,hta*,htm*,jsp*,php*,sht*,',
+                ',' . $xts . ','
+            ) !== false || preg_match(
+                '/3c(?:21646f6374797065|6(?:120|26f6479|8656164|8746d6c|96672616d65|96d67|f626a656374)|7(?:36372697074|461626c65|469746c65))/i',
+                $str_hex_norm
+            ) || preg_match(
+                '/(?:6(?:26f6479|8656164|8746d6c)|7(?:36372697074|461626c65|469746c65))3e/i',
+                $str_hex_norm
+            ));
 
         /** Look for potential email indicators. */
         $is_email = (strpos(
-            ',htm*,ema*,eml*,',
-            ',' . $xts . ','
-        ) !== false || preg_match(
-            '/0a(?:4(?:36f6e74656e742d54797065|4617465|6726f6d|d6573736167652d4944|d4' .
-            '94d452d56657273696f6e)|5(?:265706c792d546f|2657475726e2d50617468|3656e64' .
-            '6572|375626a656374|46f|82d4d61696c6572))3a20/i',
-        $str_hex) || preg_match('/0a2d2d.{32}(?:2d2d)?(?:0d)?0a/i', $str_hex));
+                ',htm*,ema*,eml*,',
+                ',' . $xts . ','
+            ) !== false || preg_match(
+                '/0a(?:4(?:36f6e74656e742d54797065|4617465|6726f6d|d6573736167652d4944|d4' .
+                '94d452d56657273696f6e)|5(?:265706c792d546f|2657475726e2d50617468|3656e64' .
+                '6572|375626a656374|46f|82d4d61696c6572))3a20/i',
+                $str_hex
+            ) || preg_match('/0a2d2d.{32}(?:2d2d)?(?:0d)?0a/i', $str_hex));
 
         /** Look for potential Mach-O indicators. */
         $is_macho = preg_match('/^(?:cafe(?:babe|d00d)|c[ef]faedfe|feedfac[ef])$/', $fourcc);
@@ -996,10 +1011,8 @@ class Scanner
         $is_pdf = ($pdf_magic || $xt === 'pdf');
 
         /** Look for potential Shockwave/SWF indicators. */
-        $is_swf = (
-            strpos(',435753,465753,5a5753,', ',' . substr($str_hex, 0, 6) . ',') !== false ||
-            strpos(',swf,swt,', ',' . $xt . ',') !== false
-        );
+        $is_swf = (strpos(',435753,465753,5a5753,', ',' . substr($str_hex, 0, 6) . ',') !== false ||
+            strpos(',swf,swt,', ',' . $xt . ',') !== false);
 
         /** "Infectable"? Used by ClamAV General and ClamAV ASCII signatures. */
         $infectable = true;
@@ -1008,10 +1021,8 @@ class Scanner
         $asciiable = (bool)$str_hex_norm_len;
 
         /** Used to identify whether to check against OLE signatures. */
-        $is_ole = !empty($this->Loader->InstanceCache['file_is_ole']) && (
-            !empty($this->Loader->InstanceCache['file_is_macro']) ||
-            strpos(',bin,ole,xml,rels,', ',' . $xt . ',') !== false
-        );
+        $is_ole = !empty($this->Loader->InstanceCache['file_is_ole']) && (!empty($this->Loader->InstanceCache['file_is_macro']) ||
+                strpos(',bin,ole,xml,rels,', ',' . $xt . ',') !== false);
 
         /** Worked by the switch file. */
         $fileswitch = 'unassigned';
@@ -1041,7 +1052,7 @@ class Scanner
                     if (!isset($Fragment[1]) || substr($Fragment[1], 0, 1) !== '$') {
                         continue 2;
                     }
-                    $lv_haystack = substr($Fragment[1],1);
+                    $lv_haystack = substr($Fragment[1], 1);
                     if (!isset($$lv_haystack) || is_array($$lv_haystack)) {
                         continue 2;
                     }
@@ -1061,75 +1072,41 @@ class Scanner
                     if (isset($Fragment[3])) {
                         if ($Fragment[2] === 'A') {
                             if (
-                                strpos(',FD,FD-RX,FD-NORM,FD-NORM-RX,', ',' . $Fragment[0] . ',') === false || (
-                                    $Fragment[0] === 'FD' &&
-                                    strpos("\x01" . substr($str_hex, 0, $Fragment[3] * 2), "\x01" . $Fragment[1]) === false
-                                ) || (
-                                    $Fragment[0] === 'FD-RX' &&
-                                    !preg_match('/\A(?:' . $Fragment[1] . ')/i', substr($str_hex, 0, $Fragment[3] * 2))
-                                ) || (
-                                    $Fragment[0] === 'FD-NORM' &&
-                                    strpos("\x01" . substr($str_hex_norm, 0, $Fragment[3] * 2), "\x01" . $Fragment[1]) === false
-                                ) || (
-                                    $Fragment[0] === 'FD-NORM-RX' &&
-                                    !preg_match('/\A(?:' . $Fragment[1] . ')/i', substr($str_hex_norm, 0, $Fragment[3] * 2))
-                                )
+                                strpos(',FD,FD-RX,FD-NORM,FD-NORM-RX,', ',' . $Fragment[0] . ',') === false || ($Fragment[0] === 'FD' &&
+                                    strpos("\x01" . substr($str_hex, 0, $Fragment[3] * 2), "\x01" . $Fragment[1]) === false) || ($Fragment[0] === 'FD-RX' &&
+                                    !preg_match('/\A(?:' . $Fragment[1] . ')/i', substr($str_hex, 0, $Fragment[3] * 2))) || ($Fragment[0] === 'FD-NORM' &&
+                                    strpos("\x01" . substr($str_hex_norm, 0, $Fragment[3] * 2), "\x01" . $Fragment[1]) === false) || ($Fragment[0] === 'FD-NORM-RX' &&
+                                    !preg_match('/\A(?:' . $Fragment[1] . ')/i', substr($str_hex_norm, 0, $Fragment[3] * 2)))
                             ) {
                                 continue 2;
                             }
                         } elseif (
-                            strpos(',FD,FD-RX,FD-NORM,FD-NORM-RX,', ',' . $Fragment[0] . ',') === false || (
-                                $Fragment[0] === 'FD' &&
-                                strpos(substr($str_hex, $Fragment[2] * 2, $Fragment[3] * 2), $Fragment[1]) === false
-                            ) || (
-                                $Fragment[0] === 'FD-RX' &&
-                                !preg_match('/(?:' . $Fragment[1] . ')/i', substr($str_hex, $Fragment[2] * 2, $Fragment[3]*2))
-                            ) || (
-                                $Fragment[0] === 'FD-NORM' &&
-                                strpos(substr($str_hex_norm, $Fragment[2] * 2, $Fragment[3] * 2), $Fragment[1]) === false
-                            ) || (
-                                $Fragment[0] === 'FD-NORM-RX' &&
-                                !preg_match('/(?:' . $Fragment[1] . ')/i', substr($str_hex_norm, $Fragment[2] * 2, $Fragment[3]*2))
-                            )
+                            strpos(',FD,FD-RX,FD-NORM,FD-NORM-RX,', ',' . $Fragment[0] . ',') === false || ($Fragment[0] === 'FD' &&
+                                strpos(substr($str_hex, $Fragment[2] * 2, $Fragment[3] * 2), $Fragment[1]) === false) || ($Fragment[0] === 'FD-RX' &&
+                                !preg_match('/(?:' . $Fragment[1] . ')/i', substr($str_hex, $Fragment[2] * 2, $Fragment[3] * 2))) || ($Fragment[0] === 'FD-NORM' &&
+                                strpos(substr($str_hex_norm, $Fragment[2] * 2, $Fragment[3] * 2), $Fragment[1]) === false) || ($Fragment[0] === 'FD-NORM-RX' &&
+                                !preg_match('/(?:' . $Fragment[1] . ')/i', substr($str_hex_norm, $Fragment[2] * 2, $Fragment[3] * 2)))
                         ) {
                             continue 2;
                         }
                     } else {
                         if ($Fragment[2] === 'A') {
                             if (
-                                strpos(',FN,FD,FD-RX,FD-NORM,FD-NORM-RX,', ',' . $Fragment[0] . ',') === false || (
-                                    $Fragment[0] === 'FN' &&
-                                    !preg_match('/\A(?:' . $Fragment[1] . ')/i', $OriginalFilename)
-                                ) || (
-                                    $Fragment[0] === 'FD' &&
-                                    strpos("\x01" . $str_hex, "\x01" . $Fragment[1]) === false
-                                ) || (
-                                    $Fragment[0] === 'FD-RX' &&
-                                    !preg_match('/\A(?:' . $Fragment[1] . ')/i', $str_hex)
-                                ) || (
-                                    $Fragment[0] === 'FD-NORM' &&
-                                    strpos("\x01" . $str_hex_norm, "\x01" . $Fragment[1]) === false
-                                ) || (
-                                    $Fragment[0] === 'FD-NORM-RX' &&
-                                    !preg_match('/\A(?:' . $Fragment[1] . ')/i', $str_hex_norm)
-                                )
+                                strpos(',FN,FD,FD-RX,FD-NORM,FD-NORM-RX,', ',' . $Fragment[0] . ',') === false || ($Fragment[0] === 'FN' &&
+                                    !preg_match('/\A(?:' . $Fragment[1] . ')/i', $OriginalFilename)) || ($Fragment[0] === 'FD' &&
+                                    strpos("\x01" . $str_hex, "\x01" . $Fragment[1]) === false) || ($Fragment[0] === 'FD-RX' &&
+                                    !preg_match('/\A(?:' . $Fragment[1] . ')/i', $str_hex)) || ($Fragment[0] === 'FD-NORM' &&
+                                    strpos("\x01" . $str_hex_norm, "\x01" . $Fragment[1]) === false) || ($Fragment[0] === 'FD-NORM-RX' &&
+                                    !preg_match('/\A(?:' . $Fragment[1] . ')/i', $str_hex_norm))
                             ) {
                                 continue 2;
                             }
                         } elseif (
-                            strpos(',FD,FD-RX,FD-NORM,FD-NORM-RX,', ',' . $Fragment[0] . ',') === false || (
-                                $Fragment[0] === 'FD' &&
-                                strpos(substr($str_hex, $Fragment[2] * 2), $Fragment[1]) === false
-                            ) || (
-                                $Fragment[0] === 'FD-RX' &&
-                                !preg_match('/(?:' . $Fragment[1] . ')/i', substr($str_hex, $Fragment[2] * 2))
-                            ) || (
-                                $Fragment[0] === 'FD-NORM' &&
-                                strpos(substr($str_hex_norm, $Fragment[2] * 2), $Fragment[1]) === false
-                            ) || (
-                                $Fragment[0] === 'FD-NORM-RX' &&
-                                !preg_match('/(?:' . $Fragment[1] . ')/i', substr($str_hex_norm, $Fragment[2] * 2))
-                            )
+                            strpos(',FD,FD-RX,FD-NORM,FD-NORM-RX,', ',' . $Fragment[0] . ',') === false || ($Fragment[0] === 'FD' &&
+                                strpos(substr($str_hex, $Fragment[2] * 2), $Fragment[1]) === false) || ($Fragment[0] === 'FD-RX' &&
+                                !preg_match('/(?:' . $Fragment[1] . ')/i', substr($str_hex, $Fragment[2] * 2))) || ($Fragment[0] === 'FD-NORM' &&
+                                strpos(substr($str_hex_norm, $Fragment[2] * 2), $Fragment[1]) === false) || ($Fragment[0] === 'FD-NORM-RX' &&
+                                !preg_match('/(?:' . $Fragment[1] . ')/i', substr($str_hex_norm, $Fragment[2] * 2)))
                         ) {
                             continue 2;
                         }
@@ -1210,7 +1187,7 @@ class Scanner
                         break;
                     }
                     $PEArr['Magic'] = substr($str, $PEArr['Offset'], 2);
-                    if ($PEArr['Magic']!=='PE') {
+                    if ($PEArr['Magic'] !== 'PE') {
                         $PEArr['DoScan'] = false;
                         break;
                     }
@@ -1237,9 +1214,9 @@ class Scanner
                         $heur['detections']++;
                         $this->Loader->InstanceCache['detections_count']++;
                         $Out .= $lnap . sprintf(
-                            $this->Loader->L10N->getString('_exclamation_final'),
-                            $this->Loader->L10N->getString('corrupted')
-                        ) . "\n";
+                                $this->Loader->L10N->getString('_exclamation_final'),
+                                $this->Loader->L10N->getString('corrupted')
+                            ) . "\n";
                         $this->Loader->WhyFlagged .= sprintf(
                             $this->Loader->L10N->getString('_exclamation'),
                             $this->Loader->L10N->getString('corrupted') . ' (' . $OriginalFilenameSafe . ')'
@@ -1270,7 +1247,7 @@ class Scanner
                         $PointerToRawData = $PointerToRawData[1];
                         $PEArr['SectionArr'][$PEArr['k']]['SectionData'] = substr($str, $PointerToRawData, $SizeOfRawData);
                         $SectionOffsets[$PEArr['k']] = [$PointerToRawData, $SizeOfRawData];
-                        foreach(['md5', 'sha1', 'sha256'] as $TryHash) {
+                        foreach (['md5', 'sha1', 'sha256'] as $TryHash) {
                             $PEArr['SectionArr'][$PEArr['k']][$TryHash] = hash($TryHash, $PEArr['SectionArr'][$PEArr['k']]['SectionData']);
                         }
                         $this->Loader->PEData .=
@@ -1295,21 +1272,19 @@ class Scanner
                         $PEArr['Parts'] = $this->Loader->substrAfterLast($str, "V\x00a\x00r\x00F\x00i\x00l\x00e\x00I\x00n\x00f\x00o\x00\x00\x00\x00\x00\x24");
                         $PEArr['FINFO'] = [];
                         foreach ([
-                            ["F\x00i\x00l\x00e\x00D\x00e\x00s\x00c\x00r\x00i\x00p\x00t\x00i\x00o\x00n\x00\x00\x00", 'PEFileDescription'],
-                            ["F\x00i\x00l\x00e\x00V\x00e\x00r\x00s\x00i\x00o\x00n\x00\x00\x00", 'PEFileVersion'],
-                            ["P\x00r\x00o\x00d\x00u\x00c\x00t\x00N\x00a\x00m\x00e\x00\x00\x00", 'PEProductName'],
-                            ["P\x00r\x00o\x00d\x00u\x00c\x00t\x00V\x00e\x00r\x00s\x00i\x00o\x00n\x00\x00\x00", 'PEProductVersion'],
-                            ["L\x00e\x00g\x00a\x00l\x00C\x00o\x00p\x00y\x00r\x00i\x00g\x00h\x00t\x00\x00\x00", 'PECopyright'],
-                            ["O\x00r\x00i\x00g\x00i\x00n\x00a\x00l\x00F\x00i\x00l\x00e\x00n\x00a\x00m\x00e\x00\x00\x00", 'PEOriginalFilename'],
-                            ["C\x00o\x00m\x00p\x00a\x00n\x00y\x00N\x00a\x00m\x00e\x00\x00\x00", 'PECompanyName'],
-                        ] as $PEVars) {
-                            if (strpos($PEArr['Parts'], $PEVars[0]) !== false && (
-                                ${$PEVars[1]} = trim(str_ireplace("\x00", '', $this->Loader->substrBeforeFirst(
+                                     ["F\x00i\x00l\x00e\x00D\x00e\x00s\x00c\x00r\x00i\x00p\x00t\x00i\x00o\x00n\x00\x00\x00", 'PEFileDescription'],
+                                     ["F\x00i\x00l\x00e\x00V\x00e\x00r\x00s\x00i\x00o\x00n\x00\x00\x00", 'PEFileVersion'],
+                                     ["P\x00r\x00o\x00d\x00u\x00c\x00t\x00N\x00a\x00m\x00e\x00\x00\x00", 'PEProductName'],
+                                     ["P\x00r\x00o\x00d\x00u\x00c\x00t\x00V\x00e\x00r\x00s\x00i\x00o\x00n\x00\x00\x00", 'PEProductVersion'],
+                                     ["L\x00e\x00g\x00a\x00l\x00C\x00o\x00p\x00y\x00r\x00i\x00g\x00h\x00t\x00\x00\x00", 'PECopyright'],
+                                     ["O\x00r\x00i\x00g\x00i\x00n\x00a\x00l\x00F\x00i\x00l\x00e\x00n\x00a\x00m\x00e\x00\x00\x00", 'PEOriginalFilename'],
+                                     ["C\x00o\x00m\x00p\x00a\x00n\x00y\x00N\x00a\x00m\x00e\x00\x00\x00", 'PECompanyName'],
+                                 ] as $PEVars) {
+                            if (strpos($PEArr['Parts'], $PEVars[0]) !== false && (${$PEVars[1]} = trim(str_ireplace("\x00", '', $this->Loader->substrBeforeFirst(
                                     $this->Loader->substrAfterLast($PEArr['Parts'], $PEVars[0]),
                                     "\x00\x00\x00"
-                                )))
-                            )) {
-                                foreach(['md5', 'sha1', 'sha256'] as $TryHash) {
+                                ))))) {
+                                foreach (['md5', 'sha1', 'sha256'] as $TryHash) {
                                     $PEArr['FINFO'][] = sprintf(
                                         '$%s:%s:%d:',
                                         $PEVars[1],
@@ -1330,13 +1305,11 @@ class Scanner
         $is_not_html = (!$is_html && ($is_macho || $is_elf || $is_pe));
 
         /** Look for potential indicators of not being PHP. */
-        $is_not_php = ((
-            strpos(',phar,', ',' . $xt . ',') === false &&
-            strpos(',php*,', ',' . $xts . ',') === false &&
-            strpos(',phar,', ',' . $gzxt . ',') === false &&
-            strpos(',php*,', ',' . $gzxts . ',') === false &&
-            strpos($str_hex_norm, '3c3f706870') === false
-        ) || $is_pe);
+        $is_not_php = ((strpos(',phar,', ',' . $xt . ',') === false &&
+                strpos(',php*,', ',' . $xts . ',') === false &&
+                strpos(',phar,', ',' . $gzxt . ',') === false &&
+                strpos(',php*,', ',' . $gzxts . ',') === false &&
+                strpos($str_hex_norm, '3c3f706870') === false) || $is_pe);
 
         /** Set debug values, if this has been enabled. */
         if (isset($this->debugArr)) {
@@ -1416,9 +1389,9 @@ class Scanner
                     $URLScanner['DomainParts'][$URLScanner['Iterable']] = $ThisURL;
                     if (strpos($URLScanner['DomainParts'][$URLScanner['Iterable']], '.') !== false) {
                         $URLScanner['TLDs'][$URLScanner['Iterable']] = 'TLD:' . $this->Loader->substrAfterLast(
-                            $URLScanner['DomainParts'][$URLScanner['Iterable']],
-                            '.'
-                        ) . ':';
+                                $URLScanner['DomainParts'][$URLScanner['Iterable']],
+                                '.'
+                            ) . ':';
                     }
                     $ThisURL = hash('md5', $ThisURL) . ':' . strlen($ThisURL) . ':';
                     $URLScanner['Domains'][$URLScanner['Iterable']] = 'DOMAIN:' . $ThisURL;
@@ -1484,13 +1457,13 @@ class Scanner
 
         /** Process non-mappable signatures. */
         foreach ([
-            ['General_Command_Detections', 0],
-            ['Hash', 1],
-            ['PE_Sectional', 2],
-            ['PE_Extended', 3],
-            ['URL_Scanner', 4],
-            ['Complex_Extended', 5]
-        ] as $ThisConf) {
+                     ['General_Command_Detections', 0],
+                     ['Hash', 1],
+                     ['PE_Sectional', 2],
+                     ['PE_Extended', 3],
+                     ['URL_Scanner', 4],
+                     ['Complex_Extended', 5]
+                 ] as $ThisConf) {
 
             /** Fire event: "beforeSigFiles". */
             $this->Loader->Events->fireEvent('beforeSigFiles');
@@ -1518,9 +1491,9 @@ class Scanner
                             $this->Loader->L10N->getString('scan_signature_file_missing') . ' (' . $SigFile . ')'
                         );
                         return [-3, $lnap . sprintf(
-                            $this->Loader->L10N->getString('_exclamation_final'),
-                            $this->Loader->L10N->getString('scan_signature_file_missing') . ' (' . $SigFile . ')'
-                        ) . "\n"];
+                                $this->Loader->L10N->getString('_exclamation_final'),
+                                $this->Loader->L10N->getString('scan_signature_file_missing') . ' (' . $SigFile . ')'
+                            ) . "\n"];
                     }
                 } elseif ($ThisConf[1] === 0) {
                     if (substr($this->Loader->InstanceCache[$SigFile], 0, 9) === 'phpMussel') {
@@ -1536,9 +1509,9 @@ class Scanner
                             $heur['detections']++;
                             $this->Loader->InstanceCache['detections_count']++;
                             $Out .= $lnap . sprintf(
-                                $this->Loader->L10N->getString('_exclamation'),
-                                $this->Loader->L10N->getString('scan_command_injection')
-                            ) . "\n";
+                                    $this->Loader->L10N->getString('_exclamation'),
+                                    $this->Loader->L10N->getString('scan_command_injection')
+                                ) . "\n";
                             $this->Loader->WhyFlagged .= sprintf(
                                 $this->Loader->L10N->getString('_exclamation'),
                                 $this->Loader->L10N->getString('scan_command_injection') . ', \'' . $this->Loader->hexSafe($ItemCSV) . '\' (' . $OriginalFilenameSafe . ')'
@@ -1618,11 +1591,11 @@ class Scanner
                         }
                     }
                     foreach ([
-                        $URLScanner['TLDs'],
-                        $URLScanner['Domains'],
-                        $URLScanner['URLs'],
-                        $URLScanner['Queries']
-                    ] as $URLScanner['ThisArr']) {
+                                 $URLScanner['TLDs'],
+                                 $URLScanner['Domains'],
+                                 $URLScanner['URLs'],
+                                 $URLScanner['Queries']
+                             ] as $URLScanner['ThisArr']) {
                         foreach ($URLScanner['ThisArr'] as $URLHash) {
                             if (substr_count($this->Loader->InstanceCache[$SigFile], $URLHash)) {
                                 $xSig = $this->Loader->substrAfterFirst($this->Loader->InstanceCache[$SigFile], $URLHash);
@@ -1642,44 +1615,42 @@ class Scanner
                 } elseif ($ThisConf[1] === 5) {
                     $SigName = '';
                     foreach ([
-                        'NumOfSections',
-                        'PECompanyName',
-                        'PECopyright',
-                        'PEFileDescription',
-                        'PEFileVersion',
-                        'PEOriginalFilename',
-                        'PEProductName',
-                        'PEProductVersion',
-                        'container',
-                        'crc32b',
-                        'fileswitch',
-                        'fourcc',
-                        'is_elf',
-                        'is_email',
-                        'is_graphics',
-                        'is_html',
-                        'is_macho',
-                        'is_not_html',
-                        'is_not_php',
-                        'is_ole',
-                        'is_pdf',
-                        'is_pe',
-                        'is_swf',
-                        'md5',
-                        'phase',
-                        'sha1',
-                        'sha256',
-                        'StringLength',
-                        'twocc',
-                        'xt',
-                        'xts'
-                    ] as $ThisCheckFor) {
+                                 'NumOfSections',
+                                 'PECompanyName',
+                                 'PECopyright',
+                                 'PEFileDescription',
+                                 'PEFileVersion',
+                                 'PEOriginalFilename',
+                                 'PEProductName',
+                                 'PEProductVersion',
+                                 'container',
+                                 'crc32b',
+                                 'fileswitch',
+                                 'fourcc',
+                                 'is_elf',
+                                 'is_email',
+                                 'is_graphics',
+                                 'is_html',
+                                 'is_macho',
+                                 'is_not_html',
+                                 'is_not_php',
+                                 'is_ole',
+                                 'is_pdf',
+                                 'is_pe',
+                                 'is_swf',
+                                 'md5',
+                                 'phase',
+                                 'sha1',
+                                 'sha256',
+                                 'StringLength',
+                                 'twocc',
+                                 'xt',
+                                 'xts'
+                             ] as $ThisCheckFor) {
                         if (!isset($$ThisCheckFor)) {
                             continue;
                         }
-                        $ThisCheckValue = "\n$" . $ThisCheckFor . ':' . (
-                            substr($ThisCheckFor, 0, 3) !== 'is_' ? $$ThisCheckFor : ($$ThisCheckFor ? '1' : '0')
-                        ) . ';';
+                        $ThisCheckValue = "\n$" . $ThisCheckFor . ':' . (substr($ThisCheckFor, 0, 3) !== 'is_' ? $$ThisCheckFor : ($$ThisCheckFor ? '1' : '0')) . ';';
                         if (strpos($this->Loader->InstanceCache[$SigFile], $ThisCheckValue) === false) {
                             continue;
                         }
@@ -1733,115 +1704,57 @@ class Scanner
                                     if (isset($ThisSigPart[2])) {
                                         if (isset($ThisSigPart[3])) {
                                             if ($ThisSigPart[2] === 'A') {
-                                                if (strpos(',FD,FD-RX,FD-NORM,FD-NORM-RX,META,', ',' . $ThisSigPart[0] . ',') === false || (
-                                                    $ThisSigPart[0] === 'FD' &&
-                                                    strpos("\x01" . substr($str_hex, 0, $ThisSigPart[3] * 2), "\x01" . $ThisSigPart[1]) === false
-                                                ) || (
-                                                    $ThisSigPart[0] === 'FD-RX' &&
-                                                    !preg_match('/\A(?:' . $ThisSigPart[1] . ')/i', substr($str_hex, 0, $ThisSigPart[3] * 2))
-                                                ) || (
-                                                    $ThisSigPart[0] === 'FD-NORM' &&
-                                                    strpos("\x01" . substr($str_hex_norm, 0, $ThisSigPart[3] * 2), "\x01" . $ThisSigPart[1]) === false
-                                                ) || (
-                                                    $ThisSigPart[0] === 'FD-NORM-RX' &&
-                                                    !preg_match('/\A(?:' . $ThisSigPart[1] . ')/i', substr($str_hex_norm, 0, $ThisSigPart[3] * 2))
-                                                ) || (
-                                                    $ThisSigPart[0] === 'META' &&
-                                                    !preg_match('/\A(?:' . $ThisSigPart[1] . ')/i', substr($CoExMeta, 0, $ThisSigPart[3] * 2))
-                                                )) {
+                                                if (strpos(',FD,FD-RX,FD-NORM,FD-NORM-RX,META,', ',' . $ThisSigPart[0] . ',') === false || ($ThisSigPart[0] === 'FD' &&
+                                                        strpos("\x01" . substr($str_hex, 0, $ThisSigPart[3] * 2), "\x01" . $ThisSigPart[1]) === false) || ($ThisSigPart[0] === 'FD-RX' &&
+                                                        !preg_match('/\A(?:' . $ThisSigPart[1] . ')/i', substr($str_hex, 0, $ThisSigPart[3] * 2))) || ($ThisSigPart[0] === 'FD-NORM' &&
+                                                        strpos("\x01" . substr($str_hex_norm, 0, $ThisSigPart[3] * 2), "\x01" . $ThisSigPart[1]) === false) || ($ThisSigPart[0] === 'FD-NORM-RX' &&
+                                                        !preg_match('/\A(?:' . $ThisSigPart[1] . ')/i', substr($str_hex_norm, 0, $ThisSigPart[3] * 2))) || ($ThisSigPart[0] === 'META' &&
+                                                        !preg_match('/\A(?:' . $ThisSigPart[1] . ')/i', substr($CoExMeta, 0, $ThisSigPart[3] * 2)))) {
                                                     continue 2;
                                                 }
                                                 continue;
                                             }
-                                            if (strpos(',FD,FD-RX,FD-NORM,FD-NORM-RX,META,', ',' . $ThisSigPart[0] . ',') === false || (
-                                                $ThisSigPart[0] === 'FD' &&
-                                                strpos(substr($str_hex, $ThisSigPart[2] * 2, $ThisSigPart[3] * 2), $ThisSigPart[1]) === false
-                                            ) || (
-                                                $ThisSigPart[0] === 'FD-RX' &&
-                                                !preg_match('/(?:' . $ThisSigPart[1] . ')/i', substr($str_hex, $ThisSigPart[2] * 2, $ThisSigPart[3] * 2))
-                                            ) || (
-                                                $ThisSigPart[0] === 'FD-NORM' &&
-                                                strpos(substr($str_hex_norm, $ThisSigPart[2] * 2, $ThisSigPart[3] * 2), $ThisSigPart[1]) === false
-                                            ) || (
-                                                $ThisSigPart[0] === 'FD-NORM-RX' &&
-                                                !preg_match('/(?:' . $ThisSigPart[1] . ')/i', substr($str_hex_norm, $ThisSigPart[2] * 2, $ThisSigPart[3] * 2))
-                                            ) || (
-                                                $ThisSigPart[0] === 'META' &&
-                                                !preg_match('/(?:' . $ThisSigPart[1] . ')/i', substr($CoExMeta, $ThisSigPart[2] * 2, $ThisSigPart[3] * 2))
-                                            )) {
+                                            if (strpos(',FD,FD-RX,FD-NORM,FD-NORM-RX,META,', ',' . $ThisSigPart[0] . ',') === false || ($ThisSigPart[0] === 'FD' &&
+                                                    strpos(substr($str_hex, $ThisSigPart[2] * 2, $ThisSigPart[3] * 2), $ThisSigPart[1]) === false) || ($ThisSigPart[0] === 'FD-RX' &&
+                                                    !preg_match('/(?:' . $ThisSigPart[1] . ')/i', substr($str_hex, $ThisSigPart[2] * 2, $ThisSigPart[3] * 2))) || ($ThisSigPart[0] === 'FD-NORM' &&
+                                                    strpos(substr($str_hex_norm, $ThisSigPart[2] * 2, $ThisSigPart[3] * 2), $ThisSigPart[1]) === false) || ($ThisSigPart[0] === 'FD-NORM-RX' &&
+                                                    !preg_match('/(?:' . $ThisSigPart[1] . ')/i', substr($str_hex_norm, $ThisSigPart[2] * 2, $ThisSigPart[3] * 2))) || ($ThisSigPart[0] === 'META' &&
+                                                    !preg_match('/(?:' . $ThisSigPart[1] . ')/i', substr($CoExMeta, $ThisSigPart[2] * 2, $ThisSigPart[3] * 2)))) {
                                                 continue 2;
                                             }
                                             continue;
                                         }
                                         if ($ThisSigPart[2] === 'A') {
-                                            if (strpos(',FN,FD,FD-RX,FD-NORM,FD-NORM-RX,META,', ',' . $ThisSigPart[0] . ',') === false || (
-                                                $ThisSigPart[0] === 'FN' &&
-                                                !preg_match('/\A(?:' . $ThisSigPart[1] . ')/i', $OriginalFilename)
-                                            ) || (
-                                                $ThisSigPart[0] === 'FD' &&
-                                                strpos("\x01" . $str_hex, "\x01" . $ThisSigPart[1]) === false
-                                            ) || (
-                                                $ThisSigPart[0] === 'FD-RX' &&
-                                                !preg_match('/\A(?:' . $ThisSigPart[1] . ')/i', $str_hex)
-                                            ) || (
-                                                $ThisSigPart[0] === 'FD-NORM' &&
-                                                strpos("\x01" . $str_hex_norm, "\x01" . $ThisSigPart[1]) === false
-                                            ) || (
-                                                $ThisSigPart[0] === 'FD-NORM-RX' &&
-                                                !preg_match('/\A(?:' . $ThisSigPart[1] . ')/i', $str_hex_norm)
-                                            ) || (
-                                                $ThisSigPart[0] === 'META' &&
-                                                !preg_match('/\A(?:' . $ThisSigPart[1] . ')/i', $CoExMeta)
-                                            )) {
+                                            if (strpos(',FN,FD,FD-RX,FD-NORM,FD-NORM-RX,META,', ',' . $ThisSigPart[0] . ',') === false || ($ThisSigPart[0] === 'FN' &&
+                                                    !preg_match('/\A(?:' . $ThisSigPart[1] . ')/i', $OriginalFilename)) || ($ThisSigPart[0] === 'FD' &&
+                                                    strpos("\x01" . $str_hex, "\x01" . $ThisSigPart[1]) === false) || ($ThisSigPart[0] === 'FD-RX' &&
+                                                    !preg_match('/\A(?:' . $ThisSigPart[1] . ')/i', $str_hex)) || ($ThisSigPart[0] === 'FD-NORM' &&
+                                                    strpos("\x01" . $str_hex_norm, "\x01" . $ThisSigPart[1]) === false) || ($ThisSigPart[0] === 'FD-NORM-RX' &&
+                                                    !preg_match('/\A(?:' . $ThisSigPart[1] . ')/i', $str_hex_norm)) || ($ThisSigPart[0] === 'META' &&
+                                                    !preg_match('/\A(?:' . $ThisSigPart[1] . ')/i', $CoExMeta))) {
                                                 continue 2;
                                             }
                                             continue;
                                         }
-                                        if (strpos(',FD,FD-RX,FD-NORM,FD-NORM-RX,META,', ',' . $ThisSigPart[0] . ',') === false || (
-                                            $ThisSigPart[0] === 'FD' &&
-                                            strpos(substr($str_hex, $ThisSigPart[2] * 2), $ThisSigPart[1]) === false
-                                        ) || (
-                                            $ThisSigPart[0] === 'FD-RX' &&
-                                            !preg_match('/(?:' . $ThisSigPart[1] . ')/i', substr($str_hex, $ThisSigPart[2] * 2))
-                                        ) || (
-                                            $ThisSigPart[0] === 'FD-NORM' &&
-                                            strpos(substr($str_hex_norm, $ThisSigPart[2] * 2), $ThisSigPart[1]) === false
-                                        ) || (
-                                            $ThisSigPart[0] === 'FD-NORM-RX' &&
-                                            !preg_match('/(?:' . $ThisSigPart[1] . ')/i', substr($str_hex_norm, $ThisSigPart[2] * 2))
-                                        ) || (
-                                            $ThisSigPart[0] === 'META' &&
-                                            !preg_match('/(?:' . $ThisSigPart[1] . ')/i', substr($CoExMeta, $ThisSigPart[2] * 2))
-                                        )) {
+                                        if (strpos(',FD,FD-RX,FD-NORM,FD-NORM-RX,META,', ',' . $ThisSigPart[0] . ',') === false || ($ThisSigPart[0] === 'FD' &&
+                                                strpos(substr($str_hex, $ThisSigPart[2] * 2), $ThisSigPart[1]) === false) || ($ThisSigPart[0] === 'FD-RX' &&
+                                                !preg_match('/(?:' . $ThisSigPart[1] . ')/i', substr($str_hex, $ThisSigPart[2] * 2))) || ($ThisSigPart[0] === 'FD-NORM' &&
+                                                strpos(substr($str_hex_norm, $ThisSigPart[2] * 2), $ThisSigPart[1]) === false) || ($ThisSigPart[0] === 'FD-NORM-RX' &&
+                                                !preg_match('/(?:' . $ThisSigPart[1] . ')/i', substr($str_hex_norm, $ThisSigPart[2] * 2))) || ($ThisSigPart[0] === 'META' &&
+                                                !preg_match('/(?:' . $ThisSigPart[1] . ')/i', substr($CoExMeta, $ThisSigPart[2] * 2)))) {
                                             continue 2;
                                         }
                                         continue;
                                     }
-                                    if ((
-                                        $ThisSigPart[0] === 'FN' &&
-                                        !preg_match('/(?:' . $ThisSigPart[1] . ')/i', $OriginalFilename)
-                                    ) || (
-                                        $ThisSigPart[0] === 'FS-MIN' &&
-                                        $StringLength < $ThisSigPart[1]
-                                    ) || (
-                                        $ThisSigPart[0] === 'FS-MAX' &&
-                                        $StringLength > $ThisSigPart[1]
-                                    ) || (
-                                        $ThisSigPart[0] === 'FD' &&
-                                        strpos($str_hex, $ThisSigPart[1]) === false
-                                    ) || (
-                                        $ThisSigPart[0] === 'FD-RX' &&
-                                        !preg_match('/(?:' . $ThisSigPart[1] . ')/i', $str_hex)
-                                    ) || (
-                                        $ThisSigPart[0] === 'FD-NORM' &&
-                                        strpos($str_hex_norm, $ThisSigPart[1]) === false
-                                    ) || (
-                                        $ThisSigPart[0] === 'FD-NORM-RX' &&
-                                        !preg_match('/(?:' . $ThisSigPart[1] . ')/i', $str_hex_norm)
-                                    ) || (
-                                        $ThisSigPart[0] === 'META' &&
-                                        !preg_match('/(?:' . $ThisSigPart[1] . ')/i', $CoExMeta)
-                                    )) {
+                                    if (($ThisSigPart[0] === 'FN' &&
+                                            !preg_match('/(?:' . $ThisSigPart[1] . ')/i', $OriginalFilename)) || ($ThisSigPart[0] === 'FS-MIN' &&
+                                            $StringLength < $ThisSigPart[1]) || ($ThisSigPart[0] === 'FS-MAX' &&
+                                            $StringLength > $ThisSigPart[1]) || ($ThisSigPart[0] === 'FD' &&
+                                            strpos($str_hex, $ThisSigPart[1]) === false) || ($ThisSigPart[0] === 'FD-RX' &&
+                                            !preg_match('/(?:' . $ThisSigPart[1] . ')/i', $str_hex)) || ($ThisSigPart[0] === 'FD-NORM' &&
+                                            strpos($str_hex_norm, $ThisSigPart[1]) === false) || ($ThisSigPart[0] === 'FD-NORM-RX' &&
+                                            !preg_match('/(?:' . $ThisSigPart[1] . ')/i', $str_hex_norm)) || ($ThisSigPart[0] === 'META' &&
+                                            !preg_match('/(?:' . $ThisSigPart[1] . ')/i', $CoExMeta))) {
                                         continue 2;
                                     }
                                     if (substr($ThisSigPart[0], 0, 1) === '$') {
@@ -1881,14 +1794,14 @@ class Scanner
 
         /** Process mappable signatures. */
         foreach ([
-            ['Filename', 'str_hex', 'str_hex_len', 2],
-            ['Standard', 'str_hex', 'str_hex_len', 0],
-            ['Normalised', 'str_hex_norm', 'str_hex_norm_len', 0],
-            ['HTML', 'str_hex_html', 'str_hex_html_len', 0],
-            ['Standard_RegEx', 'str_hex', 'str_hex_len', 1],
-            ['Normalised_RegEx', 'str_hex_norm', 'str_hex_norm_len', 1],
-            ['HTML_RegEx', 'str_hex_html', 'str_hex_html_len', 1]
-        ] as $ThisConf) {
+                     ['Filename', 'str_hex', 'str_hex_len', 2],
+                     ['Standard', 'str_hex', 'str_hex_len', 0],
+                     ['Normalised', 'str_hex_norm', 'str_hex_norm_len', 0],
+                     ['HTML', 'str_hex_html', 'str_hex_html_len', 0],
+                     ['Standard_RegEx', 'str_hex', 'str_hex_len', 1],
+                     ['Normalised_RegEx', 'str_hex_norm', 'str_hex_norm_len', 1],
+                     ['HTML_RegEx', 'str_hex_html', 'str_hex_html_len', 1]
+                 ] as $ThisConf) {
             $DataSource = $ThisConf[1];
             $DataSourceLen = $ThisConf[2];
 
@@ -1918,9 +1831,9 @@ class Scanner
                             $this->Loader->L10N->getString('scan_signature_file_missing') . ' (' . $SigFile . ')'
                         );
                         return [-3, $lnap . sprintf(
-                            $this->Loader->L10N->getString('_exclamation_final'),
-                            $this->Loader->L10N->getString('scan_signature_file_missing') . ' (' . $SigFile . ')'
-                        ) . "\n"];
+                                $this->Loader->L10N->getString('_exclamation_final'),
+                                $this->Loader->L10N->getString('scan_signature_file_missing') . ' (' . $SigFile . ')'
+                            ) . "\n"];
                     }
                     continue;
                 }
@@ -2024,9 +1937,7 @@ class Scanner
                                 }
                             }
                         } elseif ($ThisConf[3] === 0 || $ThisConf[3] === 1) {
-                            $ThisSig = preg_split((
-                                $ThisConf[3] === 0 ? '/[^\da-f>]+/i' : '/[\x00-\x1f]+/'
-                            ), $VN[1], -1, PREG_SPLIT_NO_EMPTY);
+                            $ThisSig = preg_split(($ThisConf[3] === 0 ? '/[^\da-f>]+/i' : '/[\x00-\x1f]+/'), $VN[1], -1, PREG_SPLIT_NO_EMPTY);
                             $ThisSig = ($ThisSig === false ? '' : implode('', $ThisSig));
                             $ThisSigLen = strlen($ThisSig);
                             if ($this->confineLength($ThisSigLen)) {
@@ -2036,11 +1947,7 @@ class Scanner
                             $xstrt = $VN[3] ?? '*';
                             $VN = $this->getShorthand($VN[0]);
                             $VNLC = strtolower($VN);
-                            if (($is_not_php && (
-                                    strpos($VNLC, '-php') !== false || strpos($VNLC, '.php') !== false
-                            )) || ($is_not_html && (
-                                    strpos($VNLC, '-htm') !== false || strpos($VNLC, '.htm') !== false
-                            )) || $$DataSourceLen < $ThisSigLen) {
+                            if (($is_not_php && (strpos($VNLC, '-php') !== false || strpos($VNLC, '.php') !== false)) || ($is_not_html && (strpos($VNLC, '-htm') !== false || strpos($VNLC, '.htm') !== false)) || $$DataSourceLen < $ThisSigLen) {
                                 continue;
                             }
                             if (
@@ -2134,9 +2041,9 @@ class Scanner
                                 $Flagged = true;
                             }
                             $Out .= $lnap . sprintf(
-                                $this->Loader->L10N->getString('_exclamation_final'),
-                                $this->Loader->L10N->getString('too_many_urls')
-                            ) . "\n";
+                                    $this->Loader->L10N->getString('_exclamation_final'),
+                                    $this->Loader->L10N->getString('too_many_urls')
+                                ) . "\n";
                             $this->Loader->WhyFlagged .= sprintf(
                                 $this->Loader->L10N->getString('_exclamation'),
                                 $this->Loader->L10N->getString('too_many_urls') . ' (' . $OriginalFilenameSafe . ')'
@@ -2192,9 +2099,7 @@ class Scanner
 
             /** Codeblock for performing Google Safe Browsing API lookups. */
             if ($this->Loader->Configuration['urlscanner']['google_api_key'] && $URLScanner['URLsCount']) {
-                $URLScanner['URLsChunked'] = (
-                    $URLScanner['URLsCount'] > 500
-                ) ? array_chunk($URLScanner['URLParts'], 500) : [$URLScanner['URLParts']];
+                $URLScanner['URLsChunked'] = ($URLScanner['URLsCount'] > 500) ? array_chunk($URLScanner['URLParts'], 500) : [$URLScanner['URLParts']];
                 $URLScanner['URLChunks'] = count($URLScanner['URLsChunked']);
                 for ($i = 0; $i < $URLScanner['URLChunks']; $i++) {
 
@@ -2209,9 +2114,9 @@ class Scanner
                                 $Flagged = true;
                             }
                             $Out .= $lnap . sprintf(
-                                $this->Loader->L10N->getString('_exclamation_final'),
-                                $this->Loader->L10N->getString('too_many_urls')
-                            ) . "\n";
+                                    $this->Loader->L10N->getString('_exclamation_final'),
+                                    $this->Loader->L10N->getString('too_many_urls')
+                                ) . "\n";
                             $this->Loader->WhyFlagged .= sprintf(
                                 $this->Loader->L10N->getString('_exclamation'),
                                 $this->Loader->L10N->getString('too_many_urls') . ' (' . $OriginalFilenameSafe . ')'
@@ -2237,9 +2142,9 @@ class Scanner
                             'SafeBrowseLookup_' . $URLScanner['SafeBrowseLookup']
                         ) ?: $this->Loader->L10N->getString('SafeBrowseLookup_999');
                         $Out .= $lnap . sprintf(
-                            $this->Loader->L10N->getString('_exclamation_final'),
-                            $URLScanner['L10N']
-                        ) . "\n";
+                                $this->Loader->L10N->getString('_exclamation_final'),
+                                $URLScanner['L10N']
+                            ) . "\n";
                         $this->Loader->WhyFlagged .= sprintf(
                             $this->Loader->L10N->getString('_exclamation'),
                             $URLScanner['L10N'] . ' (' . $OriginalFilenameSafe . ')'
@@ -2266,9 +2171,9 @@ class Scanner
         /** PHP chameleon attack detection. */
         if ($this->Loader->Configuration['files']['chameleon_from_php']) {
             if ($this->containsMustAssert([
-                $this->Loader->Configuration['files']['can_contain_php_file_extensions'],
-                $this->Loader->Configuration['files']['archive_file_extensions']
-            ], [$xts, $gzxts, $xt, $gzxt]) && strpos($str_hex_norm, '3c3f706870') !== false) {
+                    $this->Loader->Configuration['files']['can_contain_php_file_extensions'],
+                    $this->Loader->Configuration['files']['archive_file_extensions']
+                ], [$xts, $gzxts, $xt, $gzxt]) && strpos($str_hex_norm, '3c3f706870') !== false) {
                 if (!$Flagged) {
                     $this->Loader->HashReference .= $sha256 . ':' . $StringLength . ':' . $OriginalFilename . "\n";
                     $Flagged = true;
@@ -2276,9 +2181,9 @@ class Scanner
                 $heur['detections']++;
                 $this->Loader->InstanceCache['detections_count']++;
                 $Out .= $lnap . sprintf(
-                    $this->Loader->L10N->getString('_exclamation_final'),
-                    sprintf($this->Loader->L10N->getString('scan_chameleon'), 'PHP')
-                ) . "\n";
+                        $this->Loader->L10N->getString('_exclamation_final'),
+                        sprintf($this->Loader->L10N->getString('scan_chameleon'), 'PHP')
+                    ) . "\n";
                 $this->Loader->WhyFlagged .= sprintf(
                     $this->Loader->L10N->getString('_exclamation'),
                     sprintf($this->Loader->L10N->getString('scan_chameleon'), 'PHP') . ' (' . $OriginalFilenameSafe . ')'
@@ -2321,9 +2226,9 @@ class Scanner
                 $heur['detections']++;
                 $this->Loader->InstanceCache['detections_count']++;
                 $Out .= $lnap . sprintf(
-                    $this->Loader->L10N->getString('_exclamation_final'),
-                    sprintf($this->Loader->L10N->getString('scan_chameleon'), $Chameleon)
-                ) . "\n";
+                        $this->Loader->L10N->getString('_exclamation_final'),
+                        sprintf($this->Loader->L10N->getString('scan_chameleon'), $Chameleon)
+                    ) . "\n";
                 $this->Loader->WhyFlagged .= sprintf(
                     $this->Loader->L10N->getString('_exclamation'),
                     sprintf($this->Loader->L10N->getString('scan_chameleon'), $Chameleon) . ' (' . $OriginalFilenameSafe . ')'
@@ -2351,9 +2256,9 @@ class Scanner
                 $heur['detections']++;
                 $this->Loader->InstanceCache['detections_count']++;
                 $Out .= $lnap . sprintf(
-                    $this->Loader->L10N->getString('_exclamation_final'),
-                    sprintf($this->Loader->L10N->getString('scan_chameleon'), $Chameleon)
-                ) . "\n";
+                        $this->Loader->L10N->getString('_exclamation_final'),
+                        sprintf($this->Loader->L10N->getString('scan_chameleon'), $Chameleon)
+                    ) . "\n";
                 $this->Loader->WhyFlagged .= sprintf(
                     $this->Loader->L10N->getString('_exclamation'),
                     sprintf($this->Loader->L10N->getString('scan_chameleon'), $Chameleon) . ' (' . $OriginalFilenameSafe . ')'
@@ -2372,9 +2277,9 @@ class Scanner
                     $heur['detections']++;
                     $this->Loader->InstanceCache['detections_count']++;
                     $Out .= $lnap . sprintf(
-                        $this->Loader->L10N->getString('_exclamation_final'),
-                        sprintf($this->Loader->L10N->getString('scan_chameleon'), 'Office')
-                    ) . "\n";
+                            $this->Loader->L10N->getString('_exclamation_final'),
+                            sprintf($this->Loader->L10N->getString('scan_chameleon'), 'Office')
+                        ) . "\n";
                     $this->Loader->WhyFlagged .= sprintf(
                         $this->Loader->L10N->getString('_exclamation'),
                         sprintf($this->Loader->L10N->getString('scan_chameleon'), 'Office') . ' (' . $OriginalFilenameSafe . ')'
@@ -2403,9 +2308,9 @@ class Scanner
                 $heur['detections']++;
                 $this->Loader->InstanceCache['detections_count']++;
                 $Out .= $lnap . sprintf(
-                    $this->Loader->L10N->getString('_exclamation_final'),
-                    sprintf($this->Loader->L10N->getString('scan_chameleon'), $this->Loader->L10N->getString('image'))
-                ) . "\n";
+                        $this->Loader->L10N->getString('_exclamation_final'),
+                        sprintf($this->Loader->L10N->getString('scan_chameleon'), $this->Loader->L10N->getString('image'))
+                    ) . "\n";
                 $this->Loader->WhyFlagged .= sprintf(
                     $this->Loader->L10N->getString('_exclamation'),
                     sprintf($this->Loader->L10N->getString('scan_chameleon'), $this->Loader->L10N->getString('image')) . ' (' . $OriginalFilenameSafe . ')'
@@ -2423,9 +2328,9 @@ class Scanner
                 $heur['detections']++;
                 $this->Loader->InstanceCache['detections_count']++;
                 $Out .= $lnap . sprintf(
-                    $this->Loader->L10N->getString('_exclamation_final'),
-                    sprintf($this->Loader->L10N->getString('scan_chameleon'), 'PDF')
-                ) . "\n";
+                        $this->Loader->L10N->getString('_exclamation_final'),
+                        sprintf($this->Loader->L10N->getString('scan_chameleon'), 'PDF')
+                    ) . "\n";
                 $this->Loader->WhyFlagged .= sprintf(
                     $this->Loader->L10N->getString('_exclamation'),
                     sprintf($this->Loader->L10N->getString('scan_chameleon'), 'PDF') . ' (' . $OriginalFilenameSafe . ')'
@@ -2440,9 +2345,9 @@ class Scanner
         if ($this->Loader->Configuration['files']['block_control_characters']) {
             if (preg_match('/[\x00-\x08\x0b\x0c\x0e\x1f\x7f]/i', $str)) {
                 $Out .= $lnap . sprintf(
-                    $this->Loader->L10N->getString('_exclamation'),
-                    $this->Loader->L10N->getString('detected_control_characters')
-                ) . "\n";
+                        $this->Loader->L10N->getString('_exclamation'),
+                        $this->Loader->L10N->getString('detected_control_characters')
+                    ) . "\n";
                 $heur['detections']++;
                 $this->Loader->InstanceCache['detections_count']++;
                 if (!$Flagged) {
@@ -2484,14 +2389,12 @@ class Scanner
             if ($this->Loader->Configuration['virustotal']['vt_suspicion_level'] === 0) {
                 $DoScan = ($heur['weight'] > 0);
             } elseif ($this->Loader->Configuration['virustotal']['vt_suspicion_level'] === 1) {
-                $DoScan = (
-                    $heur['weight'] > 0 ||
+                $DoScan = ($heur['weight'] > 0 ||
                     $is_pe ||
                     $fileswitch === 'chrome' ||
                     $fileswitch === 'java' ||
                     $fileswitch === 'docfile' ||
-                    $fileswitch === 'vt_interest'
-                );
+                    $fileswitch === 'vt_interest');
             } elseif ($this->Loader->Configuration['virustotal']['vt_suspicion_level'] === 2) {
                 $DoScan = true;
             }
@@ -2523,7 +2426,9 @@ class Scanner
                         'https://www.virustotal.com/vtapi/v2/file/report?apikey=' .
                         urlencode($this->Loader->Configuration['virustotal']['vt_public_api_key']) .
                         '&resource=' . $md5,
-                    $VTParams, 12);
+                        $VTParams,
+                        12
+                    );
                     $VTJSON = json_decode($VTRequest, true);
                     $y = $this->Loader->Time + ($this->Loader->Configuration['virustotal']['vt_quota_time'] * 60);
                     $this->Loader->InstanceCache['vt_quota'] .= $y . ';';
@@ -2554,18 +2459,18 @@ class Scanner
                                         if ($this->Loader->Configuration['virustotal']['vt_weighting'] > 0) {
                                             $VTWeight['weight']++;
                                             $VTWeight['web'] .= $lnap . sprintf(
-                                                $this->Loader->L10N->getString('_exclamation'),
-                                                sprintf($this->Loader->L10N->getString('detected'), $VN)
-                                            ) . "\n";
+                                                    $this->Loader->L10N->getString('_exclamation'),
+                                                    sprintf($this->Loader->L10N->getString('detected'), $VN)
+                                                ) . "\n";
                                             $VTWeight['cli'] .= sprintf(
                                                 $this->Loader->L10N->getString('_exclamation'),
                                                 sprintf($this->Loader->L10N->getString('detected'), $VN) . ' (' . $OriginalFilenameSafe . ')'
                                             );
                                         } else {
                                             $Out .= $lnap . sprintf(
-                                                $this->Loader->L10N->getString('_exclamation_final'),
-                                                sprintf($this->Loader->L10N->getString('detected'), $VN)
-                                            ) . "\n";
+                                                    $this->Loader->L10N->getString('_exclamation_final'),
+                                                    sprintf($this->Loader->L10N->getString('detected'), $VN)
+                                                ) . "\n";
                                             $this->Loader->WhyFlagged .= sprintf(
                                                 $this->Loader->L10N->getString('_exclamation'),
                                                 sprintf($this->Loader->L10N->getString('detected'), $VN) . ' (' . $OriginalFilenameSafe . ')'
@@ -2605,9 +2510,7 @@ class Scanner
 
         /** Register object flagged. */
         if ($Out) {
-            $this->statsIncrement($this->CalledFrom === 'Web' ? 'Web-Blocked' : (
-                $this->CalledFrom === 'CLI' ? 'CLI-Flagged' : 'API-Flagged'
-            ), 1);
+            $this->statsIncrement($this->CalledFrom === 'Web' ? 'Web-Blocked' : ($this->CalledFrom === 'CLI' ? 'CLI-Flagged' : 'API-Flagged'), 1);
         }
 
         /** Exit data handler. */
@@ -2677,14 +2580,14 @@ class Scanner
             } elseif ($xts === 'app*') {
                 $ConType = 'App';
             } elseif (strpos(
-                ',docm,docx,dotm,dotx,potm,potx,ppam,ppsm,ppsx,pptm,pptx,xlam,xlsb,xlsm,xlsx,xltm,xltx,',
-                ',' . $xt . ','
-            ) !== false) {
+                    ',docm,docx,dotm,dotx,potm,potx,ppam,ppsm,ppsx,pptm,pptx,xlam,xlsb,xlsm,xlsx,xltm,xltx,',
+                    ',' . $xt . ','
+                ) !== false) {
                 $ConType = 'OpenXML';
             } elseif (strpos(
-                ',odc,odf,odg,odm,odp,ods,odt,otg,oth,otp,ots,ott,',
-                ',' . $xt . ','
-            ) !== false || $xts === 'fod*') {
+                    ',odc,odf,odg,odm,odp,ods,odt,otg,oth,otp,ots,ott,',
+                    ',' . $xt . ','
+                ) !== false || $xts === 'fod*') {
                 $ConType = 'OpenDocument';
             } elseif (strpos(',opf,epub,', ',' . $xt . ',') !== false) {
                 $ConType = 'EPUB';
@@ -2931,8 +2834,7 @@ class Scanner
 
                     /** Verify filesize, integrity, etc. Exit early in case of problems. */
                     if ($Filesize !== strlen($Content) || ($InternalCRC &&
-                        preg_replace('~^0+~', '', $DataCRC32) !== preg_replace('~^0+~', '', $InternalCRC)
-                    )) {
+                            preg_replace('~^0+~', '', $DataCRC32) !== preg_replace('~^0+~', '', $InternalCRC))) {
                         $Results = 2;
                         $this->Loader->HashReference .= $Hash . ':' . $Filesize . ':' . $ThisItemRef . "\n";
                         $this->Loader->WhyFlagged .= sprintf(
@@ -3259,15 +3161,15 @@ class Scanner
      */
     public function imageIndicators(string $Ext, string $Head): bool
     {
-        return (
-            preg_match(
+        return (preg_match(
                 '/^(?:bm[2p]|c(d5|gm)|d(ib|w[fg]|xf)|ecw|fits|gif|img|j(f?if?|p[2s]|pe?g?2?|xr)|p(bm|cx|dd|gm|ic|n[gms]|' .
-                'pm|s[dp])|s(id|v[ag])|tga|w(bmp?|ebp|mp)|x(cf|bmp))$/'
-            , $Ext) ||
+                'pm|s[dp])|s(id|v[ag])|tga|w(bmp?|ebp|mp)|x(cf|bmp))$/',
+                $Ext
+            ) ||
             preg_match(
-                '/^(?:0000000c6a502020|25504446|38425053|424d|474946383[79]61|57454250|67696d7020786366|89504e47|ffd8ff)/'
-            , $Head)
-        );
+                '/^(?:0000000c6a502020|25504446|38425053|424d|474946383[79]61|57454250|67696d7020786366|89504e47|ffd8ff)/',
+                $Head
+            ));
     }
 
     /**
@@ -3310,10 +3212,8 @@ class Scanner
             return false;
         }
 
-        if (!$In || !$Key || !$IP || !$ID || !function_exists('gzdeflate') || (
-            strlen($Key) < 128 &&
-            !$Key = $this->Loader->hexSafe(hash('sha512', $Key) . hash('whirlpool', $Key))
-        )) {
+        if (!$In || !$Key || !$IP || !$ID || !function_exists('gzdeflate') || (strlen($Key) < 128 &&
+                !$Key = $this->Loader->hexSafe(hash('sha512', $Key) . hash('whirlpool', $Key)))) {
             return false;
         }
         if ($this->Loader->Configuration['legal']['pseudonymise_ip_addresses']) {
@@ -3377,7 +3277,7 @@ class Scanner
      * @param int $Delete How many bytes to delete from the target directory; Omit
      *      or set to 0 to avoid deleting files on the basis of total bytes.
      * @param int $DeleteFiles How many files to delete from the target directory;
-            Omit or set to 0 to avoid deleting files.
+     * Omit or set to 0 to avoid deleting files.
      * @return array Contains two integer elements: `Size`: The actual, total
      *      memory used by the target directory. `Count`: The total number of files
      *      found in the target directory by the time of closure exit.
@@ -3447,7 +3347,9 @@ class Scanner
                     '/(base64_decode|decode_base64|base64\.b64decode|atob|Base64\.decode64)(\s*' .
                     '\(\s*["\'\`])([\da-z+\/]{4})*([\da-z+\/]{4}|[\da-z+\/]{3}=|[\da-z+\/]{2}==)(["\'\`]' .
                     '\s*\))/i',
-                $str, $matches)) {
+                    $str,
+                    $matches
+                )) {
                     for ($i = 0; $c > $i; $i++) {
                         $str = str_ireplace(
                             $matches[0][$i],
@@ -3459,7 +3361,9 @@ class Scanner
                 }
                 if ($c = preg_match_all(
                     '/(str_rot13\s*\(\s*["\'])([^\'"\(\)]{1,4096})(["\']\s*\))/i',
-                $str, $matches)) {
+                    $str,
+                    $matches
+                )) {
                     for ($i = 0; $c > $i; $i++) {
                         $str = str_ireplace(
                             $matches[0][$i],
@@ -3471,7 +3375,9 @@ class Scanner
                 }
                 if ($c = preg_match_all(
                     '/(hex2bin\s*\(\s*["\'])([\da-f]{1,4096})(["\']\s*\))/i',
-                $str, $matches )) {
+                    $str,
+                    $matches
+                )) {
                     for ($i = 0; $c > $i; $i++) {
                         $str = str_ireplace(
                             $matches[0][$i],
@@ -3483,7 +3389,9 @@ class Scanner
                 }
                 if ($c = preg_match_all(
                     '/([Uu][Nn][Pp][Aa][Cc][Kk]\s*\(\s*["\']\s*H\*\s*["\']\s*,\s*["\'])([\da-fA-F]{1,4096})(["\']\s*\))/',
-                $str, $matches)) {
+                    $str,
+                    $matches
+                )) {
                     for ($i = 0; $c > $i; $i++) {
                         $str = str_replace($matches[0][$i], '"' . $this->Loader->hexSafe($this->Loader->substrBeforeLast($this->Loader->substrAfterFirst($matches[0][$i], $matches[1][$i]), $matches[3][$i])) . '"', $str);
                     }
@@ -3579,13 +3487,9 @@ class Scanner
         }
 
         /** Populate weight options. */
-        if ((
-            !empty($this->Loader->InstanceCache['shorthand.yml']['Vendor Weight Options'][$Nibbles[0]][$Nibbles[1]]) &&
-            $this->Loader->InstanceCache['shorthand.yml']['Vendor Weight Options'][$Nibbles[0]][$Nibbles[1]] === 'Weighted'
-        ) || (
-            !empty($this->Loader->InstanceCache['shorthand.yml']['Vendor Weight Options'][$Nibbles[0]]) &&
-            $this->Loader->InstanceCache['shorthand.yml']['Vendor Weight Options'][$Nibbles[0]] === 'Weighted'
-        )) {
+        if ((!empty($this->Loader->InstanceCache['shorthand.yml']['Vendor Weight Options'][$Nibbles[0]][$Nibbles[1]]) &&
+                $this->Loader->InstanceCache['shorthand.yml']['Vendor Weight Options'][$Nibbles[0]][$Nibbles[1]] === 'Weighted') || (!empty($this->Loader->InstanceCache['shorthand.yml']['Vendor Weight Options'][$Nibbles[0]]) &&
+                $this->Loader->InstanceCache['shorthand.yml']['Vendor Weight Options'][$Nibbles[0]] === 'Weighted')) {
             $this->Loader->InstanceCache['weighted'] = true;
         }
 
@@ -3674,9 +3578,7 @@ class Scanner
         $min = (int)$min;
         $max = (int)$max;
         if ($pos_A !== 0 || $pos_Z !== 0) {
-            $Haystack = (
-                $pos_Z === 0
-            ) ? substr($Haystack, $pos_A) : substr($Haystack, $pos_A, $pos_Z);
+            $Haystack = ($pos_Z === 0) ? substr($Haystack, $pos_A) : substr($Haystack, $pos_A, $pos_Z);
         }
         $hlen = strlen($Haystack);
         if ($nlen < 1 || $hlen < 1) {
@@ -3877,27 +3779,21 @@ class Scanner
                  */
                 if ($this->Loader->MostRecentHttpCode === '400') {
                     $returnVal = 400;
-                }
-
-                /**
+                } /**
                  * Unauthorised (most likely an invalid API key used). Returning
                  * the same message for 401 and 403 because the returned message is
                  * suitable either way.
                  */
                 elseif ($this->Loader->MostRecentHttpCode >= '401' && $this->Loader->MostRecentHttpCode <= 403) {
                     $returnVal = 401;
-                }
-
-                /**
+                } /**
                  * Service unavailable or internal server error. Returning the same
                  * message for 429, 500, 503, 504 alike because, for our purpose,
                  * the returned message is suitable in any case.
                  */
                 elseif ($this->Loader->MostRecentHttpCode >= '429') {
                     $returnVal = 503;
-                }
-
-                /**
+                } /**
                  * Fallback for other error codes (in theory, this shouldn't ever
                  * be reached, but adding it here just in case).
                  */
@@ -3974,9 +3870,9 @@ class Scanner
         if ($this->Loader->InstanceCache['weighted']) {
             $Heuristic['weight']++;
             $Heuristic['cli'] .= $Indentation . sprintf(
-                $this->Loader->L10N->getString('_exclamation_final'),
-                sprintf($this->Loader->L10N->getString('detected'), $VN)
-            ) . "\n";
+                    $this->Loader->L10N->getString('_exclamation_final'),
+                    sprintf($this->Loader->L10N->getString('detected'), $VN)
+                ) . "\n";
             $Heuristic['web'] .= sprintf(
                 $this->Loader->L10N->getString('_exclamation'),
                 sprintf($this->Loader->L10N->getString('detected'), $VN) . ' (' . $OriginalFilenameSafe . ')'
@@ -3984,9 +3880,9 @@ class Scanner
             return;
         }
         $Out .= $Indentation . sprintf(
-            $this->Loader->L10N->getString('_exclamation_final'),
-            sprintf($this->Loader->L10N->getString('detected'), $VN)
-        ) . "\n";
+                $this->Loader->L10N->getString('_exclamation_final'),
+                sprintf($this->Loader->L10N->getString('detected'), $VN)
+            ) . "\n";
         $this->Loader->WhyFlagged .= sprintf(
             $this->Loader->L10N->getString('_exclamation'),
             sprintf($this->Loader->L10N->getString('detected'), $VN) . ' (' . $OriginalFilenameSafe . ')'
@@ -4168,8 +4064,8 @@ class Scanner
                 return;
             }
             if (!empty($this->Loader->Configuration['files']['filetype_greylist']) && $this->containsMustAssert([
-                $this->Loader->Configuration['files']['filetype_greylist']
-            ], [$xt, $xts])) {
+                    $this->Loader->Configuration['files']['filetype_greylist']
+                ], [$xt, $xts])) {
                 $r = 2;
                 $this->Loader->HashReference .= $Checksum . ':' . $Filesize . ':' . $ItemRef . "\n";
                 $this->Loader->WhyFlagged .= sprintf(
@@ -4184,10 +4080,8 @@ class Scanner
         }
 
         /** Determine whether the file being scanned is a macro. */
-        $this->Loader->InstanceCache['file_is_macro'] = (
-            preg_match('~vbaProject\.bin$~i', $Filename) ||
-            preg_match('~^\xd0\xcf|\x00Attribut|\x01CompObj|\x05Document~', $Data)
-        );
+        $this->Loader->InstanceCache['file_is_macro'] = (preg_match('~vbaProject\.bin$~i', $Filename) ||
+            preg_match('~^\xd0\xcf|\x00Attribut|\x01CompObj|\x05Document~', $Data));
 
         /** Handle macro detection and blocking. */
         if ($this->Loader->Configuration['files']['block_macros'] && $this->Loader->InstanceCache['file_is_macro']) {

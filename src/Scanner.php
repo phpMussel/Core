@@ -458,7 +458,7 @@ class Scanner
                 $this->Loader->Events->fireEvent('countersChanged');
                 return !$n ? 2 :
                     [
-                        'flagged' => false,
+                        'flagged' => true,
                         'file' => $OriginalFilename,
                         'reason' => $this->Loader->L10N->getString('filesize_limit_exceeded')
                     ];
@@ -478,7 +478,7 @@ class Scanner
             $this->Loader->Events->fireEvent('countersChanged');
             return !$n ? 2 :
                 [
-                    'flagged' => false,
+                    'flagged' => true,
                     'file' => $OriginalFilename,
                     'reason' => sprintf(
                         $this->Loader->L10N->getString('_exclamation_final'),
@@ -521,7 +521,7 @@ class Scanner
             $this->Loader->Events->fireEvent('countersChanged');
             return !$n ? 2 :
                 [
-                    'flagged' => false,
+                    'flagged' => true,
                     'file' => $OriginalFilename,
                     'reason' => $this->Loader->L10N->getString('filetype_blacklisted') .
                         $this->Loader->L10N->getString('_fullstop_final')
@@ -544,7 +544,7 @@ class Scanner
             $this->Loader->InstanceCache['ThisScanDone']++;
             $this->Loader->Events->fireEvent('countersChanged');
             return !$n ? 2 : [
-                'flagged' => false,
+                'flagged' => true,
                 'file' => $OriginalFilename,
                 'reason' => $this->Loader->L10N->getString('filetype_blacklisted') .
                     $this->Loader->L10N->getString('_fullstop_final')
@@ -573,7 +573,7 @@ class Scanner
             $this->Loader->Events->fireEvent('countersChanged');
             return !$n ? 2 :
                 [
-                    'flagged' => false,
+                    'flagged' => true,
                     'file' => $OriginalFilename,
                     'reason' => $this->Loader->L10N->getString('only_allow_images') .
                         $this->Loader->L10N->getString('_fullstop_final')
@@ -645,7 +645,7 @@ class Scanner
             $this->Loader->Events->fireEvent('countersChanged');
             return !$n ? $z[0] :
                 [
-                    'flagged' => false,
+                    'flagged' => $z[0]!==1 || $z[0]!==0,
                     'file' => $OriginalFilename,
                     'reason' => $z[1]
                 ];
@@ -740,7 +740,7 @@ class Scanner
         $this->Loader->InstanceCache['ThisScanDone']++;
         $this->Loader->Events->fireEvent('countersChanged');
         return !$n ? $Results : [
-            'flagged' => false,
+            'flagged' => $Results,
             'file' => $OriginalFilename,
             'reason' => $x
         ];

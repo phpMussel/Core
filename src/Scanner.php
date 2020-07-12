@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2020.07.11).
+ * This file: The scanner (last modified: 2020.07.12).
  */
 
 namespace phpMussel\Core;
@@ -495,6 +495,7 @@ class Scanner
             $this->Loader->InstanceCache['ThisScanDone']++;
             $this->Loader->Events->fireEvent('countersChanged');
             $this->Loader->atHit('', $fS, $OriginalFilenameClean, '', 1, $Depth + 1);
+            return;
         }
 
         /** Process filetype blacklisting and greylisting. */
@@ -1439,6 +1440,7 @@ class Scanner
                                 $SigFile
                             )
                         ), -3, $Depth);
+                        return;
                     }
                 } elseif ($ThisConf[1] === 0) {
                     if (substr($this->Loader->InstanceCache[$SigFile], 0, 9) === 'phpMussel') {
@@ -1823,6 +1825,7 @@ class Scanner
                                 $SigFile
                             )
                         ), -3, $Depth);
+                        return;
                     }
                     continue;
                 }
@@ -2079,7 +2082,11 @@ class Scanner
                     }
                     $this->Loader->InstanceCache['urlscanner_domains'] .= $URLScanner['Domains'][$i] . $URLExpiry . ':;';
                 }
-                $this->Loader->Cache->setEntry('urlscanner_domains', $this->Loader->InstanceCache['urlscanner_domains'], $URLExpiry);
+                $this->Loader->Cache->setEntry(
+                    'urlscanner_domains',
+                    $this->Loader->InstanceCache['urlscanner_domains'],
+                    $this->Loader->Configuration['urlscanner']['cache_time']
+                );
             }
 
             $URLScanner['URLsCount'] = count($URLScanner['URLParts']);
@@ -2308,12 +2315,12 @@ class Scanner
                         '&resource=' . $md5,
                     $VTParams, 12);
                     $VTJSON = json_decode($VTRequest, true);
-                    $y = $this->Loader->Time + ($this->Loader->Configuration['virustotal']['vt_quota_time'] * 60);
-                    $this->Loader->InstanceCache['vt_quota'] .= $y . ';';
+                    $VTCacheTime = $this->Loader->Configuration['virustotal']['vt_quota_time'] * 60;
+                    $this->Loader->InstanceCache['vt_quota'] .= ($this->Loader->Time + $VTCacheTime) . ';';
                     while (substr_count($this->Loader->InstanceCache['vt_quota'], ';;')) {
                         $this->Loader->InstanceCache['vt_quota'] = str_ireplace(';;', ';', $this->Loader->InstanceCache['vt_quota']);
                     }
-                    $this->Loader->Cache->setEntry('vt_quota', $this->Loader->InstanceCache['vt_quota'], $y + 60);
+                    $this->Loader->Cache->setEntry('vt_quota', $this->Loader->InstanceCache['vt_quota'], $VTCacheTime + 60);
                     if (isset($VTJSON['response_code'])) {
                         $VTJSON['response_code'] = (int)$VTJSON['response_code'];
                         if (
@@ -2856,11 +2863,12 @@ class Scanner
 
     /**
      * Uses iterators to generate an array of the contents of a specified directory.
+     * Used both by the scanner as well as by CLI.
      *
      * @param string $Base Directory root.
      * @return array Directory tree.
      */
-    private function directoryRecursiveList(string $Base): array
+    public function directoryRecursiveList(string $Base): array
     {
         $Arr = [];
         $Offset = strlen($Base);
@@ -3238,6 +3246,9 @@ class Scanner
             return $VN;
         }
 
+        /** Will be populated by the signature name. */
+        $Out = '';
+
         /** Byte 1 contains vendor name and signature metadata information. */
         $Nibbles = $this->splitNibble($VN[1]);
 
@@ -3533,7 +3544,7 @@ class Scanner
         $this->Loader->InstanceCache['LookupCount']++;
 
         /** Generate new cache expiry time. */
-        $newExpiry = $this->Loader->Time + $this->Loader->Configuration['urlscanner']['cache_time'];
+        $newExpiry = $this->Loader->Configuration['urlscanner']['cache_time'];
 
         /** Potentially harmful URL detected. */
         if (strpos($Response, '"matches":') !== false) {
@@ -3596,7 +3607,7 @@ class Scanner
 
         /** Update the cache entry for Google Safe Browsing. */
         $this->Loader->InstanceCache['urlscanner_google'] .= $cacheRef . ':' . $newExpiry . ':' . $returnVal . ';';
-        $this->Loader->Cache->setEntry('urlscanner_google', $newExpiry, $this->Loader->InstanceCache['urlscanner_google']);
+        $this->Loader->Cache->setEntry('urlscanner_google', $this->Loader->InstanceCache['urlscanner_google'], $newExpiry);
 
         return $returnVal;
     }

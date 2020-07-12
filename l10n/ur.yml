@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Urdu language data (last modified: 2020.07.05).
+# This file: Urdu language data (last modified: 2020.07.11).
 ##/
 
 # Language settings.
@@ -21,10 +21,6 @@ SafeBrowseLookup_400: "API کی درخواست کی خرابی"
 SafeBrowseLookup_401: "API کیلئے اجازت کی خرابی"
 SafeBrowseLookup_503: "API سروس دستیاب نہیں"
 SafeBrowseLookup_999: "نامعلوم API کی خرابی"
-_exclamation: "%s! "
-_exclamation_final: "%s!"
-_fullstop: ". "
-_fullstop_final: "."
 corrupted: "کے پتہ خراب PE"
 data_not_available: "ڈیٹا دستیاب نہیں ہے."
 detected: "کے پتہ %s"
@@ -42,6 +38,10 @@ filesize_limit_exceeded: "فائل کی حد سے تجاوز کر گئی"
 filetype_blacklisted: "قسم کی فائل کو بلیک لسٹ"
 finished: "ختم"
 generated_by: "کی طرف سے پیدا"
+grammar_brackets: "%s (%s)"
+grammar_exclamation_mark: "%s!"
+grammar_fullstop: "%s."
+grammar_spacer: " "
 image: "تصویر"
 invalid_data: "غلط ڈیٹا!"
 invalid_file: "غلط فائل"
@@ -52,14 +52,13 @@ only_allow_images: "صرف تصویری فائلوں کی اجازت ہے"
 quarantined_as: "یہ طور قرنطینہ میں "%s.qfu" کے."
 recursive: "تکرار کی گہرائی کی حد سے تجاوز کر گئی"
 scan_chameleon: "%s گرگٹ حملے کا پتہ چلا"
-scan_checking: "پڑتال کر رہا ہے"
+scan_checking: ""%s" چیک کر رہا ہے."
 scan_command_injection: "کمان انجکشن کی کوشش کا پتہ چلا"
 scan_complete: "مکمل"
 scan_extensions_missing: "ناکام ہوگیا (ضروری ملانے کے لاپتہ)!"
 scan_filename_manipulation_detected: "فائل کا نام ہیرا پھیری کے پتہ"
 scan_missing_filename: "لاپتہ فائل کا نام"
 scan_no_problems_found: "کوئی مسئلہ نہیں پایا."
-scan_not_archive: "ناکام ہوگیا (خالی یا ایک آرکائیو نہیں)!"
 scan_reading: "پڑھنا"
 scan_signature_file_missing: "دستخط کی فائل لاپتہ"
 scan_tampering: "پتہ چلنے پر ممکنہ طور پر خطرناک فائل چھیڑچھاڑ"

@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Dutch language data (last modified: 2020.07.05).
+# This file: Dutch language data (last modified: 2020.07.11).
 ##/
 
 # Language settings.
@@ -21,10 +21,6 @@ SafeBrowseLookup_400: "API aanvraag foute"
 SafeBrowseLookup_401: "API niet geautoriseerd"
 SafeBrowseLookup_503: "API dienst niet beschikbaar"
 SafeBrowseLookup_999: "Onbekende API fout"
-_exclamation: "%s! "
-_exclamation_final: "%s!"
-_fullstop: ". "
-_fullstop_final: "."
 corrupted: "Gedetecteerd beschadigd PE"
 data_not_available: "Gegevens niet beschikbaar."
 detected: "Gedetecteerd %s"
@@ -42,6 +38,10 @@ filesize_limit_exceeded: "Bestandsgrootte limiet overschreden"
 filetype_blacklisted: "Bestandstype in zwarte lijst"
 finished: "Afgewerkt"
 generated_by: "Gegenereerde door"
+grammar_brackets: "%s (%s)"
+grammar_exclamation_mark: "%s!"
+grammar_fullstop: "%s."
+grammar_spacer: " "
 image: "Beeld"
 invalid_data: "Ongeldige data!"
 invalid_file: "Ongeldige bestand"
@@ -52,14 +52,13 @@ only_allow_images: "Alleen afbeeldingsbestanden zijn toegestaan"
 quarantined_as: "In quarantaine geplaatst als "%s.qfu"."
 recursive: "Recursie dieptelimiet overschreden"
 scan_chameleon: "%s kameleon aanval gedetecteerd"
-scan_checking: "Verifiëren"
+scan_checking: ""%s" aan het verifiëren."
 scan_command_injection: "Command injectie poging gedetecteerd"
 scan_complete: "Voltooid"
 scan_extensions_missing: "Mislukt (ontbrekende vereiste extensies)!"
 scan_filename_manipulation_detected: "Bestandsnaam manipulatie ontdekt"
 scan_missing_filename: "Ontbrekende bestandsnaam"
 scan_no_problems_found: "Geen problemen gevonden."
-scan_not_archive: "Mislukt (leeg of is geen archief)!"
 scan_reading: "Lezen van"
 scan_signature_file_missing: "Signatuurbestand ontbreekt"
 scan_tampering: "Gedetecteerd potentieel gevaarlijke bestandswijziging"

@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Thai language data (last modified: 2020.07.05).
+# This file: Thai language data (last modified: 2020.07.11).
 ##/
 
 # Language settings.
@@ -21,10 +21,6 @@ SafeBrowseLookup_400: "ข้อผิดพลาดคำขอ API"
 SafeBrowseLookup_401: "ข้อผิดพลาดอนุมัติ API"
 SafeBrowseLookup_503: "ไม่สามารถให้บริการได้ API"
 SafeBrowseLookup_999: "ข้อผิดพลาดที่ไม่รู้จัก API"
-_exclamation: "%s! "
-_exclamation_final: "%s!"
-_fullstop: ". "
-_fullstop_final: "."
 corrupted: "PE เสียหายถูกตรวจพบ"
 data_not_available: "ไม่มีข้อมูล."
 detected: "ตรวจพบแล้ว %s"
@@ -42,6 +38,10 @@ filesize_limit_exceeded: "จำกัดขนาดไฟล์เกินแ
 filetype_blacklisted: "ประเภทไฟล์คือในรายการดำ"
 finished: "เสร็จแล้ว"
 generated_by: "สร้างขึ้นโดย"
+grammar_brackets: "%s (%s)"
+grammar_exclamation_mark: "%s!"
+grammar_fullstop: "%s."
+grammar_spacer: " "
 image: "ภาพ"
 invalid_data: "ข้อมูลไม่ถูกต้อง!"
 invalid_file: "ไฟล์ไม่ถูกต้อง"
@@ -52,14 +52,13 @@ only_allow_images: "อนุญาตเพียงไฟล์รูปภา
 quarantined_as: "เป็นกักกันที่ "%s.qfu"."
 recursive: "จำกัดความลึกสำหรับการทับซ้ำเกินแล้ว"
 scan_chameleon: "กิ้งก่าโจมตี %s ถูกตรวจพบ"
-scan_checking: "การตรวจสอบ"
+scan_checking: "กำลังตรวจสอบ "%s"."
 scan_command_injection: "ความพยายามที่จะฉีดคำสั่งถูกตรวจพบ"
 scan_complete: "เสร็จแล้ว"
 scan_extensions_missing: "ล้มเหลว (ส่วนขยายที่จำเป็นหายไป)!"
 scan_filename_manipulation_detected: "การปลอมแปลงชื่อไฟล์ถูกตรวจพบ"
 scan_missing_filename: "ไม่มีชื่อไฟล์"
 scan_no_problems_found: "ไม่พบปัญหาใด."
-scan_not_archive: "ล้มเหลว (ว่างเปล่าหรือไม่ใช่ที่เก็บถาวร)!"
 scan_reading: "การอ่าน"
 scan_signature_file_missing: "ไฟล์ลายเซ็นหายไป"
 scan_tampering: "การปลอมแปลงไฟล์ที่อาจเป็นอันตรายตรวจพบแล้ว"

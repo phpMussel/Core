@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: Zip handler (last modified: 2020.06.22).
+ * This file: Zip handler (last modified: 2020.07.11).
  */
 
 namespace phpMussel\Core;
@@ -43,7 +43,7 @@ class ZipHandler extends ArchiveHandler
     public function __construct($Pointer)
     {
         /** Zip class requirements guard. */
-        if (!class_exists('ZipArchive')) {
+        if (!class_exists('\ZipArchive')) {
             $this->ErrorState = 1;
             return;
         }
@@ -109,7 +109,7 @@ class ZipHandler extends ArchiveHandler
      */
     public function EntryIsDirectory(): bool
     {
-        return (!$this->EntryActualSize() && !$this->EntryCompressedSize() && substr($this->EntryName, -1) === '/');
+        return (!$this->EntryActualSize() && !$this->EntryCompressedSize() && substr($this->EntryName(), -1) === '/');
     }
 
     /**

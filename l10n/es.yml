@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Spanish language data (last modified: 2020.07.05).
+# This file: Spanish language data (last modified: 2020.07.11).
 ##/
 
 # Language settings.
@@ -21,10 +21,6 @@ SafeBrowseLookup_400: "Error de solicitud de la API"
 SafeBrowseLookup_401: "Error de autorización de la API"
 SafeBrowseLookup_503: "Servicio de la API no está disponible"
 SafeBrowseLookup_999: "Error da la API desconocido"
-_exclamation: "¡%s! "
-_exclamation_final: "¡%s!"
-_fullstop: ". "
-_fullstop_final: "."
 corrupted: "PE corrompido detectado"
 data_not_available: "Informacion no disponible."
 detected: "Detectado %s"
@@ -42,6 +38,10 @@ filesize_limit_exceeded: "Excede el límite del archivo tamaño"
 filetype_blacklisted: "Tipo de archivo en la lista negra"
 finished: "Terminado"
 generated_by: "Generado por"
+grammar_brackets: "%s (%s)"
+grammar_exclamation_mark: "¡%s!"
+grammar_fullstop: "%s."
+grammar_spacer: " "
 image: "Imagen"
 invalid_data: "¡Datos no válidos!"
 invalid_file: "Archivo no válido"
@@ -52,14 +52,13 @@ only_allow_images: "Solo se permiten archivos de imagen"
 quarantined_as: "En cuarentena como "%s.qfu"."
 recursive: "Recursión profundidad límite excedido"
 scan_chameleon: "%s camaleón ataque detectado"
-scan_checking: "Comprobando"
+scan_checking: "Comprobando "%s"."
 scan_command_injection: "Comandos inyección intento detectado"
 scan_complete: "Completo"
 scan_extensions_missing: "¡Fracasado (desaparecido requeridos extensiones)!"
 scan_filename_manipulation_detected: "Manipulación del fichero nombre detectado"
 scan_missing_filename: "Nombre del archivo está ausente"
 scan_no_problems_found: "No problemas encontrado."
-scan_not_archive: "¡Fracasado (vacío o no es un archivo)!"
 scan_reading: "Leyendo"
 scan_signature_file_missing: "Firma archivo desaparecido"
 scan_tampering: "Detectado potencialmente peligrosa archivo manipulación"

@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Norwegian language data (last modified: 2020.07.05).
+# This file: Norwegian language data (last modified: 2020.07.11).
 ##/
 
 # Language settings.
@@ -21,10 +21,6 @@ SafeBrowseLookup_400: "API-forespørselsfeil"
 SafeBrowseLookup_401: "API-autorisasjonsfeil"
 SafeBrowseLookup_503: "API-tjenesten er ikke tilgjengelig"
 SafeBrowseLookup_999: "Ukjent API-feil"
-_exclamation: "%s! "
-_exclamation_final: "%s!"
-_fullstop: ". "
-_fullstop_final: "."
 corrupted: "Oppdaget ødelagt PE"
 data_not_available: "Data ikke tilgjengelig."
 detected: "Oppdaget %s"
@@ -42,6 +38,10 @@ filesize_limit_exceeded: "Filstørrelsen overskredet"
 filetype_blacklisted: "Filtype svartelistet"
 finished: "Ferdig"
 generated_by: "Generert av"
+grammar_brackets: "%s (%s)"
+grammar_exclamation_mark: "%s!"
+grammar_fullstop: "%s."
+grammar_spacer: " "
 image: "Bilde"
 invalid_data: "Ugyldig data!"
 invalid_file: "Ugyldig fil"
@@ -52,14 +52,13 @@ only_allow_images: "Bare bildefiler er tillatt"
 quarantined_as: "Plassert i karantene som "%s.qfu"."
 recursive: "Grensen for rekursjonsdybde overskredet"
 scan_chameleon: "%s-kameleonangrep oppdaget"
-scan_checking: "Kontrollere"
+scan_checking: "Kontrollere "%s"."
 scan_command_injection: "Kommandoinjeksjonsforsøk oppdaget"
 scan_complete: "Fullstendig"
 scan_extensions_missing: "Mislyktes (mangler nødvendige utvidelser)!"
 scan_filename_manipulation_detected: "Filnavnmanipulasjon oppdaget"
 scan_missing_filename: "Mangler filnavn"
 scan_no_problems_found: "Ingen problemer funnet."
-scan_not_archive: "Mislyktes (tomt eller ikke et arkiv)!"
 scan_reading: "Leser"
 scan_signature_file_missing: "Signaturfil mangler"
 scan_tampering: "Oppdaget potensielt farlig filhindring"

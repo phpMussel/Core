@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Japanese language data (last modified: 2020.07.05).
+# This file: Japanese language data (last modified: 2020.07.11).
 ##/
 
 # Language settings.
@@ -21,10 +21,6 @@ SafeBrowseLookup_400: "ＡＰＩリクエストが不正である"
 SafeBrowseLookup_401: "ＡＰＩ認証エラー"
 SafeBrowseLookup_503: "ＡＰＩサービス利用不可"
 SafeBrowseLookup_999: "不明なＡＰＩエラー"
-_exclamation: "%s！"
-_exclamation_final: "%s！"
-_fullstop: "。"
-_fullstop_final: "。"
 corrupted: "破損ＰＥを検出しました"
 data_not_available: "データは入手できません。"
 detected: "%sを検出しました"
@@ -42,6 +38,10 @@ filesize_limit_exceeded: "容範囲外ファイルサイズです"
 filetype_blacklisted: "ファイルタイプがブラックリスト記載です"
 finished: "完了"
 generated_by: "作成者"
+grammar_brackets: "%s（%s）"
+grammar_exclamation_mark: "%s！"
+grammar_fullstop: "%s。"
+grammar_spacer: ""
 image: "画像"
 invalid_data: "不正データ！"
 invalid_file: "不正ファイル"
@@ -52,14 +52,13 @@ only_allow_images: "画像ファイルのみ許可されています"
 quarantined_as: "「%s.qfu」として隔離。"
 recursive: "再帰定義呼び出しの繰り返し回数が上限を超えました"
 scan_chameleon: "%s Chameleon（カメレオン）攻撃が検出されました"
-scan_checking: "チェック中"
+scan_checking: "「%s」をチェックしています。"
 scan_command_injection: "コマンドインジェクション攻撃が検出されました"
 scan_complete: "完了"
 scan_extensions_missing: "失敗（要求のあった拡張子がありません）！"
 scan_filename_manipulation_detected: "ファイルネイム不正操作が検出されました"
 scan_missing_filename: "ファイル名が存在しません"
 scan_no_problems_found: "問題は検出されませんでした。"
-scan_not_archive: "失敗（中身が存在しないかアーカイブではありません）！"
 scan_reading: "読み込んでいます"
 scan_signature_file_missing: "シグネチャ・ファイルがありません"
 scan_tampering: "検出された潜在的に危険なファイル改ざん"

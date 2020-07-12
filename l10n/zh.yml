@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Chinese (simplified) language data (last modified: 2020.07.05).
+# This file: Chinese (simplified) language data (last modified: 2020.07.11).
 ##/
 
 # Language settings.
@@ -21,10 +21,6 @@ SafeBrowseLookup_400: "API请求错误"
 SafeBrowseLookup_401: "API授权错误"
 SafeBrowseLookup_503: "API服务不可用"
 SafeBrowseLookup_999: "未知API错误"
-_exclamation: "%s！"
-_exclamation_final: "%s！"
-_fullstop: "。"
-_fullstop_final: "。"
 corrupted: "检测损坏PE"
 data_not_available: "数据不可用。"
 detected: "检测%s"
@@ -42,6 +38,10 @@ filesize_limit_exceeded: "文件大小超过限制"
 filetype_blacklisted: "文件类型列入黑名单"
 finished: "完了"
 generated_by: "所产生通过"
+grammar_brackets: "%s（%s）"
+grammar_exclamation_mark: "%s！"
+grammar_fullstop: "%s。"
+grammar_spacer: ""
 image: "图像"
 invalid_data: "无效数据！"
 invalid_file: "无效的文件"
@@ -52,14 +52,13 @@ only_allow_images: "仅允许图像文件"
 quarantined_as: "隔离为“%s.qfu”。"
 recursive: "递归深度超过是限制"
 scan_chameleon: "%s变色龙攻击检测"
-scan_checking: "检查"
+scan_checking: "正在检查“%s”。"
 scan_command_injection: "命令注入尝试检测"
 scan_complete: "完成"
 scan_extensions_missing: "失败（失踪必需的扩展）！"
 scan_filename_manipulation_detected: "文件名操控检测"
 scan_missing_filename: "文件名是失踪"
 scan_no_problems_found: "没有任何问题发现。"
-scan_not_archive: "失败（空或不是存档）！"
 scan_reading: "阅读"
 scan_signature_file_missing: "签名文件是失踪"
 scan_tampering: "检测潜在的危险文件篡改"

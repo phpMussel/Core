@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Polish language data (last modified: 2020.07.05).
+# This file: Polish language data (last modified: 2020.07.11).
 ##/
 
 # Language settings.
@@ -21,10 +21,6 @@ SafeBrowseLookup_400: "Błąd żądania API"
 SafeBrowseLookup_401: "Błąd autoryzacji API"
 SafeBrowseLookup_503: "Usługa API niedostępna"
 SafeBrowseLookup_999: "Nieznany błąd API"
-_exclamation: "%s! "
-_exclamation_final: "%s!"
-_fullstop: ". "
-_fullstop_final: "."
 corrupted: "Wykryto uszkodzony PE"
 data_not_available: "Dane nie dostępne."
 detected: "Wykryto %s"
@@ -42,6 +38,10 @@ filesize_limit_exceeded: "Przekroczono limit rozmiaru pliku"
 filetype_blacklisted: "Typ pliku na czarnej liście"
 finished: "Skończone"
 generated_by: "Wygenerowane przez"
+grammar_brackets: "%s (%s)"
+grammar_exclamation_mark: "%s!"
+grammar_fullstop: "%s."
+grammar_spacer: " "
 image: "Obraz"
 invalid_data: "Niepoprawny dane!"
 invalid_file: "Niepoprawny plik"
@@ -52,14 +52,13 @@ only_allow_images: "Dozwolone są tylko pliki graficzne"
 quarantined_as: "Poddany kwarantannie jako „%s.qfu”."
 recursive: "Przekroczono limit głębokości rekurencji"
 scan_chameleon: "Wykryto atak kameleona %s"
-scan_checking: "Sprawdzam"
+scan_checking: "Sprawdzam „%s”."
 scan_command_injection: "Wykryto wstrzyknięcia polecenia"
 scan_complete: "Kompletny"
 scan_extensions_missing: "Błąd (brak wymaganych rozszerzeń)!"
 scan_filename_manipulation_detected: "Wykryto manipulację nazwą pliku"
 scan_missing_filename: "Brak nazwy pliku"
 scan_no_problems_found: "Nie znaleziono problemów."
-scan_not_archive: "Błąd (puste lub nie archiwum)!"
 scan_reading: "Czytam"
 scan_signature_file_missing: "Brak pliku podpisy"
 scan_tampering: "Wykryto potencjalnie niebezpieczne manipulowanie plików"

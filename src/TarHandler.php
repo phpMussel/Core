@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: Tar handler (last modified: 2020.06.22).
+ * This file: Tar handler (last modified: 2020.07.12).
  */
 
 namespace phpMussel\Core;
@@ -99,7 +99,7 @@ class TarHandler extends ArchiveHandler
     {
         $Name = $this->EntryName();
         $Separator = substr($Name, -1, 1);
-        return (($Separator === "\\" || $Separator === '/') && $this->EntryActualSize === 0);
+        return (($Separator === "\\" || $Separator === '/') && $this->EntryActualSize() === 0);
     }
 
     /**

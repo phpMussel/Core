@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: French language data (last modified: 2020.07.05).
+# This file: French language data (last modified: 2020.07.11).
 ##/
 
 # Language settings.
@@ -21,10 +21,6 @@ SafeBrowseLookup_400: "Erreur de requête de l'API"
 SafeBrowseLookup_401: "Erreur d'autorisation de l'API"
 SafeBrowseLookup_503: "Le service de l'API est indisponible"
 SafeBrowseLookup_999: "Erreur API inconnue"
-_exclamation: "%s ! "
-_exclamation_final: "%s !"
-_fullstop: ". "
-_fullstop_final: "."
 corrupted: "PE corrompu détecté"
 data_not_available: "Les données ne sont pas disponibles."
 detected: "Détecté %s"
@@ -42,6 +38,10 @@ filesize_limit_exceeded: "Taille limite fichier dépassée"
 filetype_blacklisted: "Type de fichier sur liste noire"
 finished: "Terminé"
 generated_by: "Généré par"
+grammar_brackets: "%s (%s)"
+grammar_exclamation_mark: "%s !"
+grammar_fullstop: "%s."
+grammar_spacer: " "
 image: "Image"
 invalid_data: "Données non valides !"
 invalid_file: "Fichier non valide"
@@ -52,14 +52,13 @@ only_allow_images: "Seuls les fichiers images sont autorisés"
 quarantined_as: "Mis en quarantaine comme « %s.qfu »."
 recursive: "Profondeur limite de récursion dépassée"
 scan_chameleon: "Attaque %s caméléon détectée"
-scan_checking: "Vérification"
+scan_checking: "Vérifie « %s »."
 scan_command_injection: "Tentative d'injection de commande détectée"
 scan_complete: "Terminé"
 scan_extensions_missing: "Échec (extensions requises manquantes) !"
 scan_filename_manipulation_detected: "Manipulation de nom de fichier détectée"
 scan_missing_filename: "Nom de fichier manquant"
 scan_no_problems_found: "Pas de problème trouvé."
-scan_not_archive: "Échec (vide ou pas une archive) !"
 scan_reading: "Lecture en cours"
 scan_signature_file_missing: "Fichiers des signatures manquant"
 scan_tampering: "Altération de fichier potentiellement dangereuse détectée"

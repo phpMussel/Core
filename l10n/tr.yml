@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Turkish language data (last modified: 2020.07.05).
+# This file: Turkish language data (last modified: 2020.07.11).
 ##/
 
 # Language settings.
@@ -21,10 +21,6 @@ SafeBrowseLookup_400: "API istek hatası"
 SafeBrowseLookup_401: "API yetkilendirme hatası"
 SafeBrowseLookup_503: "API hizmeti kullanılamıyor"
 SafeBrowseLookup_999: "Bilinmeyen API hatası"
-_exclamation: "%s! "
-_exclamation_final: "%s!"
-_fullstop: ". "
-_fullstop_final: "."
 corrupted: "Bozuk PE saptandı"
 data_not_available: "Veri mevcut değil."
 detected: "%s algılandı"
@@ -42,6 +38,10 @@ filesize_limit_exceeded: "Dosya boyutu sınırı aşıldı"
 filetype_blacklisted: "Filetype kara listeye alındı"
 finished: "Bitirdi"
 generated_by: "Üreten"
+grammar_brackets: "%s (%s)"
+grammar_exclamation_mark: "%s!"
+grammar_fullstop: "%s."
+grammar_spacer: " "
 image: "Resim"
 invalid_data: "Geçersiz veri!"
 invalid_file: "Geçersiz dosya"
@@ -52,14 +52,13 @@ only_allow_images: "Yalnızca resim dosyalarına izin verilir"
 quarantined_as: ""%s.qfu" olarak karantinaya alındı."
 recursive: "Yineleme derinliği sınırı aşıldı"
 scan_chameleon: "%s bukalemun saldırısı tespit edildi"
-scan_checking: "Kontrol etme"
+scan_checking: ""%s" kontrol ediliyor."
 scan_command_injection: "Komuta enjeksiyon girişimi tespit edildi"
 scan_complete: "Tamamlayınız"
 scan_extensions_missing: "Başarısız oldu (gerekli uzantıları eksik)!"
 scan_filename_manipulation_detected: "Dosya adı işleme algılandı"
 scan_missing_filename: "Dosya adı eksik"
 scan_no_problems_found: "Hiçbir sorun bulunamadı."
-scan_not_archive: "Başarısız oldu (boş veya bir arşiv değil)!"
 scan_reading: "Okuma"
 scan_signature_file_missing: "İmza dosyası eksik"
 scan_tampering: "Potansiyel olarak tehlikeli dosyaların değiştirilmesi algılandı"

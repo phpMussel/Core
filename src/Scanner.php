@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2020.07.06).
+ * This file: The scanner (last modified: 2020.07.11).
  */
 
 namespace phpMussel\Core;
@@ -42,6 +42,21 @@ class Scanner
     private $CrxSignature = '';
 
     /**
+     * @var array Text for heuristic detections pending activation.
+     */
+    private $HeuristicText = [];
+
+    /**
+     * @var int The number of heuristic detections pending activation.
+     */
+    private $HeuristicCount = 0;
+
+    /**
+     * @var bool Whether the most recently processed signature is weighted.
+     */
+    private $HeuristicMode = false;
+
+    /**
      * Construct the scanner.
      */
     public function __construct(\phpMussel\Core\Loader &$Loader)
@@ -64,7 +79,7 @@ class Scanner
             }
 
             /** Determine SAPI/origin. */
-            if (isset($this->BinaryPath)) {
+            if ($this->CalledFrom === 'CLI') {
                 $Origin = 'CLI';
             } elseif ($this->Loader->Configuration['legal']['pseudonymise_ip_addresses']) {
                 $Origin = $this->Loader->pseudonymiseIP($_SERVER[$this->Loader->Configuration['core']['ipaddr']]);
@@ -72,24 +87,21 @@ class Scanner
                 $Origin = $_SERVER[$this->Loader->Configuration['core']['ipaddr']];
             }
 
-            $ScanData = empty($this->Loader->WhyFlagged) ? $this->Loader->L10N->getString('data_not_available') : trim($this->Loader->WhyFlagged);
-            if (!isset($this->Loader->InstanceCache['objects_scanned'])) {
-                $this->Loader->InstanceCache['objects_scanned'] = 0;
+            /** Get detections. */
+            if (count($this->Loader->ScanResultsText)) {
+                $Detections = implode($this->Loader->L10N->getString('grammar_spacer'), $this->Loader->ScanResultsText);
+            } else {
+                $Detections = $this->Loader->L10N->getString('data_not_available');
             }
-            if (!isset($this->Loader->InstanceCache['detections_count'])) {
-                $this->Loader->InstanceCache['detections_count'] = 0;
-            }
-            if (!isset($this->Loader->InstanceCache['scan_errors'])) {
-                $this->Loader->InstanceCache['scan_errors'] = 1;
-            }
+
             $Data = serialize([
-                'start_time' => $this->Loader->InstanceCache['StartTime'] ?? '-',
-                'end_time' => $this->Loader->InstanceCache['EndTime'] ?? '-',
-                'origin' => $Origin,
-                'objects_scanned' => $this->Loader->InstanceCache['objects_scanned'] ?? 0,
-                'detections_count' => $this->Loader->InstanceCache['detections_count'] ?? 0,
-                'scan_errors' => $this->Loader->InstanceCache['scan_errors'] ?? 0,
-                'detections' => $ScanData
+                'StartTime' => $this->Loader->InstanceCache['StartTime'] ?? '-',
+                'EndTime' => $this->Loader->InstanceCache['EndTime'] ?? '-',
+                'Origin' => $Origin,
+                'ObjectsScanned' => $this->Loader->InstanceCache['ObjectsScanned'] ?? 0,
+                'DetectionsCount' => $this->Loader->InstanceCache['DetectionsCount'] ?? 0,
+                'ScanErrors' => $this->Loader->InstanceCache['ScanErrors'] ?? 1,
+                'Detections' => $Detections
             ]) . "\n";
             $WriteMode = (!file_exists($File) || (
                 $this->Loader->Configuration['core']['truncate'] > 0 &&
@@ -106,20 +118,29 @@ class Scanner
         /**
          * Writes to the standard scan log upon scan completion.
          *
-         * @param string $Data What to write.
          * @return bool True on success; False on failure.
          */
-        $this->Loader->Events->addHandler('writeToScanLog', function (string $Data): bool {
+        $this->Loader->Events->addHandler('writeToScanLog', function (): bool {
             /** Guard. */
             if (
+                strlen($this->Loader->ScanResultsFormatted) === 0 ||
                 !$this->Loader->Configuration['core']['scan_log'] ||
                 !($File = $this->Loader->buildPath($this->Loader->Configuration['core']['scan_log']))
             ) {
                 return false;
             }
 
+            $Results = sprintf(
+                "%s %s\n%s%s %s\n\n",
+                $this->Loader->InstanceCache['StartTime2822'],
+                sprintf($this->Loader->L10N->getString('grammar_fullstop'), $this->Loader->L10N->getString('started')),
+                $this->Loader->ScanResultsFormatted,
+                $this->Loader->InstanceCache['EndTime2822'],
+                sprintf($this->Loader->L10N->getString('grammar_fullstop'), $this->Loader->L10N->getString('finished'))
+            );
+
             if (!file_exists($File)) {
-                $Data = \phpMussel\Core\Loader::SAFETY . "\n" . $Data;
+                $Results = \phpMussel\Core\Loader::SAFETY . "\n" . $Results;
                 $WriteMode = 'wb';
             } else {
                 $WriteMode = (
@@ -129,7 +150,7 @@ class Scanner
             }
 
             $Handle = fopen($File, 'ab');
-            fwrite($Handle, $Data);
+            fwrite($Handle, $Results);
             fclose($Handle);
             $this->Loader->logRotation($this->Loader->Configuration['core']['scan_log']);
             return true;
@@ -137,31 +158,45 @@ class Scanner
     }
 
     /**
-     * The method to call to scan something.
+     * The main entry point to the phpMussel scanner.
      * @link https://github.com/phpMussel/Docs/blob/master/readme.en.md#SECTION3
      *
-     * @param string|array $Files What to scan (can be string indicating a
-     *      specific file or directory, or an array of such strings to specify
-     *      multiple files and/or directories).
-     * @param bool $Format The format to return the scan results as. False
-     *      instructs the function to return the results as an integer; True
-     *      instructs the function to return the results as human-readable
-     *      text. Optional (false by default).
-     * @param bool $Flatness Whether arrayed results should be imploded prior
-     *      to being returned. Use false to return the array as verbatim; Use
-     *      true to return the results imploded as an string. Optional (false
-     *      by default).
-     * @param int $Depth The recursion depth of the current method call (you
-     *      should never set this parameter manually).
-     * @param string $OriginalFilename When dealing with uploads, this
-     *      parameter is meant to represent the "original filename" of the file
-     *      being scanned, as per supplied by the client. In other contexts, it
-     *      should generally be the same as $Files.
-     * @return mixed The scan results (an array when $Files is an array, as
-     *      long as at least one of either $Format or $Flatness is false;
-     *      otherwise, an integer or boolean value).
+     * @param string|array $Files What to scan (can be string indicating a specific
+     *      file or directory, or an array of such strings to specify multiple
+     *      files/directories). When as a string, it should point to where the data
+     *      can be found. When as an array, the array keys should indicate the
+     *      original names of the items to be scanned (this is mostly useful for
+     *      file upload scanning, whereby the source is normally temporary files,
+     *      and doesn't reflect the names of the files as given by the client), and
+     *      the values should point to where the data can be found.
+     * @param int $Format The format to return the results as (optional).
+     *      1 = An array of the scan results for each item scanned as integers.
+     *      ├── -5 = Indicates the scan failed to complete for other reasons.
+     *      ├── -4 = Indicates that data couldn't be scanned due to encryption.
+     *      ├── -3 = Indicates that problems were encountered with the
+     *      │        phpMussel signatures files and thus the scan failed to
+     *      │        complete.
+     *      ├── -2 = Indicates that corrupt data was detected during the scan and
+     *      │        thus the scan failed to complete.
+     *      ├── -1 = Indicates that extensions or addons required to execute the
+     *      │        scan were missing and thus the scan failed to complete.
+     *      ├────0 = Indicates that the scan target doesn't exist and thus there was
+     *      │        nothing to scan.
+     *      ├────1 = Indicates that the target was successfully scanned and no
+     *      │        problems were detected (scan target is probably okay).
+     *      └────2 = Indicates that the target was successfully scanned and problems
+     *               were detected (scan target is bad/dangerous).
+     *      2 = A boolean.
+     *      ├───True = Problems were detected (scan target is bad/dangerous).
+     *      └───False = Problems were not detected (scan target is probably okay).
+     *      3 = An array of the scan results for each item scanned as human-readable
+     *          text.
+     *      4 = A string of human-readable text (like 3, but imploded).
+     *      Any other value [default] = Formatted text (i.e., the scan results seen
+     *               when using phpMussel/CLI).
+     * @return mixed The scan results (as per the indicated format).
      */
-    public function scan($Files, bool $Format = false, bool $Flatness = false, int $Depth = 0, string $OriginalFilename = '')
+    public function scan($Files, int $Format = 0)
     {
         /** Fire event: "atStartOf_scan". */
         $this->Loader->Events->fireEvent('atStartOf_scan');
@@ -180,39 +215,35 @@ class Scanner
         /** Initialise statistics if they've been enabled. */
         $this->statsInitialise();
 
-        /** Fall back to $Files if $OriginalFilename wasn't supplied. */
-        if (!$OriginalFilename) {
-            $OriginalFilename = $Files;
-        }
+        /** Reset at each new scan call (but leave $HashReference alone). */
+        $this->Loader->ScanResultsText = [];
+        $this->Loader->ScanResultsIntegers = [];
+        $this->Loader->ScanResultsFormatted = '';
+        $this->Loader->PEData = '';
+        $this->Loader->InstanceCache['ObjectsScanned'] = 0;
+        $this->Loader->InstanceCache['DetectionsCount'] = 0;
+        $this->Loader->InstanceCache['ScanErrors'] = 0;
 
+        /** Start time is used for logging. */
         $this->Loader->InstanceCache['StartTime'] = time() + ($this->Loader->Configuration['core']['time_offset'] * 60);
-        $this->Loader->InstanceCache['start_time_2822'] = $this->Loader->timeFormat(
+        $this->Loader->InstanceCache['StartTime2822'] = $this->Loader->timeFormat(
             $this->Loader->InstanceCache['StartTime'],
             $this->Loader->Configuration['core']['time_format']
         );
-        $Results = $this->recursor($Files, $Format, $Flatness, $Depth, $OriginalFilename);
+
+        /** Begin the recursor. */
+        $this->recursor($Files);
+
+        /** End time is used for logging. */
         $this->Loader->InstanceCache['EndTime'] = time() + ($this->Loader->Configuration['core']['time_offset'] * 60);
-        $this->Loader->InstanceCache['end_time_2822'] = $this->Loader->timeFormat(
+        $this->Loader->InstanceCache['EndTime2822'] = $this->Loader->timeFormat(
             $this->Loader->InstanceCache['EndTime'],
             $this->Loader->Configuration['core']['time_format']
         );
 
-        if ($Format && !is_array($Results)) {
-            $Results = sprintf(
-                "%s %s%s\n%s%s %s%s\n",
-                $this->Loader->InstanceCache['start_time_2822'],
-                $this->Loader->L10N->getString('started'),
-                $this->Loader->L10N->getString('_fullstop_final'),
-                $Results,
-                $this->Loader->InstanceCache['end_time_2822'],
-                $this->Loader->L10N->getString('finished'),
-                $this->Loader->L10N->getString('_fullstop_final')
-            );
-            $this->Loader->Events->fireEvent('writeToScanLog', $Results);
-        }
-        if (!isset($this->Loader->InstanceCache['SkipSerial'])) {
-            $this->Loader->Events->fireEvent('writeToSerialLog');
-        }
+        /** Write to the scan logs. */
+        $this->Loader->Events->fireEvent('writeToScanLog');
+        $this->Loader->Events->fireEvent('writeToSerialLog');
 
         /** Register scan event. */
         $this->statsIncrement($this->CalledFrom === 'Web' ? 'Web-Events' : (
@@ -228,77 +259,58 @@ class Scanner
             );
         }
 
-        /** Exit scan process. */
-        return $Results;
+        /** Return human-readable text. */
+        if ($Format === 4) {
+            return implode($this->Loader->L10N->getString('grammar_spacer'), array_filter($this->Loader->ScanResultsText));
+        }
+
+        /** Return an array of human-readable text. */
+        if ($Format === 3) {
+            return $this->Loader->ScanResultsText;
+        }
+
+        /** Return boolean. */
+        if ($Format === 2) {
+            return $this->Loader->InstanceCache['DetectionsCount'] > 0;
+        }
+
+        /** Return an array of integers. */
+        if ($Format === 1) {
+            return $this->Loader->ScanResultsIntegers;
+        }
+
+        /** Return formatted human-readable text. */
+        return sprintf(
+            "%s %s\n%s%s %s\n\n",
+            $this->Loader->InstanceCache['StartTime2822'],
+            sprintf($this->Loader->L10N->getString('grammar_fullstop'), $this->Loader->L10N->getString('started')),
+            $this->Loader->ScanResultsFormatted,
+            $this->Loader->InstanceCache['EndTime2822'],
+            sprintf($this->Loader->L10N->getString('grammar_fullstop'), $this->Loader->L10N->getString('finished'))
+        );
     }
 
     /**
      * Responsible for recursing through any files given to it to be scanned, which
      * may be necessary for the case of archives and directories. It performs the
-     * preparations necessary for scanning files using the "data handler" and the
-     * "meta data scan" closures. Additionally, it performs some necessary
-     * whitelist, blacklist and greylist checks, filesize and file extension checks,
-     * and handles the processing and extraction of files from archives, fetching
-     * the files contained in archives being scanned in order to process those
-     * contained files as so that they, too, may be scanned.
+     * preparations necessary for scanning files using the "datahandler" and the
+     * "metaDataScan" methods. Additionally, it performs some necessary whitelist,
+     * blacklist and greylist checks, filesize and file extension checks, and
+     * handles the processing and extraction of files from archives, fetching the
+     * files contained in archives being scanned in order to process those contained
+     * files as so that they, too, may be scanned.
      *
-     * When phpMussel is instructed to scan a directory or an array of multiple
-     * files, the recursor is the closure function responsible for iterating through
-     * that directory and/or array queued for scanning, and if necessary, will
-     * recurse itself (such as for when scanning a directory containing
-     * sub-directories or when scanning a multidimensional array of multiple files
-     * and/or directories).
+     * When phpMussel is instructed to scan a directory or an array of files, the
+     * recursor is the method responsible for iterating through that directory/array
+     * queued for scanning, and if necessary, will recurse itself (such as for when
+     * scanning a directory containing sub-directories or when scanning a
+     * multidimensional array of multiple files and/or directories).
      *
-     * @param string|array $Files In the context of the initial file upload scanning
-     *      that phpMussel performs when operating via a server, this parameter (a
-     *      string) represents the "temporary filename" of the file being scanned
-     *      (the temporary filename, in this context, referring to the name
-     *      temporarily assigned to the file by the server upon the file being
-     *      uploaded to the temporary uploads location assigned to the server). When
-     *      operating in the context of CLI mode, both $Files and $OriginalFilename
-     *      represent the scan target, as per specified by the CLI operator; The
-     *      only difference between the two is when the scan target is a directory,
-     *      rather than a single file; $Files will represent the full path to the
-     *      file (so, directory plus filename), whereas $OriginalFilename will
-     *      represent only the filename. This parameter can also accept an array of
-     *      filenames.
-     * @param bool $n This optional parameter is a boolean (defaults to false, but
-     *      set to true during the initial scan of file uploads), indicating the
-     *      format for returning the scan results. False instructs the function to
-     *      return results as an integer; True instructs the function to return
-     *      results as human readable text (refer to Section 3A of the README
-     *      documentation, "HOW TO USE (FOR WEB SERVERS)", for more information).
-     * @param bool $Flatness This optional parameter is a boolean (defaults to
-     *      false, but set to true during the initial scan of file uploads),
-     *      indicating to the function whether or not arrayed results should be
-     *      imploded prior to being returned to the calling function. False
-     *      instructs the function to return the arrayed results as verbatim; True
-     *      instructs the function to return the arrayed results as an imploded
-     *      string.
+     * @param string|array $Files Supplied by the scan method.
      * @param int $Depth Represents the current depth of recursion from which the
-     *      function has been called. This information is used for determining how
-     *      far to indent any entries generated for logging and for the display of
-     *      scan results in CLI (you should never manually set this parameter
-     *      yourself).
-     * @param string $OriginalFilename For the file upload scanning that phpMussel
-     *      normally performs by default, this parameter represents the "original
-     *      filename" of the file being scanned (the original filename, in this
-     *      context, referring to the name supplied by the upload client, as
-     *      opposed to the temporary filename assigned by the server or anything
-     *      else). When operating in the context of CLI mode, both $Files and
-     *      $OriginalFilename represent the scan target, as per specified by the CLI
-     *      operator; The only difference between the two is when the scan target is
-     *      a directory, rather than a single file; $Files will represent the full
-     *      path to the file (so, directory plus filename), whereas
-     *      $OriginalFilename will represent only the filename.
-     * @return mixed The scan results, returned as an array when the $Files
-     *      parameter is an array and when $n and/or $Flatness is/are false, and
-     *      otherwise returned as per described by the README documentation. The
-     *      function may also die the script and return nothing, if something goes
-     *      wrong, such as if the function is triggered in the absence of the
-     *      required $this->Loader->InstanceCache variable being set.
+     *      method has been called.
      */
-    public function recursor($Files = '', bool $n = false, bool $Flatness = false, int $Depth = 0, string $OriginalFilename = '')
+    private function recursor($Files = '', int $Depth = -1)
     {
         /** Fire event: "atStartOf_recursor". */
         $this->Loader->Events->fireEvent('atStartOf_recursor');
@@ -309,64 +321,43 @@ class Scanner
             $this->Loader->InstanceCache['OrganisedSigFiles'] = true;
         }
 
-        if ($this->CalledFrom !== 'Web') {
-            $this->Loader->WhyFlagged = $this->Loader->HashReference = $this->Loader->PEData = '';
-            if ($Depth === 0 || !isset(
-                $this->Loader->InstanceCache['objects_scanned'],
-                $this->Loader->InstanceCache['detections_count'],
-                $this->Loader->InstanceCache['scan_errors']
-            )) {
-                $this->Loader->InstanceCache['objects_scanned'] = 0;
-                $this->Loader->InstanceCache['detections_count'] = 0;
-                $this->Loader->InstanceCache['scan_errors'] = 0;
-            }
-        } else {
-            if (!isset($this->Loader->HashReference)) {
-                $this->Loader->HashReference = '';
-            }
-            if (!isset($this->Loader->WhyFlagged)) {
-                $this->Loader->WhyFlagged = '';
-            }
-            if (!isset($this->Loader->PEData)) {
-                $this->Loader->PEData = '';
-            }
-            if (!isset(
-                $this->Loader->InstanceCache['objects_scanned'],
-                $this->Loader->InstanceCache['detections_count'],
-                $this->Loader->InstanceCache['scan_errors']
-            )) {
-                $this->Loader->InstanceCache['objects_scanned'] = 0;
-                $this->Loader->InstanceCache['detections_count'] = 0;
-                $this->Loader->InstanceCache['scan_errors'] = 0;
-            }
-        }
-
         /** Increment scan depth. */
         $Depth++;
 
-        /** Controls indenting relating to scan depth for normal logging and for CLI-mode scanning. */
-        $lnap = str_pad('> ', ($Depth + 1), '-', STR_PAD_LEFT);
-
         /**
-         * If the scan target is an array, iterate through the array and recurse
-         * the recursor with each array element.
+         * If the scan target is an array with multiple items to scan, iterate
+         * through the array and recurse the recursor with each array element.
+         * Otherwise, discern the data source and original name of the scan target.
          */
         if (is_array($Files)) {
             $SizeOfDir = count($Files);
-            if ($this->Loader->InstanceCache['ThisScanTotal'] === 0) {
-                $this->Loader->InstanceCache['ThisScanTotal'] = $SizeOfDir;
+            if ($SizeOfDir === 1) {
+                $Key = key($Files);
+                $OriginalFilename = $this->prescanDecode($Key);
+                $Files = $Files[$Key];
+                if (is_array($Files)) {
+                    $this->recursor($Files, $Depth);
+                    return;
+                }
+            } elseif ($SizeOfDir > 1) {
+                if ($this->Loader->InstanceCache['ThisScanTotal'] === 0) {
+                    $this->Loader->InstanceCache['ThisScanTotal'] = $SizeOfDir;
+                } else {
+                    $this->Loader->InstanceCache['ThisScanTotal'] += $SizeOfDir - 1;
+                }
+                $this->Loader->Events->fireEvent('countersChanged');
+                foreach ($Files as $Key => $Value) {
+                    $this->recursor([$Key => $Value], $Depth);
+                }
+                return;
             } else {
-                $this->Loader->InstanceCache['ThisScanTotal'] += $SizeOfDir - 1;
+                return;
             }
-            $this->Loader->Events->fireEvent('countersChanged');
-            foreach ($Files as &$Current) {
-                $Current = $this->recursor($Current, $n, false, $Depth, $Current);
-            }
-            return ($n && $Flatness) ? $this->implodeMd($Files) : $Files;
+        } elseif (!is_string($Files)) {
+            return;
+        } else {
+            $OriginalFilename = $this->prescanDecode($Files);
         }
-
-        $OriginalFilename = $this->prescanDecode($OriginalFilename);
-        $OriginalFilenameSafe = urlencode($OriginalFilename);
 
         /**
          * If the scan target is a directory, iterate through the directory
@@ -374,11 +365,11 @@ class Scanner
          */
         if (is_dir($Files)) {
             if (!is_readable($Files)) {
-                $this->Loader->InstanceCache['scan_errors']++;
-                return !$n ? 0 : $lnap . sprintf(
-                    $this->Loader->L10N->getString('_exclamation_final'),
+                $this->Loader->InstanceCache['ScanErrors']++;
+                $this->Loader->atHit('', -1, preg_replace(['~[\x00-\x1f]~', '~^[\\\/]~'], '', $Files), sprintf(
+                    $this->Loader->L10N->getString('grammar_exclamation_mark'),
                     sprintf($this->Loader->L10N->getString('failed_to_access'), $OriginalFilename)
-                ) . "\n";
+                ), -5, $Depth);
             }
             $Dir = $this->directoryRecursiveList($Files);
             $SizeOfDir = count($Dir);
@@ -389,9 +380,9 @@ class Scanner
             }
             $this->Loader->Events->fireEvent('countersChanged');
             foreach ($Dir as &$Sub) {
-                $Sub = $this->recursor($Files . DIRECTORY_SEPARATOR . $Sub, $n, false, $Depth, $Sub);
+                $this->recursor([$Sub => $Files . DIRECTORY_SEPARATOR . $Sub], $Depth);
             }
-            return ($n && $Flatness) ? $this->implodeMd($Dir) : $Dir;
+            return;
         }
 
         /** Increment counter. */
@@ -399,6 +390,19 @@ class Scanner
             $this->Loader->InstanceCache['ThisScanTotal'] = 1;
             $this->Loader->Events->fireEvent('countersChanged');
         }
+
+        /** Reset at each new recursor call. */
+        $this->resetHeuristics();
+
+        /** Ensure that the original filename doesn't break lines and clean it up. */
+        $OriginalFilenameClean = preg_replace(['~[\x00-\x1f]~', '~^[\\\/]~'], '', $OriginalFilename);
+
+        /** Indenting to apply for "checking" . */
+        $Indent = str_pad('→ ', ($Depth < 1 ? 4 : ($Depth * 3) + 4), '─', STR_PAD_LEFT);
+
+        /** Notify that we've began checking a scan target to the formatted text. */
+        $this->Loader->ScanResultsFormatted .= $Indent . sprintf($this->Loader->L10N->getString('scan_checking'), $OriginalFilenameClean) . "\n";
+        $this->Loader->InstanceCache['CheckWasLast'] = true;
 
         /** Define file phase. */
         $this->Loader->InstanceCache['phase'] = 'file';
@@ -426,72 +430,63 @@ class Scanner
         /** Fire event: "before_scan". */
         $this->Loader->Events->fireEvent('before_scan');
 
-        $fnCRC = hash('crc32b', $OriginalFilename);
-
         /** Kill it here if the scan target isn't a valid file. */
-        if (!$Files || !$d = is_file($Files)) {
+        if (!$Files || !is_file($Files)) {
             $this->Loader->InstanceCache['ThisScanDone']++;
             $this->Loader->Events->fireEvent('countersChanged');
-            return !$n ? 0 :
-                $lnap . $this->Loader->L10N->getString('scan_checking') . ' \'' . $OriginalFilename .
-                '\' (FN: ' . $fnCRC . "):\n-" . $lnap . sprintf(
-                    $this->Loader->L10N->getString('_exclamation_final'),
-                    $this->Loader->L10N->getString('invalid_file')
-                ) . "\n";
+            $this->Loader->atHit('', -1, $OriginalFilenameClean, sprintf(
+                $this->Loader->L10N->getString('grammar_exclamation_mark'),
+                $this->Loader->L10N->getString('invalid_file')
+            ), 0, $Depth + 1);
+            return;
         }
 
         $fS = filesize($Files);
         if ($this->Loader->Configuration['files']['filesize_limit'] > 0) {
             if ($fS > $this->Loader->readBytes($this->Loader->Configuration['files']['filesize_limit'])) {
+                $this->Loader->InstanceCache['ThisScanDone']++;
+                $this->Loader->Events->fireEvent('countersChanged');
                 if (!$this->Loader->Configuration['files']['filesize_response']) {
                     $this->Loader->InstanceCache['ThisScanDone']++;
                     $this->Loader->Events->fireEvent('countersChanged');
-                    return !$n ? 1 :
-                        $lnap . $this->Loader->L10N->getString('scan_checking') . ' \'' .
-                        $OriginalFilename . '\' (FN: ' . $fnCRC . "):\n-" . $lnap .
-                        $this->Loader->L10N->getString('ok') . ' (' .
-                        $this->Loader->L10N->getString('filesize_limit_exceeded') . ").\n";
+                    $this->Loader->atHit('', $fS, $OriginalFilenameClean, '', 1, $Depth + 1);
+                    return;
                 }
-                $this->Loader->HashReference .= str_repeat('-', 64) . ':' . $fS . ':' . $OriginalFilename . "\n";
-                $this->Loader->WhyFlagged .= sprintf(
-                    $this->Loader->L10N->getString('_exclamation'),
-                    $this->Loader->L10N->getString('filesize_limit_exceeded') . ' (' . $OriginalFilenameSafe . ')'
-                );
+                $this->Loader->atHit('', $fS, $OriginalFilenameClean, sprintf(
+                    $this->Loader->L10N->getString('grammar_exclamation_mark'),
+                    sprintf(
+                        $this->Loader->L10N->getString('grammar_brackets'),
+                        $this->Loader->L10N->getString('filesize_limit_exceeded'),
+                        $OriginalFilenameClean
+                    )
+                ), 2, $Depth + 1);
                 if ($this->Loader->Configuration['core']['delete_on_sight'] && is_readable($Files)) {
                     unlink($Files);
                 }
-                $this->Loader->InstanceCache['ThisScanDone']++;
-                $this->Loader->Events->fireEvent('countersChanged');
-                return !$n ? 2 :
-                    $lnap . $this->Loader->L10N->getString('scan_checking') . ' \'' . $OriginalFilename .
-                    '\' (FN: ' . $fnCRC . "):\n-" . $lnap .
-                    $this->Loader->L10N->getString('filesize_limit_exceeded') .
-                    $this->Loader->L10N->getString('_fullstop_final') . "\n";
+                return;
             }
         }
         if (!$this->Loader->Configuration['files']['allow_leading_trailing_dots'] && (
-            substr($OriginalFilename, 0, 1) === '.' || substr($OriginalFilename, -1) === '.'
+            substr($OriginalFilenameClean, 0, 1) === '.' || substr($OriginalFilenameClean, -1) === '.'
         )) {
-            $this->Loader->HashReference .= str_repeat('-', 64) . ':' . $fS . ':' . $OriginalFilename . "\n";
-            $this->Loader->WhyFlagged .= sprintf(
-                $this->Loader->L10N->getString('_exclamation'),
-                $this->Loader->L10N->getString('scan_filename_manipulation_detected') . ' (' . $OriginalFilenameSafe . ')'
-            );
+            $this->Loader->InstanceCache['ThisScanDone']++;
+            $this->Loader->Events->fireEvent('countersChanged');
+            $this->Loader->atHit('', $fS, $OriginalFilenameClean, sprintf(
+                $this->Loader->L10N->getString('grammar_exclamation_mark'),
+                sprintf(
+                    $this->Loader->L10N->getString('grammar_brackets'),
+                    $this->Loader->L10N->getString('scan_filename_manipulation_detected'),
+                    $OriginalFilenameClean
+                )
+            ), 2, $Depth + 1);
             if ($this->Loader->Configuration['core']['delete_on_sight'] && is_readable($Files)) {
                 unlink($Files);
             }
-            $this->Loader->InstanceCache['ThisScanDone']++;
-            $this->Loader->Events->fireEvent('countersChanged');
-            return !$n ? 2 :
-                $lnap . $this->Loader->L10N->getString('scan_checking') . ' \'' . $OriginalFilename .
-                '\' (FN: ' . $fnCRC . "):\n-" . $lnap . sprintf(
-                    $this->Loader->L10N->getString('_exclamation_final'),
-                    $this->Loader->L10N->getString('scan_filename_manipulation_detected')
-                ) . "\n";
+            return;
         }
 
         /** Get file extensions. */
-        [$xt, $xts, $gzxt, $gzxts] = $this->fetchExtension($OriginalFilename);
+        [$xt, $xts, $gzxt, $gzxts] = $this->fetchExtension($OriginalFilenameClean);
 
         /** Process filetype whitelisting. */
         if ($this->containsMustAssert([
@@ -499,52 +494,31 @@ class Scanner
         ], [$xt, $xts, $gzxt, $gzxts], ',', true, true)) {
             $this->Loader->InstanceCache['ThisScanDone']++;
             $this->Loader->Events->fireEvent('countersChanged');
-            return !$n ? 1 :
-                $lnap . $this->Loader->L10N->getString('scan_checking') . ' \'' . $OriginalFilename .
-                '\' (FN: ' . $fnCRC . "):\n-" . $lnap .
-                $this->Loader->L10N->getString('scan_no_problems_found') . "\n";
+            $this->Loader->atHit('', $fS, $OriginalFilenameClean, '', 1, $Depth + 1);
         }
 
-        /** Process filetype blacklisting. */
+        /** Process filetype blacklisting and greylisting. */
         if ($this->containsMustAssert([
             $this->Loader->Configuration['files']['filetype_blacklist']
-        ], [$xt, $xts, $gzxt, $gzxts], ',', true, true)) {
-            $this->Loader->HashReference .= str_repeat('-', 64) . ':' . $fS . ':' . $OriginalFilename . "\n";
-            $this->Loader->WhyFlagged .= sprintf(
-                $this->Loader->L10N->getString('_exclamation'),
-                $this->Loader->L10N->getString('filetype_blacklisted') . ' (' . $OriginalFilenameSafe . ')'
-            );
+        ], [$xt, $xts, $gzxt, $gzxts], ',', true, true) ||
+            (!empty($this->Loader->Configuration['files']['filetype_greylist']) && $this->containsMustAssert([
+                $this->Loader->Configuration['files']['filetype_greylist']
+            ], [$xt, $xts, $gzxt, $gzxts]))
+        ) {
+            $this->Loader->InstanceCache['ThisScanDone']++;
+            $this->Loader->Events->fireEvent('countersChanged');
+            $this->Loader->atHit('', $fS, $OriginalFilenameClean, sprintf(
+                $this->Loader->L10N->getString('grammar_exclamation_mark'),
+                sprintf(
+                    $this->Loader->L10N->getString('grammar_brackets'),
+                    $this->Loader->L10N->getString('filetype_blacklisted'),
+                    $OriginalFilenameClean
+                )
+            ), 2, $Depth + 1);
             if ($this->Loader->Configuration['core']['delete_on_sight'] && is_readable($Files)) {
                 unlink($Files);
             }
-            $this->Loader->InstanceCache['ThisScanDone']++;
-            $this->Loader->Events->fireEvent('countersChanged');
-            return !$n ? 2 :
-                $lnap . $this->Loader->L10N->getString('scan_checking') . ' \'' .
-                $OriginalFilename . '\' (FN: ' . $fnCRC . "):\n-" . $lnap .
-                $this->Loader->L10N->getString('filetype_blacklisted') .
-                $this->Loader->L10N->getString('_fullstop_final') . "\n";
-        }
-
-        /** Process filetype greylisting (when relevant). */
-        if (!empty($this->Loader->Configuration['files']['filetype_greylist']) && $this->containsMustAssert([
-            $this->Loader->Configuration['files']['filetype_greylist']
-        ], [$xt, $xts, $gzxt, $gzxts])) {
-            $this->Loader->HashReference .= str_repeat('-', 64) . ':' . $fS . ':' . $OriginalFilename . "\n";
-            $this->Loader->WhyFlagged .= sprintf(
-                $this->Loader->L10N->getString('_exclamation'),
-                $this->Loader->L10N->getString('filetype_blacklisted') . ' (' . $OriginalFilenameSafe . ')'
-            );
-            if ($this->Loader->Configuration['core']['delete_on_sight'] && is_readable($Files)) {
-                unlink($Files);
-            }
-            $this->Loader->InstanceCache['ThisScanDone']++;
-            $this->Loader->Events->fireEvent('countersChanged');
-            return !$n ? 2 :
-                $lnap . $this->Loader->L10N->getString('scan_checking') . ' \'' .
-                $OriginalFilename . '\' (FN: ' . $fnCRC . "):\n-" . $lnap .
-                $this->Loader->L10N->getString('filetype_blacklisted') .
-                $this->Loader->L10N->getString('_fullstop_final') . "\n";
+            return;
         }
 
         /** Read in the file to be scanned. */
@@ -556,37 +530,39 @@ class Scanner
         /** Generate CRC for the file to be scanned. */
         $fdCRC = hash('crc32b', $in);
 
+        /** Generate SHA256 for the file to be scanned. */
+        $SHA256 = hash('sha256', $in);
+
         /** Check for non-image items. */
         if (!empty($in) && $this->Loader->Configuration['files']['only_allow_images'] && !$this->imageIndicators($xt, bin2hex(substr($in, 0, 16)))) {
-            $this->Loader->HashReference .= hash('sha256', $in) . ':' . $fS . ':' . $OriginalFilename . "\n";
-            $this->Loader->WhyFlagged .= sprintf(
-                $this->Loader->L10N->getString('_exclamation'),
-                $this->Loader->L10N->getString('only_allow_images') . ' (' . $OriginalFilenameSafe . ')'
-            );
+            $this->Loader->InstanceCache['ThisScanDone']++;
+            $this->Loader->Events->fireEvent('countersChanged');
+            $this->Loader->atHit($SHA256, $fS, $OriginalFilenameClean, sprintf(
+                $this->Loader->L10N->getString('grammar_exclamation_mark'),
+                sprintf(
+                    $this->Loader->L10N->getString('grammar_brackets'),
+                    $this->Loader->L10N->getString('only_allow_images'),
+                    $OriginalFilenameClean
+                )
+            ), 2, $Depth + 1);
             if ($this->Loader->Configuration['core']['delete_on_sight'] && is_readable($Files)) {
                 unlink($Files);
             }
-            $this->Loader->InstanceCache['ThisScanDone']++;
-            $this->Loader->Events->fireEvent('countersChanged');
-            return !$n ? 2 :
-                $lnap . $this->Loader->L10N->getString('scan_checking') . ' \'' .
-                $OriginalFilename . '\' (FN: ' . $fnCRC . '; FD: ' . $fdCRC . "):\n-" .
-                $lnap . $this->Loader->L10N->getString('only_allow_images') .
-                $this->Loader->L10N->getString('_fullstop_final') . "\n";
+            return;
         }
 
         /** Increment objects scanned count. */
-        $this->Loader->InstanceCache['objects_scanned']++;
+        $this->Loader->InstanceCache['ObjectsScanned']++;
 
         /** Send the scan target to the data handler. */
-        $z = $this->dataHandler($in, $Depth, $OriginalFilename);
+        $this->dataHandler($in, $Depth, $OriginalFilenameClean);
 
         /**
          * Check whether the file is compressed. If it's compressed, attempt to
          * decompress it, and then scan the decompressed version of the file. We'll
          * only bother doing this if the file hasn't already been flagged though.
          */
-        if ($z[0] === 1) {
+        if (!empty($this->Loader->InstanceCache['CheckWasLast'])) {
 
             /** Create a new compression object. */
             $CompressionObject = new CompressionHandler($in);
@@ -595,7 +571,7 @@ class Scanner
             if (!$CompressionResults = $CompressionObject->TryEverything()) {
 
                 /** Success! Now we'll send it to the data handler. */
-                $z = $this->dataHandler($CompressionObject->Data, $Depth, $this->dropTrailingCompressionExtension($OriginalFilename));
+                $this->dataHandler($CompressionObject->Data, $Depth, $this->dropTrailingCompressionExtension($OriginalFilenameClean));
 
                 /**
                  * Replace originally scanned data with decompressed data in case
@@ -608,25 +584,26 @@ class Scanner
             unset($CompressionResults, $CompressionObject);
         }
 
-        /** Executed if there were any problems or if anything was detected. */
-        if ($z[0] !== 1) {
+        $inLen = strlen($in);
+
+        /** Executed if any problems were detected. */
+        if (empty($this->Loader->InstanceCache['CheckWasLast'])) {
 
             /** Quarantine if necessary. */
-            if ($z[0] === 2) {
-                if (
-                    $this->Loader->Configuration['quarantine']['quarantine_key'] &&
-                    strlen($in) < $this->Loader->readBytes($this->Loader->Configuration['quarantine']['quarantine_max_filesize'])
-                ) {
-                    /** Note: "qfu" = "Quarantined File Upload". */
-                    $qfu = $this->Loader->Time . '-' . hash('md5', $this->Loader->Configuration['quarantine']['quarantine_key'] . $fdCRC . $this->Loader->Time);
-                    $this->quarantine(
-                        $in,
-                        $this->Loader->Configuration['quarantine']['quarantine_key'],
-                        $_SERVER[$this->Loader->Configuration['core']['ipaddr']],
-                        $qfu
-                    );
-                    $this->Loader->HashReference .= sprintf($this->Loader->L10N->getString('quarantined_as'), $qfu) . "\n";
-                }
+            if (
+                $this->Loader->Configuration['quarantine']['quarantine_key'] &&
+                $inLen > 0 &&
+                $inLen < $this->Loader->readBytes($this->Loader->Configuration['quarantine']['quarantine_max_filesize'])
+            ) {
+                /** Note: "qfu" = "Quarantined File Upload". */
+                $qfu = $this->Loader->Time . '-' . hash('md5', $this->Loader->Configuration['quarantine']['quarantine_key'] . $fdCRC . $this->Loader->Time);
+                $this->quarantine(
+                    $in,
+                    $this->Loader->Configuration['quarantine']['quarantine_key'],
+                    $_SERVER[$this->Loader->Configuration['core']['ipaddr']],
+                    $qfu
+                );
+                $this->Loader->HashReference .= sprintf($this->Loader->L10N->getString('quarantined_as'), $qfu) . "\n";
             }
 
             /** Delete if necessary. */
@@ -634,34 +611,10 @@ class Scanner
                 unlink($Files);
             }
 
-            /** Exit. */
             $this->Loader->InstanceCache['ThisScanDone']++;
             $this->Loader->Events->fireEvent('countersChanged');
-            return !$n ? $z[0] : sprintf(
-                '%s%s \'%s\' (FN: %s; FD: %s):%s%s',
-                $lnap,
-                $this->Loader->L10N->getString('scan_checking'),
-                $OriginalFilename,
-                $fnCRC,
-                $fdCRC,
-                "\n",
-                $z[1]
-            );
+            return;
         }
-
-        $x = sprintf(
-            '%1$s%2$s \'%3$s\' (FN: %4$s; FD: %5$s):%6$s-%1$s%7$s%6$s',
-            $lnap,
-            $this->Loader->L10N->getString('scan_checking'),
-            $OriginalFilename,
-            $fnCRC,
-            $fdCRC,
-            "\n",
-            $this->Loader->L10N->getString('scan_no_problems_found')
-        );
-
-        /** Results. */
-        $Results = 1;
 
         /**
          * Begin archive phase.
@@ -680,7 +633,7 @@ class Scanner
             $this->Loader->InstanceCache['tempfilesToDelete'] = [];
 
             /** Begin processing archives. */
-            $this->archiveRecursor($x, $Results, $in, (isset($CompressionResults) && !$CompressionResults) ? '' : $Files, 0, urlencode($OriginalFilename));
+            $this->archiveRecursor($in, (isset($CompressionResults) && !$CompressionResults) ? '' : $Files, $Depth, $OriginalFilenameClean);
 
             /** Begin deleting any temporary files that snuck through. */
             foreach ($this->Loader->InstanceCache['tempfilesToDelete'] as $DeleteThis) {
@@ -691,18 +644,25 @@ class Scanner
 
             /** Add hash cache entry here if necessary (e.g., because of encryption). */
             if (
-                $Results === -4 &&
+                ($InSha256 = hash('sha256', $in)) &&
+                ($AtInstanceLookupKey = sprintf('%s:%d:%s', $InSha256, strlen($In), $OriginalFilenameClean)) &&
+                isset($this->Loader->ScanResultsIntegers[$AtInstanceLookupKey]) &&
+                $this->Loader->ScanResultsIntegers[$AtInstanceLookupKey] === -4 &&
+                isset($this->Loader->ScanResultsText[$AtInstanceLookupKey]) &&
                 $this->Loader->Configuration['core']['scan_cache_expiry'] > 0 &&
-                ($HashCacheID = hash('sha256', $in) . hash('sha256', $OriginalFilename))
+                ($HashCacheID = $InSha256 . hash('sha256', $OriginalFilename))
             ) {
-                /** 0: (int) {-4...2}; 1: For CLI+API; 2: For Web. */
-                $HashCacheEntry = json_encode([$Results, $x, $this->Loader->WhyFlagged]);
+                /** 0: (int) {-5...2}; 1: Text. */
+                $HashCacheEntry = json_encode([
+                    $this->Loader->ScanResultsIntegers[$AtInstanceLookupKey],
+                    $this->Loader->ScanResultsText[$AtInstanceLookupKey]
+                ]);
                 $this->Loader->Cache->setEntry($HashCacheID, $HashCacheEntry, $this->Loader->Configuration['core']['scan_cache_expiry']);
             }
         }
 
         /** Quarantine if necessary. */
-        if ($Results === 2) {
+        if (empty($this->Loader->InstanceCache['CheckWasLast'])) {
             if (
                 $this->Loader->Configuration['quarantine']['quarantine_key'] &&
                 strlen($in) < $this->Loader->readBytes($this->Loader->Configuration['quarantine']['quarantine_max_filesize'])
@@ -720,14 +680,23 @@ class Scanner
         }
 
         /** Delete if necessary. */
-        if ($Results !== 1 && $this->Loader->Configuration['core']['delete_on_sight'] && is_readable($Files)) {
+        if (
+            empty($this->Loader->InstanceCache['CheckWasLast']) &&
+            $this->Loader->Configuration['core']['delete_on_sight'] &&
+            is_readable($Files)
+        ) {
             unlink($Files);
+        }
+
+        /** Clean. */
+        if (!empty($this->Loader->InstanceCache['CheckWasLast'])) {
+            $this->Loader->atHit($SHA256, $fS, $OriginalFilenameClean, '', 1, $Depth + 1);
         }
 
         /** Exit. */
         $this->Loader->InstanceCache['ThisScanDone']++;
         $this->Loader->Events->fireEvent('countersChanged');
-        return !$n ? $Results : $x;
+        return;
     }
 
     /**
@@ -737,8 +706,8 @@ class Scanner
      * phpMussel, before returning the results of those checks back to the
      * recursor.
      *
-     * @param string $str Raw binary data to be checked, supplied by the parent
-     *      closure (generally, the contents of the files to be scanned).
+     * @param string $str Raw binary data to be checked, supplied by the calling
+     *      method (generally, the contents of the files to be scanned).
      * @param int $Depth Represents the current depth of recursion from which the
      *      closure has been called, used for determining how far to indent any
      *      entries generated for logging and for the display of scan results in
@@ -747,37 +716,28 @@ class Scanner
      *      scanned (in this context, referring to the name supplied by the upload
      *      client or CLI operator, as opposed to the temporary filename assigned
      *      by the server or anything else).
-     * @return array|bool Returns an array containing the results of the scan as
-     *      both an integer (the first element) and as human-readable text (the
-     *      second element), or returns false if any problems occur preventing the
-     *      data handler from completing its normal process.
      */
-    public function dataHandler(string $str = '', int $Depth = 0, string $OriginalFilename = '')
+    private function dataHandler(string $str = '', int $Depth = 0, string $OriginalFilename = '')
     {
         /** Fire event: "atStartOf_dataHandler". */
         $this->Loader->Events->fireEvent('atStartOf_dataHandler');
 
-        /** Identifies whether the scan target has been flagged for any reason yet. */
-        $Flagged = false;
-
         /** Increment scan depth. */
         $Depth++;
 
-        /** Controls indenting relating to scan depth for normal logging and for CLI-mode scanning. */
-        $lnap = str_pad('> ', ($Depth + 1), '-', STR_PAD_LEFT);
-
-        /** Output variable (for when the output is a string). */
-        $Out = '';
-
         /** There's no point bothering to scan zero-byte files. */
         if (!$StringLength = strlen($str)) {
-            return [1, ''];
+            $this->Loader->atHit('', 0, $OriginalFilename, '', 1, $Depth);
+            return;
         }
 
         /** Generate hash variables. */
         foreach (['md5', 'sha1', 'sha256', 'crc32b'] as $Algo) {
             $$Algo = hash($Algo, $str);
         }
+
+        /** Needed for hash caching plus some other checks. */
+        $AtInstanceLookupKey = sprintf('%s:%d:%s', $sha256, $StringLength, $OriginalFilename);
 
         /** $fourcc: First four bytes of the scan target in hexadecimal notation. */
         $fourcc = strtolower(bin2hex(substr($str, 0, 4)));
@@ -797,29 +757,14 @@ class Scanner
         }
         unset($AppendToCoExMeta);
 
-        /** Indicates whether a signature is considered a "weighted" signature. */
-        $this->Loader->InstanceCache['weighted'] = false;
-
-        /** Variables used for weighted signatures and for heuristic analysis. */
-        $heur = ['detections' => 0, 'weight' => 0, 'cli' => '', 'web' => ''];
-
         /** Scan target has no name? That's a little suspicious. */
         if (!$OriginalFilename) {
-            $this->Loader->HashReference .= $sha256 . ':' . $StringLength . ":\n";
-            $this->Loader->InstanceCache['detections_count']++;
-            $Out .= $lnap . sprintf(
-                $this->Loader->L10N->getString('_exclamation_final'),
+            $this->Loader->atHit($sha256, $StringLength, '', sprintf(
+                $this->Loader->L10N->getString('grammar_exclamation_mark'),
                 $this->Loader->L10N->getString('scan_missing_filename')
-            ) . "\n";
-            $this->Loader->WhyFlagged .= sprintf(
-                $this->Loader->L10N->getString('_exclamation'),
-                $this->Loader->L10N->getString('scan_missing_filename')
-            );
-            return [2, $Out];
+            ), 2, $Depth);
+            return;
         }
-
-        /** URL-encoded version of the scan target name. */
-        $OriginalFilenameSafe = urlencode($OriginalFilename);
 
         /**
          * Check whether the file being scanned has already been recently
@@ -831,23 +776,13 @@ class Scanner
             ($HashCacheEntry = $this->Loader->Cache->getEntry($HashCacheID)) &&
             preg_match('~^\[\-?\d,".*",".*"\]$~', $HashCacheEntry)
         ) {
-            /** 0: (int) {-4...2}; 1: For CLI+API; 2: For Web. */
+            /** 0: (int) {-5...2}; 1: Text. */
             if (($HashCacheEntry = json_decode($HashCacheEntry, true, 2)) === false) {
-                $HashCacheEntry = [-2, $lnap . sprintf(
-                    $this->Loader->L10N->getString('_exclamation_final'),
-                    $this->Loader->L10N->getString('corrupted')
-                ) . "\n",
-                sprintf(
-                    $this->Loader->L10N->getString('_exclamation'),
-                    $this->Loader->L10N->getString('corrupted') . ' (' . $OriginalFilenameSafe . ')'
-                )];
-            }
-
-            /** Add to hash references if something was detected. */
-            if ($HashCacheEntry[0] !== 1) {
-                $this->Loader->HashReference .= $sha256 . ':' . $StringLength . ':' . $OriginalFilename . "\n";
-                $this->Loader->InstanceCache['detections_count']++;
-                $this->Loader->WhyFlagged .= $HashCacheEntry[2];
+                $this->Loader->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
+                    $this->Loader->L10N->getString('grammar_exclamation_mark'),
+                    $this->Loader->L10N->getString('invalid_data')
+                ), -2, $Depth);
+                return;
             }
 
             /** Set debug values, if this has been enabled. */
@@ -867,19 +802,21 @@ class Scanner
                     'ScanPhase' => $this->Loader->InstanceCache['phase'],
                     'Container' => $this->Loader->InstanceCache['container'],
                     'Results' => $HashCacheEntry[0],
-                    'Output' => $ForHumans
+                    'Output' => $HashCacheEntry[1]
                 ];
             }
 
-            /** Register object flagged. */
+            /** Something was detected. */
             if ($HashCacheEntry[0] !== 1) {
+                /** Register object flagged. */
                 $this->statsIncrement($this->CalledFrom === 'Web' ? 'Web-Blocked' : (
                     $this->CalledFrom === 'CLI' ? 'CLI-Flagged' : 'API-Flagged'
                 ), 1);
-            }
 
-            /** Exit data handler. */
-            return [$HashCacheEntry[0], $HashCacheEntry[1]];
+                /** Register the hit. */
+                $this->Loader->atHit($sha256, $StringLength, $OriginalFilename, $HashCacheEntry[1], $HashCacheEntry[0], $Depth);
+            }
+            return;
         }
 
         /** Register object scanned. */
@@ -890,9 +827,6 @@ class Scanner
         } else {
             $this->statsIncrement('API-Scanned', 1);
         }
-
-        /** Indicates whether we're in CLI-mode. */
-        $climode = isset($this->BinaryPath) ? 1 : 0;
 
         if (
             $this->Loader->Configuration['files']['scannable_threshold'] > 0 &&
@@ -1046,9 +980,6 @@ class Scanner
                         continue 2;
                     }
                     $lv_haystack = $$lv_haystack;
-                    if ($climode) {
-                        $lv_haystack = $this->Loader->substrAfterLast($this->Loader->substrAfterLast($lv_haystack, '/'), "\\");
-                    }
                     $lv_needle = $Fragment[2] ?? '';
                     $pos_A = $Fragment[3] ?? 0;
                     $pos_Z = $Fragment[4] ?? 0;
@@ -1210,7 +1141,7 @@ class Scanner
                         break;
                     }
                     $PEArr['Magic'] = substr($str, $PEArr['Offset'], 2);
-                    if ($PEArr['Magic']!=='PE') {
+                    if ($PEArr['Magic'] !== 'PE') {
                         $PEArr['DoScan'] = false;
                         break;
                     }
@@ -1230,20 +1161,10 @@ class Scanner
                 }
                 if (!$PEArr['DoScan']) {
                     if ($this->Loader->Configuration['files']['corrupted_exe']) {
-                        if (!$Flagged) {
-                            $this->Loader->HashReference .= $sha256 . ':' . $StringLength . ':' . $OriginalFilename . "\n";
-                            $Flagged = true;
-                        }
-                        $heur['detections']++;
-                        $this->Loader->InstanceCache['detections_count']++;
-                        $Out .= $lnap . sprintf(
-                            $this->Loader->L10N->getString('_exclamation_final'),
+                        $this->Loader->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
+                            $this->Loader->L10N->getString('grammar_exclamation_mark'),
                             $this->Loader->L10N->getString('corrupted')
-                        ) . "\n";
-                        $this->Loader->WhyFlagged .= sprintf(
-                            $this->Loader->L10N->getString('_exclamation'),
-                            $this->Loader->L10N->getString('corrupted') . ' (' . $OriginalFilenameSafe . ')'
-                        );
+                        ), 2, $Depth);
                     }
                 } else {
                     $is_pe = true;
@@ -1270,7 +1191,7 @@ class Scanner
                         $PointerToRawData = $PointerToRawData[1];
                         $PEArr['SectionArr'][$PEArr['k']]['SectionData'] = substr($str, $PointerToRawData, $SizeOfRawData);
                         $SectionOffsets[$PEArr['k']] = [$PointerToRawData, $SizeOfRawData];
-                        foreach(['md5', 'sha1', 'sha256'] as $TryHash) {
+                        foreach (['md5', 'sha1', 'sha256'] as $TryHash) {
                             $PEArr['SectionArr'][$PEArr['k']][$TryHash] = hash($TryHash, $PEArr['SectionArr'][$PEArr['k']]['SectionData']);
                         }
                         $this->Loader->PEData .=
@@ -1309,7 +1230,7 @@ class Scanner
                                     "\x00\x00\x00"
                                 )))
                             )) {
-                                foreach(['md5', 'sha1', 'sha256'] as $TryHash) {
+                                foreach (['md5', 'sha1', 'sha256'] as $TryHash) {
                                     $PEArr['FINFO'][] = sprintf(
                                         '$%s:%s:%d:',
                                         $PEVars[1],
@@ -1508,19 +1429,16 @@ class Scanner
                 $this->Loader->Events->fireEvent('beforeSigFile', '', $SigFile);
 
                 if (empty($this->Loader->InstanceCache[$SigFile])) {
-                    $this->Loader->InstanceCache['scan_errors']++;
+                    $this->Loader->InstanceCache['ScanErrors']++;
                     if (!$this->Loader->Configuration['signatures']['fail_silently']) {
-                        if (!$Flagged) {
-                            $this->Loader->HashReference .= $sha256 . ':' . $StringLength . ":\n";
-                        }
-                        $this->Loader->WhyFlagged .= sprintf(
-                            $this->Loader->L10N->getString('_exclamation'),
-                            $this->Loader->L10N->getString('scan_signature_file_missing') . ' (' . $SigFile . ')'
-                        );
-                        return [-3, $lnap . sprintf(
-                            $this->Loader->L10N->getString('_exclamation_final'),
-                            $this->Loader->L10N->getString('scan_signature_file_missing') . ' (' . $SigFile . ')'
-                        ) . "\n"];
+                        $this->Loader->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
+                            $this->Loader->L10N->getString('grammar_exclamation_mark'),
+                            sprintf(
+                                $this->Loader->L10N->getString('grammar_brackets'),
+                                $this->Loader->L10N->getString('scan_signature_file_missing'),
+                                $SigFile
+                            )
+                        ), -3, $Depth);
                     }
                 } elseif ($ThisConf[1] === 0) {
                     if (substr($this->Loader->InstanceCache[$SigFile], 0, 9) === 'phpMussel') {
@@ -1529,20 +1447,10 @@ class Scanner
                     $ArrayCSV = explode(',', $this->Loader->InstanceCache[$SigFile]);
                     foreach ($ArrayCSV as $ItemCSV) {
                         if (strpos($str_hex_norm, $ItemCSV) !== false) {
-                            if (!$Flagged) {
-                                $this->Loader->HashReference .= $sha256 . ':' . $StringLength . ':' . $OriginalFilename . "\n";
-                                $Flagged = true;
-                            }
-                            $heur['detections']++;
-                            $this->Loader->InstanceCache['detections_count']++;
-                            $Out .= $lnap . sprintf(
-                                $this->Loader->L10N->getString('_exclamation'),
+                            $this->Loader->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
+                                $this->Loader->L10N->getString('grammar_exclamation_mark'),
                                 $this->Loader->L10N->getString('scan_command_injection')
-                            ) . "\n";
-                            $this->Loader->WhyFlagged .= sprintf(
-                                $this->Loader->L10N->getString('_exclamation'),
-                                $this->Loader->L10N->getString('scan_command_injection') . ', \'' . $this->Loader->hexSafe($ItemCSV) . '\' (' . $OriginalFilenameSafe . ')'
-                            );
+                            ), 2, $Depth);
                         }
                     }
                     unset($ItemCSV, $ArrayCSV);
@@ -1558,7 +1466,7 @@ class Scanner
                                 strpos($this->Loader->InstanceCache['Greylist'], ',' . $xSig . ',') === false &&
                                 empty($this->Loader->InstanceCache['ignoreme'])
                             ) {
-                                $this->detected($heur, $lnap, $xSig, $OriginalFilename, $OriginalFilenameSafe, $Out, $Flagged, $md5, $StringLength);
+                                $this->detected($xSig, $OriginalFilename, $sha256, $StringLength, $Depth);
                             }
                         }
                     }
@@ -1578,7 +1486,7 @@ class Scanner
                                     strpos($this->Loader->InstanceCache['Greylist'], ',' . $xSig . ',') === false &&
                                     empty($this->Loader->InstanceCache['ignoreme'])
                                 ) {
-                                    $this->detected($heur, $lnap, $xSig, $OriginalFilename, $OriginalFilenameSafe, $Out, $Flagged, $md5, $StringLength);
+                                    $this->detected($xSig, $OriginalFilename, $sha256, $StringLength, $Depth);
                                 }
                             }
                         }
@@ -1596,7 +1504,7 @@ class Scanner
                                     !substr_count($this->Loader->InstanceCache['Greylist'], ',' . $xSig . ',') &&
                                     empty($this->Loader->InstanceCache['ignoreme'])
                                 ) {
-                                    $this->detected($heur, $lnap, $xSig, $OriginalFilename, $OriginalFilenameSafe, $Out, $Flagged, $md5, $StringLength);
+                                    $this->detected($xSig, $OriginalFilename, $sha256, $StringLength, $Depth);
                                 }
                             }
                         }
@@ -1634,7 +1542,7 @@ class Scanner
                                     !substr_count($this->Loader->InstanceCache['Greylist'], ',' . $xSig . ',') &&
                                     empty($this->Loader->InstanceCache['ignoreme'])
                                 ) {
-                                    $this->detected($heur, $lnap, $xSig, $OriginalFilename, $OriginalFilenameSafe, $Out, $Flagged, $md5, $StringLength);
+                                    $this->detected($xSig, $OriginalFilename, $sha256, $StringLength, $Depth);
                                 }
                             }
                         }
@@ -1717,9 +1625,6 @@ class Scanner
                                             continue 2;
                                         }
                                         $lv_haystack = $$lv_haystack;
-                                        if ($climode) {
-                                            $lv_haystack = $this->Loader->substrAfterLast($this->Loader->substrAfterLast($lv_haystack, '/'), "\\");
-                                        }
                                         $lv_needle = $ThisSigPart[2] ?? '';
                                         $pos_A = $ThisSigPart[3] ?? 0;
                                         $pos_Z = $ThisSigPart[4] ?? 0;
@@ -1867,7 +1772,7 @@ class Scanner
                                     strpos($this->Loader->InstanceCache['Greylist'], ',' . $SigName . ',') === false &&
                                     empty($this->Loader->InstanceCache['ignoreme'])
                                 ) {
-                                    $this->detected($heur, $lnap, $SigName, $OriginalFilename, $OriginalFilenameSafe, $Out, $Flagged, $md5, $StringLength);
+                                    $this->detected($SigName, $OriginalFilename, $sha256, $StringLength, $Depth);
                                 }
                             }
                         }
@@ -1908,19 +1813,16 @@ class Scanner
                 $this->Loader->Events->fireEvent('beforeSigFile', '', $SigFile);
 
                 if (empty($this->Loader->InstanceCache[$SigFile])) {
-                    $this->Loader->InstanceCache['scan_errors']++;
+                    $this->Loader->InstanceCache['ScanErrors']++;
                     if (!$this->Loader->Configuration['signatures']['fail_silently']) {
-                        if (!$Flagged) {
-                            $this->Loader->HashReference .= $sha256 . ':' . $StringLength . ":\n";
-                        }
-                        $this->Loader->WhyFlagged .= sprintf(
-                            $this->Loader->L10N->getString('_exclamation'),
-                            $this->Loader->L10N->getString('scan_signature_file_missing') . ' (' . $SigFile . ')'
-                        );
-                        return [-3, $lnap . sprintf(
-                            $this->Loader->L10N->getString('_exclamation_final'),
-                            $this->Loader->L10N->getString('scan_signature_file_missing') . ' (' . $SigFile . ')'
-                        ) . "\n"];
+                        $this->Loader->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
+                            $this->Loader->L10N->getString('grammar_exclamation_mark'),
+                            sprintf(
+                                $this->Loader->L10N->getString('grammar_brackets'),
+                                $this->Loader->L10N->getString('scan_signature_file_missing'),
+                                $SigFile
+                            )
+                        ), -3, $Depth);
                     }
                     continue;
                 }
@@ -2020,7 +1922,7 @@ class Scanner
                                 empty($this->Loader->InstanceCache['ignoreme'])
                             ) {
                                 if (preg_match('/(?:' . $ThisSig . ')/i', $OriginalFilename)) {
-                                    $this->detected($heur, $lnap, $VN, $OriginalFilename, $OriginalFilenameSafe, $Out, $Flagged, $md5, $StringLength);
+                                    $this->detected($VN, $OriginalFilename, $sha256, $StringLength, $Depth);
                                 }
                             }
                         } elseif ($ThisConf[3] === 0 || $ThisConf[3] === 1) {
@@ -2089,7 +1991,7 @@ class Scanner
                                         }
                                     }
                                 }
-                                $this->detected($heur, $lnap, $VN, $OriginalFilename, $OriginalFilenameSafe, $Out, $Flagged, $md5, $StringLength);
+                                $this->detected($VN, $OriginalFilename, $sha256, $StringLength, $Depth);
                             }
                         }
                     }
@@ -2098,7 +2000,7 @@ class Scanner
         }
 
         /** Perform API lookups for domains. */
-        if (isset($URLScanner) && !$Out) {
+        if (isset($URLScanner) && empty($this->Loader->ScanResultsText[$AtInstanceLookupKey])) {
 
             $URLScanner['DomainsCount'] = count($URLScanner['DomainParts']);
 
@@ -2129,18 +2031,10 @@ class Scanner
                         $this->Loader->InstanceCache['LookupCount'] > $this->Loader->Configuration['urlscanner']['maximum_api_lookups']
                     ) {
                         if ($this->Loader->Configuration['urlscanner']['maximum_api_lookups_response']) {
-                            if (!$Flagged) {
-                                $this->Loader->HashReference .= $sha256 . ':' . $StringLength . ':' . $OriginalFilename . "\n";
-                                $Flagged = true;
-                            }
-                            $Out .= $lnap . sprintf(
-                                $this->Loader->L10N->getString('_exclamation_final'),
+                            $this->Loader->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
+                                $this->Loader->L10N->getString('grammar_exclamation_mark'),
                                 $this->Loader->L10N->getString('too_many_urls')
-                            ) . "\n";
-                            $this->Loader->WhyFlagged .= sprintf(
-                                $this->Loader->L10N->getString('_exclamation'),
-                                $this->Loader->L10N->getString('too_many_urls') . ' (' . $OriginalFilenameSafe . ')'
-                            );
+                            ), 2, $Depth);
                         }
                         break;
                     }
@@ -2158,7 +2052,7 @@ class Scanner
                                 continue 2;
                             }
                             $URLScanner['Class'] = $this->getShorthand($URLScanner['Class']);
-                            $this->detected($heur, $lnap, $URLScanner['Class'], $OriginalFilename, $OriginalFilenameSafe, $Out, $Flagged, $md5, $StringLength);
+                            $this->detected($URLScanner['Class'], $OriginalFilename, $sha256, $StringLength, $Depth);
                         }
                         $this->Loader->InstanceCache['urlscanner_domains'] =
                             str_ireplace($URLHash . $URLScanner['Class'] . ';', '', $this->Loader->InstanceCache['urlscanner_domains']);
@@ -2181,7 +2075,7 @@ class Scanner
                             $URLExpiry . ':' .
                             $URLScanner['Class'] . ';';
                         $URLScanner['Class'] = $this->getShorthand($URLScanner['Class']);
-                        $this->detected($heur, $lnap, $URLScanner['Class'], $OriginalFilename, $OriginalFilenameSafe, $Out, $Flagged, $md5, $StringLength);
+                        $this->detected($URLScanner['Class'], $OriginalFilename, $sha256, $StringLength, $Depth);
                     }
                     $this->Loader->InstanceCache['urlscanner_domains'] .= $URLScanner['Domains'][$i] . $URLExpiry . ':;';
                 }
@@ -2204,18 +2098,10 @@ class Scanner
                         $this->Loader->InstanceCache['LookupCount'] > $this->Loader->Configuration['urlscanner']['maximum_api_lookups']
                     ) {
                         if ($this->Loader->Configuration['urlscanner']['maximum_api_lookups_response']) {
-                            if (!$Flagged) {
-                                $this->Loader->HashReference .= $sha256 . ':' . $StringLength . ':' . $OriginalFilename . "\n";
-                                $Flagged = true;
-                            }
-                            $Out .= $lnap . sprintf(
-                                $this->Loader->L10N->getString('_exclamation_final'),
+                            $this->Loader->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
+                                $this->Loader->L10N->getString('grammar_exclamation_mark'),
                                 $this->Loader->L10N->getString('too_many_urls')
-                            ) . "\n";
-                            $this->Loader->WhyFlagged .= sprintf(
-                                $this->Loader->L10N->getString('_exclamation'),
-                                $this->Loader->L10N->getString('too_many_urls') . ' (' . $OriginalFilenameSafe . ')'
-                            );
+                            ), 2, $Depth);
                         }
                         break;
                     }
@@ -2229,21 +2115,11 @@ class Scanner
 
                     /** Bad URLs found; Flag accordingly. */
                     if ($URLScanner['SafeBrowseLookup'] !== 204) {
-                        if (!$Flagged) {
-                            $this->Loader->HashReference .= $sha256 . ':' . $StringLength . ':' . $OriginalFilename . "\n";
-                            $Flagged = true;
-                        }
-                        $URLScanner['L10N'] = $this->Loader->L10N->getString(
-                            'SafeBrowseLookup_' . $URLScanner['SafeBrowseLookup']
-                        ) ?: $this->Loader->L10N->getString('SafeBrowseLookup_999');
-                        $Out .= $lnap . sprintf(
-                            $this->Loader->L10N->getString('_exclamation_final'),
-                            $URLScanner['L10N']
-                        ) . "\n";
-                        $this->Loader->WhyFlagged .= sprintf(
-                            $this->Loader->L10N->getString('_exclamation'),
-                            $URLScanner['L10N'] . ' (' . $OriginalFilenameSafe . ')'
-                        );
+                        $this->Loader->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
+                            $this->Loader->L10N->getString('grammar_exclamation_mark'),
+                            $this->Loader->L10N->getString('SafeBrowseLookup_' . $URLScanner['SafeBrowseLookup']) ?:
+                                $this->Loader->L10N->getString('SafeBrowseLookup_999')
+                        ), 2, $Depth);
 
                         /** Prevent further lookups in case of wrong API key used, malformed query, etc. */
                         if ($URLScanner['SafeBrowseLookup'] !== 200) {
@@ -2269,20 +2145,10 @@ class Scanner
                 $this->Loader->Configuration['files']['can_contain_php_file_extensions'],
                 $this->Loader->Configuration['files']['archive_file_extensions']
             ], [$xts, $gzxts, $xt, $gzxt]) && strpos($str_hex_norm, '3c3f706870') !== false) {
-                if (!$Flagged) {
-                    $this->Loader->HashReference .= $sha256 . ':' . $StringLength . ':' . $OriginalFilename . "\n";
-                    $Flagged = true;
-                }
-                $heur['detections']++;
-                $this->Loader->InstanceCache['detections_count']++;
-                $Out .= $lnap . sprintf(
-                    $this->Loader->L10N->getString('_exclamation_final'),
+                $this->Loader->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
+                    $this->Loader->L10N->getString('grammar_exclamation_mark'),
                     sprintf($this->Loader->L10N->getString('scan_chameleon'), 'PHP')
-                ) . "\n";
-                $this->Loader->WhyFlagged .= sprintf(
-                    $this->Loader->L10N->getString('_exclamation'),
-                    sprintf($this->Loader->L10N->getString('scan_chameleon'), 'PHP') . ' (' . $OriginalFilenameSafe . ')'
-                );
+                ), 2, $Depth);
             }
         }
 
@@ -2314,20 +2180,10 @@ class Scanner
                 $Chameleon = 'MSI';
             }
             if ($Chameleon) {
-                if (!$Flagged) {
-                    $this->Loader->HashReference .= $sha256 . ':' . $StringLength . ':' . $OriginalFilename . "\n";
-                    $Flagged = true;
-                }
-                $heur['detections']++;
-                $this->Loader->InstanceCache['detections_count']++;
-                $Out .= $lnap . sprintf(
-                    $this->Loader->L10N->getString('_exclamation_final'),
+                $this->Loader->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
+                    $this->Loader->L10N->getString('grammar_exclamation_mark'),
                     sprintf($this->Loader->L10N->getString('scan_chameleon'), $Chameleon)
-                ) . "\n";
-                $this->Loader->WhyFlagged .= sprintf(
-                    $this->Loader->L10N->getString('_exclamation'),
-                    sprintf($this->Loader->L10N->getString('scan_chameleon'), $Chameleon) . ' (' . $OriginalFilenameSafe . ')'
-                );
+                ), 2, $Depth);
             }
         }
 
@@ -2344,20 +2200,10 @@ class Scanner
                 $Chameleon = 'Bzip2';
             }
             if ($Chameleon) {
-                if (!$Flagged) {
-                    $this->Loader->HashReference .= $sha256 . ':' . $StringLength . ':' . $OriginalFilename . "\n";
-                    $Flagged = true;
-                }
-                $heur['detections']++;
-                $this->Loader->InstanceCache['detections_count']++;
-                $Out .= $lnap . sprintf(
-                    $this->Loader->L10N->getString('_exclamation_final'),
+                $this->Loader->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
+                    $this->Loader->L10N->getString('grammar_exclamation_mark'),
                     sprintf($this->Loader->L10N->getString('scan_chameleon'), $Chameleon)
-                ) . "\n";
-                $this->Loader->WhyFlagged .= sprintf(
-                    $this->Loader->L10N->getString('_exclamation'),
-                    sprintf($this->Loader->L10N->getString('scan_chameleon'), $Chameleon) . ' (' . $OriginalFilenameSafe . ')'
-                );
+                ), 2, $Depth);
             }
         }
 
@@ -2365,20 +2211,10 @@ class Scanner
         if ($this->Loader->Configuration['files']['chameleon_to_doc']) {
             if (strpos(',doc,dot,pps,ppt,xla,xls,wiz,', ',' . $xt . ',') !== false) {
                 if ($fourcc !== 'd0cf11e0') {
-                    if (!$Flagged) {
-                        $this->Loader->HashReference .= $sha256 . ':' . $StringLength . ':' . $OriginalFilename . "\n";
-                        $Flagged = true;
-                    }
-                    $heur['detections']++;
-                    $this->Loader->InstanceCache['detections_count']++;
-                    $Out .= $lnap . sprintf(
-                        $this->Loader->L10N->getString('_exclamation_final'),
+                    $this->Loader->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
+                        $this->Loader->L10N->getString('grammar_exclamation_mark'),
                         sprintf($this->Loader->L10N->getString('scan_chameleon'), 'Office')
-                    ) . "\n";
-                    $this->Loader->WhyFlagged .= sprintf(
-                        $this->Loader->L10N->getString('_exclamation'),
-                        sprintf($this->Loader->L10N->getString('scan_chameleon'), 'Office') . ' (' . $OriginalFilenameSafe . ')'
-                    );
+                    ), 2, $Depth);
                 }
             }
         }
@@ -2396,40 +2232,20 @@ class Scanner
                 ($xt === 'webp' && ($fourcc !== '52494646' || substr($str, 8, 4) !== 'WEBP')) ||
                 ($xt === 'xcf' && substr($str, 0, 8) !== 'gimp xcf')
             ) {
-                if (!$Flagged) {
-                    $this->Loader->HashReference .= $sha256 . ':' . $StringLength . ':' . $OriginalFilename . "\n";
-                    $Flagged = true;
-                }
-                $heur['detections']++;
-                $this->Loader->InstanceCache['detections_count']++;
-                $Out .= $lnap . sprintf(
-                    $this->Loader->L10N->getString('_exclamation_final'),
+                $this->Loader->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
+                    $this->Loader->L10N->getString('grammar_exclamation_mark'),
                     sprintf($this->Loader->L10N->getString('scan_chameleon'), $this->Loader->L10N->getString('image'))
-                ) . "\n";
-                $this->Loader->WhyFlagged .= sprintf(
-                    $this->Loader->L10N->getString('_exclamation'),
-                    sprintf($this->Loader->L10N->getString('scan_chameleon'), $this->Loader->L10N->getString('image')) . ' (' . $OriginalFilenameSafe . ')'
-                );
+                ), 2, $Depth);
             }
         }
 
         /** PDF chameleon attack detection. */
         if ($this->Loader->Configuration['files']['chameleon_to_pdf']) {
             if ($xt === 'pdf' && !$pdf_magic) {
-                if (!$Flagged) {
-                    $this->Loader->HashReference .= $sha256 . ':' . $StringLength . ':' . $OriginalFilename . "\n";
-                    $Flagged = true;
-                }
-                $heur['detections']++;
-                $this->Loader->InstanceCache['detections_count']++;
-                $Out .= $lnap . sprintf(
-                    $this->Loader->L10N->getString('_exclamation_final'),
+                $this->Loader->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
+                    $this->Loader->L10N->getString('grammar_exclamation_mark'),
                     sprintf($this->Loader->L10N->getString('scan_chameleon'), 'PDF')
-                ) . "\n";
-                $this->Loader->WhyFlagged .= sprintf(
-                    $this->Loader->L10N->getString('_exclamation'),
-                    sprintf($this->Loader->L10N->getString('scan_chameleon'), 'PDF') . ' (' . $OriginalFilenameSafe . ')'
-                );
+                ), 2, $Depth);
             }
         }
 
@@ -2439,35 +2255,15 @@ class Scanner
         /** Control character detection. */
         if ($this->Loader->Configuration['files']['block_control_characters']) {
             if (preg_match('/[\x00-\x08\x0b\x0c\x0e\x1f\x7f]/i', $str)) {
-                $Out .= $lnap . sprintf(
-                    $this->Loader->L10N->getString('_exclamation'),
-                    $this->Loader->L10N->getString('detected_control_characters')
-                ) . "\n";
-                $heur['detections']++;
-                $this->Loader->InstanceCache['detections_count']++;
-                if (!$Flagged) {
-                    $this->Loader->HashReference .= $sha256 . ':' . $StringLength . ':' . $OriginalFilename . "\n";
-                    $Flagged = true;
-                }
-                $this->Loader->WhyFlagged .= sprintf(
-                    $this->Loader->L10N->getString('_exclamation'),
-                    $this->Loader->L10N->getString('detected_control_characters') . ' (' . $OriginalFilenameSafe . ')'
-                );
+                $this->Loader->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
+                    $this->Loader->L10N->getString('grammar_exclamation_mark'),
+                    sprintf(
+                        $this->Loader->L10N->getString('grammar_brackets'),
+                        $this->Loader->L10N->getString('detected_control_characters'),
+                        $OriginalFilename
+                    )
+                ), 2, $Depth);
             }
-        }
-
-        /**
-         * If the heuristic weight of the current scan iteration exceeds the
-         * heuristic threshold defined by the configuration, or if outs has already
-         * been filled, dump all heuristic detections and non-heuristic detections
-         * together into outs and regard the iteration as flagged.
-         */
-        if (
-            $heur['weight'] >= $this->Loader->Configuration['signatures']['heuristic_threshold'] ||
-            $Out
-        ) {
-            $Out .= $heur['cli'];
-            $this->Loader->WhyFlagged .= $heur['web'];
         }
 
         /** Fire event: "beforeVirusTotal". */
@@ -2475,37 +2271,24 @@ class Scanner
 
         /** Virus Total API integration. */
         if (
-            !$Out &&
+            empty($this->Loader->ScanResultsText[$AtInstanceLookupKey]) &&
             !empty($this->Loader->Configuration['virustotal']['vt_public_api_key'])
         ) {
-            $DoScan = false;
-            $this->Loader->Configuration['virustotal']['vt_suspicion_level'] =
-                (int)$this->Loader->Configuration['virustotal']['vt_suspicion_level'];
-            if ($this->Loader->Configuration['virustotal']['vt_suspicion_level'] === 0) {
-                $DoScan = ($heur['weight'] > 0);
-            } elseif ($this->Loader->Configuration['virustotal']['vt_suspicion_level'] === 1) {
-                $DoScan = (
-                    $heur['weight'] > 0 ||
-                    $is_pe ||
-                    $fileswitch === 'chrome' ||
-                    $fileswitch === 'java' ||
-                    $fileswitch === 'docfile' ||
-                    $fileswitch === 'vt_interest'
-                );
-            } elseif ($this->Loader->Configuration['virustotal']['vt_suspicion_level'] === 2) {
-                $DoScan = true;
+            $DoScan = ($this->HeuristicCount > 0 || $this->Loader->Configuration['virustotal']['vt_suspicion_level'] > 1);
+            if (!$DoScan && $this->Loader->Configuration['virustotal']['vt_suspicion_level'] === 1) {
+                $DoScan = ($is_pe || in_array($fileswitch, ['chrome', 'docfile', 'java', 'vt_interest'], true));
             }
             if ($DoScan) {
                 $VTWeight = ['weight' => 0, 'cli' => '', 'web' => ''];
                 if (!isset($this->Loader->InstanceCache['vt_quota'])) {
                     $this->Loader->InstanceCache['vt_quota'] = $this->Loader->Cache->getEntry('vt_quota');
                 }
-                $x = 0;
+                $VTLookups = 0;
                 if (!empty($this->Loader->InstanceCache['vt_quota'])) {
                     $this->Loader->InstanceCache['vt_quota'] = explode(';', $this->Loader->InstanceCache['vt_quota']);
                     foreach ($this->Loader->InstanceCache['vt_quota'] as &$Quota) {
                         if ($Quota > $this->Loader->Time) {
-                            $x++;
+                            $VTLookups++;
                         } else {
                             $Quota = '';
                         }
@@ -2514,7 +2297,7 @@ class Scanner
                     $this->Loader->InstanceCache['vt_quota'] =
                         implode(';', $this->Loader->InstanceCache['vt_quota']);
                 }
-                if ($x < $this->Loader->Configuration['virustotal']['vt_quota_rate']) {
+                if ($VTLookups < $this->Loader->Configuration['virustotal']['vt_quota_rate']) {
                     $VTParams = [
                         'apikey' => $this->Loader->Configuration['virustotal']['vt_public_api_key'],
                         'resource' => $md5
@@ -2545,43 +2328,43 @@ class Scanner
                                         strpos($this->Loader->InstanceCache['Greylist'], ',' . $VN . ',') === false &&
                                         empty($this->Loader->InstanceCache['ignoreme'])
                                     ) {
-                                        if (!$Flagged) {
-                                            $this->Loader->HashReference .= $sha256 . ':' . $StringLength . ':' . $OriginalFilename . "\n";
-                                            $Flagged = true;
-                                        }
-                                        $heur['detections']++;
-                                        $this->Loader->InstanceCache['detections_count']++;
                                         if ($this->Loader->Configuration['virustotal']['vt_weighting'] > 0) {
-                                            $VTWeight['weight']++;
-                                            $VTWeight['web'] .= $lnap . sprintf(
-                                                $this->Loader->L10N->getString('_exclamation'),
-                                                sprintf($this->Loader->L10N->getString('detected'), $VN)
-                                            ) . "\n";
-                                            $VTWeight['cli'] .= sprintf(
-                                                $this->Loader->L10N->getString('_exclamation'),
-                                                sprintf($this->Loader->L10N->getString('detected'), $VN) . ' (' . $OriginalFilenameSafe . ')'
-                                            );
-                                        } else {
-                                            $Out .= $lnap . sprintf(
-                                                $this->Loader->L10N->getString('_exclamation_final'),
-                                                sprintf($this->Loader->L10N->getString('detected'), $VN)
-                                            ) . "\n";
-                                            $this->Loader->WhyFlagged .= sprintf(
-                                                $this->Loader->L10N->getString('_exclamation'),
-                                                sprintf($this->Loader->L10N->getString('detected'), $VN) . ' (' . $OriginalFilenameSafe . ')'
-                                            );
+                                            if (
+                                                !isset($this->Loader->InstanceCache['VTCount']) ||
+                                                $this->Loader->InstanceCache['VTCount'] >= $this->Loader->Configuration['virustotal']['vt_weighting']
+                                            ) {
+                                                foreach ($this->Loader->InstanceCache['VTVNs'] as $VTVN) {
+                                                    $this->Loader->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
+                                                        $this->Loader->L10N->getString('grammar_exclamation_mark'),
+                                                        sprintf(
+                                                            $this->Loader->L10N->getString('grammar_brackets'),
+                                                            sprintf($this->Loader->L10N->getString('detected'), $VTVN),
+                                                            $OriginalFilename
+                                                        )
+                                                    ), 2, $Depth);
+                                                }
+                                                $this->Loader->InstanceCache['VTCount'] = 1;
+                                                $this->Loader->InstanceCache['VTVNs'] = [];
+                                            } else {
+                                                $this->Loader->InstanceCache['VTCount']++;
+                                            }
+                                            if (!isset($this->Loader->InstanceCache['VTVNs'])) {
+                                                $this->Loader->InstanceCache['VTVNs'] = $VN;
+                                            }
+                                            continue;
                                         }
+                                        $this->Loader->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
+                                            $this->Loader->L10N->getString('grammar_exclamation_mark'),
+                                            sprintf(
+                                                $this->Loader->L10N->getString('grammar_brackets'),
+                                                sprintf($this->Loader->L10N->getString('detected'), $VN),
+                                                $OriginalFilename
+                                            )
+                                        ), 2, $Depth);
                                     }
                                 }
                             }
                         }
-                    }
-                    if (
-                        $VTWeight['weight'] > 0 &&
-                        $VTWeight['weight'] >= $this->Loader->Configuration['virustotal']['vt_weighting']
-                    ) {
-                        $Out .= $VTWeight['web'];
-                        $this->Loader->WhyFlagged .= $VTWeight['cli'];
                     }
                 }
             }
@@ -2592,26 +2375,26 @@ class Scanner
 
         /** Add hash cache entry. */
         if (!empty($HashCacheID)) {
-            /** 0: (int) {-4...2}; 1: For CLI+API; 2: For Web. */
-            $HashCacheEntry = json_encode([!$Out ? 1 : 2, $Out, $this->Loader->WhyFlagged]);
+            /** 0: (int) {-5...2}; 1: Text. */
+            $HashCacheEntry = json_encode([
+                $this->Loader->ScanResultsIntegers[$AtInstanceLookupKey] ?? 1,
+                $this->Loader->ScanResultsText[$AtInstanceLookupKey] ?? ''
+            ]);
             $this->Loader->Cache->setEntry($HashCacheID, $HashCacheEntry, $this->Loader->Configuration['core']['scan_cache_expiry']);
         }
 
         /** Set final debug values, if this has been enabled. */
         if (isset($this->debugArr, $this->Loader->InstanceCache['DebugArrKey'])) {
-            $this->debugArr[$this->Loader->InstanceCache['DebugArrKey']]['Results'] = !$Out ? 1 : 2;
-            $this->debugArr[$this->Loader->InstanceCache['DebugArrKey']]['Output'] = $Out;
+            $this->debugArr[$this->Loader->InstanceCache['DebugArrKey']]['Results'] = $this->Loader->ScanResultsIntegers[$AtInstanceLookupKey] ?? 1;
+            $this->debugArr[$this->Loader->InstanceCache['DebugArrKey']]['Output'] = $this->Loader->ScanResultsText[$AtInstanceLookupKey] ?? '';
         }
 
         /** Register object flagged. */
-        if ($Out) {
+        if (!empty($this->Loader->ScanResultsText[$AtInstanceLookupKey])) {
             $this->statsIncrement($this->CalledFrom === 'Web' ? 'Web-Blocked' : (
                 $this->CalledFrom === 'CLI' ? 'CLI-Flagged' : 'API-Flagged'
             ), 1);
         }
-
-        /** Exit data handler. */
-        return !$Out ? [1, ''] : [2, $Out];
     }
 
     /**
@@ -2619,8 +2402,6 @@ class Scanner
      *
      * This is where we recurse through archives during the scan.
      *
-     * @param string $x Scan results inherited from parent in the form of a string.
-     * @param int $Results Scan results inherited from parent in the form of an integer.
      * @param string $Data The data to be scanned (preferably an archive).
      * @param string $File A path to the file, to be able to access it directly if
      *      needed (because the zip and rar classes require a file pointer).
@@ -2628,7 +2409,7 @@ class Scanner
      * @param string $ItemRef A reference to the parent container (for logging).
      * @throws Exception if the metadata scanner throws an exception (forwarded on).
      */
-    public function archiveRecursor(string &$x, int &$Results, string $Data, string $File = '', int $ScanDepth = 0, string $ItemRef = '')
+    private function archiveRecursor(string $Data, string $File = '', int $ScanDepth = 0, string $ItemRef = '')
     {
         /** Fire event: "atStartOf_archiveRecursor". */
         $this->Loader->Events->fireEvent('atStartOf_archiveRecursor');
@@ -2730,23 +2511,14 @@ class Scanner
             if ($this->Loader->Configuration['files']['block_encrypted_archives']) {
                 $Bits = $this->explodeBits(substr($Data, 6, 2));
                 if ($Bits && $Bits[7]) {
-                    $Results = -4;
-                    $this->Loader->HashReference .= $DataHash . ':' . $DataLen . ':' . $ItemRef . "\n";
-                    $this->Loader->WhyFlagged .= sprintf(
-                        $this->Loader->L10N->getString('_exclamation'),
-                        $this->Loader->L10N->getString('encrypted_archive') . ' (' . $ItemRef . ')'
-                    );
-                    $x .= sprintf(
-                        '-%1$s%2$s \'%3$s\' (FN: %4$s; FD: %5$s):%6$s--%1$s%7$s%8$s%6$s',
-                        $Indent,
-                        $this->Loader->L10N->getString('scan_checking'),
-                        $ItemRef,
-                        hash('crc32b', $File),
-                        hash('crc32b', $Data),
-                        "\n",
-                        $this->Loader->L10N->getString('encrypted_archive'),
-                        $this->Loader->L10N->getString('_fullstop_final')
-                    );
+                    $this->Loader->atHit($DataHash, $DataLen, $ItemRef, sprintf(
+                        $this->Loader->L10N->getString('grammar_exclamation_mark'),
+                        sprintf(
+                            $this->Loader->L10N->getString('grammar_brackets'),
+                            $this->Loader->L10N->getString('encrypted_archive'),
+                            $ItemRef
+                        )
+                    ), -4, $ScanDepth);
                     return;
                 }
             }
@@ -2754,19 +2526,7 @@ class Scanner
             /** Guard. */
             if (!class_exists('ZipArchive')) {
                 if (!$this->Loader->Configuration['signatures']['fail_extensions_silently']) {
-                    $Results = -1;
-                    $this->Loader->HashReference .= $DataHash . ':' . $DataLen . ':' . $ItemRef . "\n";
-                    $this->Loader->WhyFlagged .= $this->Loader->L10N->getString('scan_extensions_missing') . ' (Zip)';
-                    $x .= sprintf(
-                        '-%1$s%2$s \'%3$s\' (FN: %4$s; FD: %5$s):%6$s--%1$s%7$s%6$s',
-                        $Indent,
-                        $this->Loader->L10N->getString('scan_checking'),
-                        $ItemRef,
-                        hash('crc32b', $File),
-                        hash('crc32b', $Data),
-                        "\n",
-                        $this->Loader->L10N->getString('scan_extensions_missing') . ' (Zip)'
-                    );
+                    $this->Loader->atHit($DataHash, $DataLen, $ItemRef, $this->Loader->L10N->getString('scan_extensions_missing'), -1, $ScanDepth);
                     return;
                 }
             }
@@ -2806,19 +2566,7 @@ class Scanner
             /** Guard. */
             if (!class_exists('RarArchive') || !class_exists('RarEntry')) {
                 if (!$this->Loader->Configuration['signatures']['fail_extensions_silently']) {
-                    $Results = -1;
-                    $this->Loader->HashReference .= $DataHash . ':' . $DataLen . ':' . $ItemRef . "\n";
-                    $this->Loader->WhyFlagged .= $this->Loader->L10N->getString('scan_extensions_missing') . ' (Rar)';
-                    $x .= sprintf(
-                        '-%1$s%2$s \'%3$s\' (FN: %4$s; FD: %5$s):%6$s--%1$s%7$s%6$s',
-                        $Indent,
-                        $this->Loader->L10N->getString('scan_checking'),
-                        $ItemRef,
-                        hash('crc32b', $File),
-                        hash('crc32b', $Data),
-                        "\n",
-                        $this->Loader->L10N->getString('scan_extensions_missing') . ' (Rar)'
-                    );
+                    $this->Loader->atHit($DataHash, $DataLen, $ItemRef, $this->Loader->L10N->getString('scan_extensions_missing'), -1, $ScanDepth);
                     return;
                 }
             }
@@ -2857,28 +2605,24 @@ class Scanner
                 /** Iterate through the archive's contents. */
                 while ($ArchiveObject->EntryNext()) {
 
+                    /** Skip directories (useless for scanning here). */
+                    if ($ArchiveObject->EntryIsDirectory()) {
+                        continue;
+                    }
+
                     /** Flag the archive if it exceeds the "max_files_in_archives" limit and return. */
                     if (
                         $this->Loader->Configuration['files']['max_files_in_archives'] > 0 &&
                         $Processed > $this->Loader->Configuration['files']['max_files_in_archives']
                     ) {
-                        $Results = 2;
-                        $this->Loader->HashReference .= $DataHash . ':' . $DataLen . ':' . $ItemRef . "\n";
-                        $this->Loader->WhyFlagged .= sprintf(
-                            $this->Loader->L10N->getString('_exclamation'),
-                            $this->Loader->L10N->getString('too_many_files_in_archive') . ' (' . $ItemRef . ')'
-                        );
-                        $x .= sprintf(
-                            '-%1$s%2$s \'%3$s\' (FN: %4$s; FD: %5$s):%6$s--%1$s%7$s%8$s%6$s',
-                            $Indent,
-                            $this->Loader->L10N->getString('scan_checking'),
-                            $ItemRef,
-                            hash('crc32b', $File),
-                            hash('crc32b', $Data),
-                            "\n",
-                            $this->Loader->L10N->getString('too_many_files_in_archive'),
-                            $this->Loader->L10N->getString('_fullstop_final')
-                        );
+                        $this->Loader->atHit($DataHash, $DataLen, $ItemRef, sprintf(
+                            $this->Loader->L10N->getString('grammar_exclamation_mark'),
+                            sprintf(
+                                $this->Loader->L10N->getString('grammar_brackets'),
+                                $this->Loader->L10N->getString('too_many_files_in_archive'),
+                                $ItemRef
+                            )
+                        ), 2, $ScanDepth);
                         unset($ArchiveObject, $Pointer, $PointerObject);
                         return;
                     }
@@ -2887,33 +2631,19 @@ class Scanner
 
                     /** Encryption guard. */
                     if ($this->Loader->Configuration['files']['block_encrypted_archives'] && $ArchiveObject->EntryIsEncrypted()) {
-                        $Results = -4;
-                        $this->Loader->HashReference .= $DataHash . ':' . $DataLen . ':' . $ItemRef . "\n";
-                        $this->Loader->WhyFlagged .= sprintf(
-                            $this->Loader->L10N->getString('_exclamation'),
-                            $this->Loader->L10N->getString('encrypted_archive') . ' (' . $ItemRef . ')'
-                        );
-                        $x .= sprintf(
-                            '-%1$s%2$s \'%3$s\' (FN: %4$s; FD: %5$s):%6$s--%1$s%7$s%8$s%6$s',
-                            $Indent,
-                            $this->Loader->L10N->getString('scan_checking'),
-                            $ItemRef,
-                            hash('crc32b', $File),
-                            hash('crc32b', $Data),
-                            "\n",
+                        $this->Loader->atHit($DataHash, $DataLen, $ItemRef, sprintf(
+                            $this->Loader->L10N->getString('grammar_brackets'),
                             $this->Loader->L10N->getString('encrypted_archive'),
-                            $this->Loader->L10N->getString('_fullstop_final')
-                        );
+                            $ItemRef
+                        ), -4, $ScanDepth);
                         unset($ArchiveObject, $Pointer, $PointerObject);
                         return;
                     }
 
                     /** Fetch and prepare filename. */
                     if ($Filename = $ArchiveObject->EntryName()) {
-                        if (strpos($Filename, "\\") !== false) {
+                        while (strpos($Filename, "\\") !== false || strpos($Filename, '/') !== false) {
                             $Filename = $this->Loader->substrAfterLast($Filename, "\\");
-                        }
-                        if (strpos($Filename, '/') !== false) {
                             $Filename = $this->Loader->substrAfterLast($Filename, '/');
                         }
                     }
@@ -2924,118 +2654,70 @@ class Scanner
                     /** Fetch content and build hashes. */
                     $Content = $ArchiveObject->EntryRead($Filesize);
                     $Hash = hash('sha256', $Content);
-                    $NameCRC32 = hash('crc32b', $Filename);
                     $DataCRC32 = hash('crc32b', $Content);
                     $InternalCRC = $ArchiveObject->EntryCRC();
-                    $ThisItemRef = $ItemRef . '>' . urlencode($Filename);
+                    $ThisItemRef = $ItemRef . '→' . preg_replace(['~[\x00-\x1f]~', '~^[\\\/]~'], '', $Filename);
 
                     /** Verify filesize, integrity, etc. Exit early in case of problems. */
                     if ($Filesize !== strlen($Content) || ($InternalCRC &&
                         preg_replace('~^0+~', '', $DataCRC32) !== preg_replace('~^0+~', '', $InternalCRC)
                     )) {
-                        $Results = 2;
-                        $this->Loader->HashReference .= $Hash . ':' . $Filesize . ':' . $ThisItemRef . "\n";
-                        $this->Loader->WhyFlagged .= sprintf(
-                            $this->Loader->L10N->getString('_exclamation'),
-                            $this->Loader->L10N->getString('scan_tampering') . ' (' . $ThisItemRef . ')'
-                        );
-                        $x .= sprintf(
-                            '-%1$s%2$s \'%3$s\' (FN: %4$s; FD: %5$s):%6$s--%1$s%7$s%8$s%6$s',
-                            $Indent,
-                            $this->Loader->L10N->getString('scan_checking'),
-                            $ThisItemRef,
-                            $NameCRC32,
-                            $DataCRC32,
-                            "\n",
-                            $this->Loader->L10N->getString('recursive'),
-                            $this->Loader->L10N->getString('_fullstop_final')
-                        );
+                        $this->Loader->atHit($Hash, $Filesize, $ThisItemRef, sprintf(
+                            $this->Loader->L10N->getString('grammar_exclamation_mark'),
+                            sprintf(
+                                $this->Loader->L10N->getString('grammar_brackets'),
+                                $this->Loader->L10N->getString('scan_tampering'),
+                                $ThisItemRef
+                            )
+                        ), 2, $ScanDepth + 1);
                         unset($ArchiveObject, $Pointer, $PointerObject);
                         return;
                     }
 
                     /** Executed if the recursion depth limit has been exceeded. */
                     if ($ScanDepth > $this->Loader->Configuration['files']['max_recursion']) {
-                        $Results = 2;
-                        $this->Loader->HashReference .= $Hash . ':' . $Filesize . ':' . $ThisItemRef . "\n";
-                        $this->Loader->WhyFlagged .= sprintf(
-                            $this->Loader->L10N->getString('_exclamation'),
-                            $this->Loader->L10N->getString('recursive') . ' (' . $ThisItemRef . ')'
-                        );
-                        $x .= sprintf(
-                            '-%1$s%2$s \'%3$s\' (FN: %4$s; FD: %5$s):%6$s--%1$s%7$s%8$s%6$s',
-                            $Indent,
-                            $this->Loader->L10N->getString('scan_checking'),
-                            $ThisItemRef,
-                            $NameCRC32,
-                            $DataCRC32,
-                            "\n",
-                            $this->Loader->L10N->getString('recursive'),
-                            $this->Loader->L10N->getString('_fullstop_final')
-                        );
+                        $this->Loader->atHit($Hash, $Filesize, $ThisItemRef, sprintf(
+                            $this->Loader->L10N->getString('grammar_exclamation_mark'),
+                            sprintf(
+                                $this->Loader->L10N->getString('grammar_brackets'),
+                                $this->Loader->L10N->getString('recursive'),
+                                $ThisItemRef
+                            )
+                        ), 2, $ScanDepth + 1);
                         unset($ArchiveObject, $Pointer, $PointerObject);
                         return;
                     }
 
                     /** Quine detection. */
                     if ($this->quineDetector($ScanDepth, $DataHash, $DataLen, $Hash, $Filesize)) {
-                        $Results = 2;
-                        $this->Loader->HashReference .= $Hash . ':' . $Filesize . ':' . $ThisItemRef . "\n";
-                        $this->Loader->WhyFlagged .= sprintf(
-                            $this->Loader->L10N->getString('_exclamation'),
-                            sprintf($this->Loader->L10N->getString('detected'), 'Quine') . ' (' . $ThisItemRef . ')'
-                        );
-                        $x .= sprintf(
-                            '-%1$s%2$s \'%3$s\' (FN: %4$s; FD: %5$s):%6$s--%1$s%7$s%8$s%6$s',
-                            $Indent,
-                            $this->Loader->L10N->getString('scan_checking'),
-                            $ThisItemRef,
-                            $NameCRC32,
-                            $DataCRC32,
-                            "\n",
-                            sprintf($this->Loader->L10N->getString('detected'), 'Quine'),
-                            $this->Loader->L10N->getString('_fullstop_final')
-                        );
+                        $this->Loader->atHit($Hash, $Filesize, $ThisItemRef, sprintf(
+                            $this->Loader->L10N->getString('grammar_exclamation_mark'),
+                            sprintf(
+                                $this->Loader->L10N->getString('grammar_brackets'),
+                                sprintf($this->Loader->L10N->getString('detected'), 'Quine'),
+                                $ThisItemRef
+                            )
+                        ), 2, $ScanDepth + 1);
                         unset($ArchiveObject, $Pointer, $PointerObject);
                         return;
                     }
 
-                    /** Ready to check the entry. */
-                    $x .= sprintf(
-                        '-%1$s%2$s \'%3$s\' (FN: %4$s; FD: %5$s):%6$s',
-                        $Indent,
-                        $this->Loader->L10N->getString('scan_checking'),
-                        $ThisItemRef,
-                        $NameCRC32,
-                        $DataCRC32,
-                        "\n"
-                    );
-
                     /** Scan the entry. */
                     try {
-                        $this->metaDataScan(
-                            $x,
-                            $Results,
-                            '--' . $Indent,
-                            $ThisItemRef,
-                            $Filename,
-                            $Content,
-                            $ScanDepth,
-                            $Hash
-                        );
+                        $this->metaDataScan($ThisItemRef, $Filename, $Content, $ScanDepth, $Hash);
                     } catch (\Exception $e) {
                         unset($ArchiveObject, $Pointer, $PointerObject);
                         throw new \Exception($e->getMessage());
                     }
 
                     /** If we've already found something bad, we can exit early to save time. */
-                    if ($Results !== 1) {
+                    if (empty($this->Loader->InstanceCache['CheckWasLast'])) {
                         unset($ArchiveObject, $Pointer, $PointerObject);
                         return;
                     }
 
                     /** Finally, check whether the archive entry is an archive. */
-                    $this->archiveRecursor($x, $Results, $Content, '', $ScanDepth, $ThisItemRef);
+                    $this->archiveRecursor($Content, '', $ScanDepth, $ThisItemRef);
                 }
             }
         }
@@ -3163,7 +2845,7 @@ class Scanner
      * @param string $str The string to be decoded.
      * @return string The decoded string.
      */
-    public function prescanDecode(string $str): string
+    private function prescanDecode(string $str): string
     {
         $nstr = html_entity_decode(urldecode(str_ireplace('&amp;#', '&#', str_ireplace('&amp;amp;', '&amp;', $str))));
         if ($nstr !== $str) {
@@ -3178,7 +2860,7 @@ class Scanner
      * @param string $Base Directory root.
      * @return array Directory tree.
      */
-    public function directoryRecursiveList(string $Base): array
+    private function directoryRecursiveList(string $Base): array
     {
         $Arr = [];
         $Offset = strlen($Base);
@@ -3198,7 +2880,7 @@ class Scanner
      * @param string $OriginalFilename The original filename.
      * @return array The extensions data.
      */
-    public function fetchExtension(string $OriginalFilename): array
+    private function fetchExtension(string $OriginalFilename): array
     {
         $decPos = strrpos($OriginalFilename, '.');
         $OriginalFilenameLen = strlen($OriginalFilename);
@@ -3230,7 +2912,7 @@ class Scanner
      * @param bool $Mode ALL (false) or ANY (true) must assert.
      * @return bool True if requirement conforms; False otherwise.
      */
-    public function containsMustAssert(array $Haystacks, array $Needles, string $Padding = ',', bool $AssertState = false, bool $Mode = false): bool
+    private function containsMustAssert(array $Haystacks, array $Needles, string $Padding = ',', bool $AssertState = false, bool $Mode = false): bool
     {
         foreach ($Haystacks as $Haystack) {
             $Haystack = $Padding . $Haystack . $Padding;
@@ -3257,7 +2939,7 @@ class Scanner
      * @param string $Head The file header.
      * @return bool True: Indicators found. False: Indicators not found.
      */
-    public function imageIndicators(string $Ext, string $Head): bool
+    private function imageIndicators(string $Ext, string $Head): bool
     {
         return (
             preg_match(
@@ -3277,7 +2959,7 @@ class Scanner
      * @param string $Filename The filename.
      * @return string The filename sans compression extension.
      */
-    public function dropTrailingCompressionExtension(string $Filename): string
+    private function dropTrailingCompressionExtension(string $Filename): string
     {
         return preg_replace(['~\.t[gbl]?z[\da-z]?$~i', '~\.(?:bz2?|gz|lha|lz[fhowx])$~i'], ['.tar', ''], $Filename);
     }
@@ -3377,10 +3059,10 @@ class Scanner
      * @param int $Delete How many bytes to delete from the target directory; Omit
      *      or set to 0 to avoid deleting files on the basis of total bytes.
      * @param int $DeleteFiles How many files to delete from the target directory;
-            Omit or set to 0 to avoid deleting files.
+     *      Omit or set to 0 to avoid deleting files.
      * @return array Contains two integer elements: `Size`: The actual, total
      *      memory used by the target directory. `Count`: The total number of files
-     *      found in the target directory by the time of closure exit.
+     *      found in the target directory by the time of method exit.
      */
     private function memoryUse(string $Path, int $Delete = 0, int $DeleteFiles = 0): array
     {
@@ -3421,7 +3103,7 @@ class Scanner
      *      Optional; Defaults to false.
      * @return string The decoded/normalised string.
      */
-    public function normalise(string $str, bool $html = false, bool $decode = false): string
+    private function normalise(string $str, bool $html = false, bool $decode = false): string
     {
         /** Fire event: "atStartOf_normalise". */
         $this->Loader->Events->fireEvent('atStartOf_normalise');
@@ -3526,22 +3208,22 @@ class Scanner
      * ignored based on those identifiers), and returns a complete signature name
      * containing all relevant identifiers.
      *
-     * Originally, this function was created to allow phpMussel to partially
-     * compress its signatures without jeopardising speed, performance or
-     * efficiency, because by allowing phpMussel to partially compress its
-     * signatures, the total signature file footprint could be reduced, thus
-     * allowing the inclusion of a greater number of signatures without causing
-     * excessive footprint bloat. Its purpose has expanded since then though.
+     * Originally, this method was created to allow phpMussel to partially compress
+     * its signatures without jeopardising speed, performance or efficiency, because
+     * by allowing phpMussel to partially compress its signatures, the total
+     * signature file footprint could be reduced, thus allowing the inclusion of a
+     * greater number of signatures without causing excessive footprint bloat. Its
+     * purpose has expanded since then though.
      *
      * @param string $VN The signature name WITH identifiers compressed (i.e.,
      *      the shorthand version of the signature name).
      * @return string The signature name WITHOUT identifiers compressed (i.e., the
      *      identifiers have been decompressed/expanded), or the input verbatim.
      */
-    public function getShorthand(string $VN): string
+    private function getShorthand(string $VN): string
     {
-        /** Determine whether the signature is weighted. */
-        $this->Loader->InstanceCache['weighted'] = false;
+        /** Reset weighted flag. */
+        $this->HeuristicMode = false;
 
         /** Determine whether the signature should be ignored due to package configuration. */
         $this->Loader->InstanceCache['ignoreme'] = false;
@@ -3555,9 +3237,6 @@ class Scanner
         if (!$this->Loader->loadShorthandData()) {
             return $VN;
         }
-
-        /** Will be populated by the signature name. */
-        $Out = '';
 
         /** Byte 1 contains vendor name and signature metadata information. */
         $Nibbles = $this->splitNibble($VN[1]);
@@ -3586,7 +3265,7 @@ class Scanner
             !empty($this->Loader->InstanceCache['shorthand.yml']['Vendor Weight Options'][$Nibbles[0]]) &&
             $this->Loader->InstanceCache['shorthand.yml']['Vendor Weight Options'][$Nibbles[0]] === 'Weighted'
         )) {
-            $this->Loader->InstanceCache['weighted'] = true;
+            $this->HeuristicMode = true;
         }
 
         /** Populate signature metadata information. */
@@ -3618,7 +3297,7 @@ class Scanner
             }
         }
 
-        /** Return the signature name and exit the closure. */
+        /** Return the signature name and exit the method. */
         return $Out . substr($VN, 4);
     }
 
@@ -3683,11 +3362,7 @@ class Scanner
             return false;
         }
         if ($nlen > $hlen) {
-            $x = [$Needle, $nlen, $Haystack, $hlen];
-            $Haystack = $x[0];
-            $hlen = $x[1];
-            $Needle = $x[2];
-            $nlen = $x[3];
+            [$Haystack, $hlen, $Needle, $nlen] = [$Needle, $nlen, $Haystack, $hlen];
         }
         $lv = levenshtein(strtolower($Haystack), strtolower($Needle));
         return (($min === 0 || $lv >= $min) && ($max === -1 || $lv <= $max));
@@ -3741,7 +3416,7 @@ class Scanner
      *      if the API key is missing or isn't authorised; 503 if the service is
      *      unavailable (e.g., if it's been throttled).
      */
-    public function safeBrowseLookup(array $URLs, array $URLsNoLookup = [], array $DomainsNoLookup = []): int
+    private function safeBrowseLookup(array $URLs, array $URLsNoLookup = [], array $DomainsNoLookup = []): int
     {
         /** Guard against missing API key. */
         if (empty($this->Loader->Configuration['urlscanner']['google_api_key'])) {
@@ -3932,7 +3607,7 @@ class Scanner
      * @param int $Length
      * @return bool
      */
-    public function confineLength(int $Length): bool
+    private function confineLength(int $Length): bool
     {
         return ($Length < 4 || $Length > 1024);
     }
@@ -3940,57 +3615,36 @@ class Scanner
     /**
      * Detection trigger method (appends detection information).
      *
-     * @param array $Heuristic
-     * @param string $Indentation
-     * @param string $VN
+     * @param string $VN What was detected.
      * @param string $OriginalFilename
-     * @param string $OriginalFilenameSafe
-     * @param string $Out
-     * @param bool $Flagged
      * @param string $Checksum
      * @param int $StringLength
+     * @param int $Depth
      */
-    private function detected(
-        array &$Heuristic,
-        string &$Indentation,
-        string &$VN,
-        string &$OriginalFilename,
-        string &$OriginalFilenameSafe,
-        string &$Out,
-        bool &$Flagged,
-        string &$Checksum,
-        int &$StringLength
-    )
+    private function detected(string $VN, string $OriginalFilename, string $Checksum, int $StringLength, int $Depth)
     {
-        /** Fire event: "atStartOf_detected". */
-        $this->Loader->Events->fireEvent('atStartOf_detected', '', $Heuristic, $Indentation, $VN, $OriginalFilename, $OriginalFilenameSafe, $Out, $Flagged, $Checksum, $StringLength);
+        /** Prepare detection text. */
+        $Text = sprintf($this->Loader->L10N->getString('grammar_exclamation_mark'), sprintf(
+            $this->Loader->L10N->getString('grammar_brackets'),
+            sprintf($this->Loader->L10N->getString('detected'), $VN),
+            $OriginalFilename
+        ));
 
-        if (!$Flagged) {
-            $this->Loader->HashReference .= $Checksum . ':' . $StringLength . ':' . $OriginalFilename . "\n";
-            $Flagged = true;
-        }
-        $Heuristic['detections']++;
-        $this->Loader->InstanceCache['detections_count']++;
-        if ($this->Loader->InstanceCache['weighted']) {
-            $Heuristic['weight']++;
-            $Heuristic['cli'] .= $Indentation . sprintf(
-                $this->Loader->L10N->getString('_exclamation_final'),
-                sprintf($this->Loader->L10N->getString('detected'), $VN)
-            ) . "\n";
-            $Heuristic['web'] .= sprintf(
-                $this->Loader->L10N->getString('_exclamation'),
-                sprintf($this->Loader->L10N->getString('detected'), $VN) . ' (' . $OriginalFilenameSafe . ')'
-            );
+        /** Heuristic detection. */
+        if ($this->HeuristicMode && $this->Loader->Configuration['signatures']['heuristic_threshold'] > 1) {
+            $this->HeuristicCount++;
+            $this->HeuristicText[] = $Text;
+            if ($this->HeuristicCount > $this->Loader->Configuration['signatures']['heuristic_threshold']) {
+                foreach ($this->HeuristicText as $Text) {
+                    $this->Loader->atHit($Checksum, $StringLength, $OriginalFilename, $Text, 2, $Depth);
+                }
+                $this->resetHeuristics();
+            }
             return;
         }
-        $Out .= $Indentation . sprintf(
-            $this->Loader->L10N->getString('_exclamation_final'),
-            sprintf($this->Loader->L10N->getString('detected'), $VN)
-        ) . "\n";
-        $this->Loader->WhyFlagged .= sprintf(
-            $this->Loader->L10N->getString('_exclamation'),
-            sprintf($this->Loader->L10N->getString('detected'), $VN) . ' (' . $OriginalFilenameSafe . ')'
-        );
+
+        /** Normal detection. */
+        $this->Loader->atHit($Checksum, $StringLength, $OriginalFilename, $Text, 2, $Depth);
     }
 
     /**
@@ -4001,7 +3655,7 @@ class Scanner
      * @param string|int $Terminal The end of the boundary or string terminal offset value.
      * @param array $SectionOffsets Section offset values.
      */
-    public function dataConfineByOffsets(string &$Data, &$Initial, &$Terminal, array &$SectionOffsets)
+    private function dataConfineByOffsets(string &$Data, &$Initial, &$Terminal, array &$SectionOffsets)
     {
         /** Guard. */
         if ($Initial === '*' && $Terminal === '*') {
@@ -4065,7 +3719,7 @@ class Scanner
      * @param mixed $Expected The expected data to be matched against.
      * @return bool True when they match; False when they don't.
      */
-    public function matchVarInSigFile($Actual, $Expected): bool
+    private function matchVarInSigFile($Actual, $Expected): bool
     {
         $LCActual = strtolower($Actual);
         if ($LCActual === '0' || $LCActual === 'false') {
@@ -4090,7 +3744,7 @@ class Scanner
      * @param int $Max The maximum number of parts to return (optional).
      * @return array The parts.
      */
-    public function splitSigParts(string $Sig, int $Max = -1): array
+    private function splitSigParts(string $Sig, int $Max = -1): array
     {
         return preg_split('~(?<!\?|\<)\:~', $Sig, $Max, PREG_SPLIT_NO_EMPTY);
     }
@@ -4098,8 +3752,6 @@ class Scanner
     /**
      * Handles scanning for files contained within archives.
      *
-     * @param string $x Scan results inherited from parent in the form of a string.
-     * @param int $r Scan results inherited from parent in the form of an integer.
      * @param string $Indent Line padding for the scan results.
      * @param string $ItemRef A reference to the path and original filename of the
      *      item being scanned in relation to its container and/or its hierarchy
@@ -4110,8 +3762,10 @@ class Scanner
      *      container and/or its hierarchy within the scan process.
      * @param string $Checksum A hash for the content, inherited from the parent.
      */
-    public function metaDataScan(string &$x, int &$r, string $Indent, string $ItemRef, string $Filename, string &$Data, int $Depth, string $Checksum)
+    private function metaDataScan(string $ItemRef, string $Filename, string &$Data, int $Depth, string $Checksum)
     {
+        $Depth++;
+
         /** Fire event: "atStartOf_metaDataScan". */
         $this->Loader->Events->fireEvent('atStartOf_metaDataScan');
 
@@ -4127,58 +3781,39 @@ class Scanner
             $Filesize > $this->Loader->readBytes($this->Loader->Configuration['files']['filesize_limit'])
         ) {
             if (!$this->Loader->Configuration['files']['filesize_response']) {
-                $x .=
-                    $Indent . $this->Loader->L10N->getString('ok') . ' (' .
-                    $this->Loader->L10N->getString('filesize_limit_exceeded') . ").\n";
+                $this->Loader->atHit($Checksum, $Filesize, $ItemRef, '', 1, $Depth);
                 return;
             }
-            $r = 2;
-            $this->Loader->HashReference .= $Checksum . ':' . $Filesize . ':' . $ItemRef . "\n";
-            $this->Loader->WhyFlagged .= sprintf(
-                $this->Loader->L10N->getString('_exclamation'),
-                $this->Loader->L10N->getString('filesize_limit_exceeded') . ' (' . $ItemRef . ')'
-            );
-            $x .=
-                $Indent . $this->Loader->L10N->getString('filesize_limit_exceeded') .
-                $this->Loader->L10N->getString('_fullstop_final') . "\n";
+            $this->Loader->atHit($Checksum, $Filesize, $ItemRef, sprintf(
+                $this->Loader->L10N->getString('grammar_exclamation_mark'),
+                sprintf(
+                    $this->Loader->L10N->getString('grammar_brackets'),
+                    $this->Loader->L10N->getString('filesize_limit_exceeded'),
+                    $ItemRef
+                )
+            ), 2, $Depth);
             return;
         }
 
         /** Process filetype blacklisting, whitelisting, and greylisting. */
         if ($this->Loader->Configuration['files']['filetype_archives']) {
             [$xt, $xts, $gzxt, $gzxts] = $this->fetchExtension($Filename);
-            if ($this->containsMustAssert([
-                $this->Loader->Configuration['files']['filetype_whitelist']
-            ], [$xt, $xts], ',', true, true)) {
-                $x .= $Indent . $this->Loader->L10N->getString('scan_no_problems_found') . "\n";
+            if ($this->containsMustAssert([$this->Loader->Configuration['files']['filetype_whitelist']], [$xt, $xts], ',', true, true)) {
+                $this->Loader->atHit($Checksum, $Filesize, $ItemRef, '', 1, $Depth);
                 return;
             }
-            if ($this->containsMustAssert([
-                $this->Loader->Configuration['files']['filetype_blacklist']
-            ], [$xt, $xts], ',', true, true)) {
-                $r = 2;
-                $this->Loader->HashReference .= $Checksum . ':' . $Filesize . ':' . $ItemRef . "\n";
-                $this->Loader->WhyFlagged .= sprintf(
-                    $this->Loader->L10N->getString('_exclamation'),
-                    $this->Loader->L10N->getString('filetype_blacklisted') . ' (' . $ItemRef . ')'
-                );
-                $x .=
-                    $Indent . $this->Loader->L10N->getString('filetype_blacklisted') .
-                    $this->Loader->L10N->getString('_fullstop_final') . "\n";
-                return;
-            }
-            if (!empty($this->Loader->Configuration['files']['filetype_greylist']) && $this->containsMustAssert([
-                $this->Loader->Configuration['files']['filetype_greylist']
-            ], [$xt, $xts])) {
-                $r = 2;
-                $this->Loader->HashReference .= $Checksum . ':' . $Filesize . ':' . $ItemRef . "\n";
-                $this->Loader->WhyFlagged .= sprintf(
-                    $this->Loader->L10N->getString('_exclamation'),
-                    $this->Loader->L10N->getString('filetype_blacklisted') . ' (' . $ItemRef . ')'
-                );
-                $x .=
-                    $Indent . $this->Loader->L10N->getString('filetype_blacklisted') .
-                    $this->Loader->L10N->getString('_fullstop_final') . "\n";
+            if ($this->containsMustAssert([$this->Loader->Configuration['files']['filetype_blacklist']], [$xt, $xts], ',', true, true) || (
+                !empty($this->Loader->Configuration['files']['filetype_greylist']) &&
+                $this->containsMustAssert([$this->Loader->Configuration['files']['filetype_greylist']], [$xt, $xts])
+            )) {
+                $this->Loader->atHit($Checksum, $Filesize, $ItemRef, sprintf(
+                    $this->Loader->L10N->getString('grammar_exclamation_mark'),
+                    sprintf(
+                        $this->Loader->L10N->getString('grammar_brackets'),
+                        $this->Loader->L10N->getString('filetype_blacklisted'),
+                        $ItemRef
+                    )
+                ), 2, $Depth);
                 return;
             }
         }
@@ -4191,28 +3826,29 @@ class Scanner
 
         /** Handle macro detection and blocking. */
         if ($this->Loader->Configuration['files']['block_macros'] && $this->Loader->InstanceCache['file_is_macro']) {
-            $r = 2;
-            $this->Loader->HashReference .= $Checksum . ':' . $Filesize . ':' . $ItemRef . "\n";
-            $this->Loader->WhyFlagged .= sprintf(
-                $this->Loader->L10N->getString('_exclamation'),
-                $this->Loader->L10N->getString('macros_not_permitted') . ' (' . $ItemRef . ')'
-            );
-            $x .= $Indent . $this->Loader->L10N->getString('macros_not_permitted') . $this->Loader->L10N->getString('_fullstop_final') . "\n";
+            $this->Loader->atHit($Checksum, $Filesize, $ItemRef, sprintf(
+                $this->Loader->L10N->getString('grammar_exclamation_mark'),
+                sprintf(
+                    $this->Loader->L10N->getString('grammar_brackets'),
+                    $this->Loader->L10N->getString('macros_not_permitted'),
+                    $ItemRef
+                )
+            ), 2, $Depth);
             return;
         }
 
         /** Increment objects scanned count. */
-        $this->Loader->InstanceCache['objects_scanned']++;
+        $this->Loader->InstanceCache['ObjectsScanned']++;
 
         /** Send the scan target to the data handler. */
-        $Scan = $this->dataHandler($Data, $Depth, $Filename);
+        $this->dataHandler($Data, $Depth, $Filename);
 
         /**
          * Check whether the file is compressed. If it's compressed, attempt to
          * decompress it, and then scan the decompressed version of the file. We'll
          * only bother doing this if the file hasn't already been flagged though.
          */
-        if ($Scan[0] === 1) {
+        if (!empty($this->Loader->InstanceCache['CheckWasLast'])) {
 
             /** Create a new compression object. */
             $CompressionObject = new CompressionHandler($Data);
@@ -4221,7 +3857,7 @@ class Scanner
             if (!$CompressionResults = $CompressionObject->TryEverything()) {
 
                 /** Success! Now we'll send it to the data handler. */
-                $Scan = $this->dataHandler($CompressionObject->Data, $Depth, $this->dropTrailingCompressionExtension($Filename));
+                $this->dataHandler($CompressionObject->Data, $Depth, $this->dropTrailingCompressionExtension($Filename));
 
                 /**
                  * Replace originally scanned data with decompressed data in case
@@ -4237,16 +3873,6 @@ class Scanner
         /** Reset Crx variables. */
         $this->CrxPubKey = '';
         $this->CrxSignature = '';
-
-        /** Update the results if anything bad was found and then exit. */
-        if ($Scan[0] !== 1) {
-            $r = $Scan[0];
-            $x .= '-' . $Scan[1];
-            return;
-        }
-
-        /** Or, if nothing bad was found for this entry, make a note of it. */
-        $x .= $Indent . $this->Loader->L10N->getString('scan_no_problems_found') . "\n";
     }
 
     /**
@@ -4259,7 +3885,7 @@ class Scanner
      * @param int $ChildLen Child data length.
      * @return bool True when a quine is detected; False otherwise.
      */
-    public function quineDetector(int $ScanDepth, string $ParentHash, int $ParentLen, string $ChildHash, int $ChildLen): bool
+    private function quineDetector(int $ScanDepth, string $ParentHash, int $ParentLen, string $ChildHash, int $ChildLen): bool
     {
         $this->Loader->InstanceCache['Quine'][$ScanDepth - 1] = [$ParentHash, $ParentLen];
         for ($Iterate = 0; $Iterate < $ScanDepth; $Iterate++) {
@@ -4276,7 +3902,7 @@ class Scanner
      * @param string $Data Referenced via the archive recursor.
      * @return bool True when conversion succeeds; False otherwise (e.g., not Crx).
      */
-    public function convertCrx(string &$Data): bool
+    private function convertCrx(string &$Data): bool
     {
         if (substr($Data, 0, 4) !== 'Cr24' || strlen($Data) <= 16) {
             return false;
@@ -4319,5 +3945,15 @@ class Scanner
     {
         unset($this->Loader->InstanceCache['DebugArrKey'], $this->debugArr);
         $Arr = null;
+    }
+
+    /**
+     * Reset heuristics.
+     */
+    private function resetHeuristics()
+    {
+        $this->HeuristicText = [];
+        $this->HeuristicCount = 0;
+        $this->HeuristicMode = false;
     }
 }

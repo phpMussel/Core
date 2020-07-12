@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: Rar handler (last modified: 2020.06.22).
+ * This file: Rar handler (last modified: 2020.07.11).
  */
 
 namespace phpMussel\Core;
@@ -43,7 +43,7 @@ class RarHandler extends ArchiveHandler
     public function __construct($Pointer)
     {
         /** Rar class requirements guard. */
-        if (!class_exists('RarArchive') || !class_exists('RarEntry')) {
+        if (!class_exists('\RarArchive') || !class_exists('\RarEntry')) {
             $this->ErrorState = 1;
             return;
         }

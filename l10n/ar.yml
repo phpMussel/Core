@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Arabic language data (last modified: 2020.07.05).
+# This file: Arabic language data (last modified: 2020.07.11).
 ##/
 
 # Language settings.
@@ -21,10 +21,6 @@ SafeBrowseLookup_400: "API خطأ طلب"
 SafeBrowseLookup_401: "API خطأ ترخيص"
 SafeBrowseLookup_503: "API الخدمة غير متوفرة"
 SafeBrowseLookup_999: "خطأ API غير معروف"
-_exclamation: "%s! "
-_exclamation_final: "%s!"
-_fullstop: ". "
-_fullstop_final: "."
 corrupted: "الكشف PE تلف"
 data_not_available: "البيانات غير متوفرة."
 detected: "الكشف %s"
@@ -42,6 +38,10 @@ filesize_limit_exceeded: "تجاوز حد حجم ملف"
 filetype_blacklisted: "نوع الملف في القائمة السوداء"
 finished: "انتهى"
 generated_by: "الناتج"
+grammar_brackets: "%s (%s)"
+grammar_exclamation_mark: "%s!"
+grammar_fullstop: "%s."
+grammar_spacer: " "
 image: "صورة"
 invalid_data: "بيانات غير صالحة!"
 invalid_file: "ملف غير صالح"
@@ -52,14 +52,13 @@ only_allow_images: "يسمح بملفات الصور فقط"
 quarantined_as: "الحجر الصحي بأنه "%s.qfu"."
 recursive: "تجاوزت الحد عمق العودية"
 scan_chameleon: "الكشف هجوم الحرباء %s"
-scan_checking: "فحص"
+scan_checking: "فحص "%s"."
 scan_command_injection: "الكشف محاولة حقن القيادة"
 scan_complete: "تم الانتهاء من"
 scan_extensions_missing: "فشل (مفقود ملحقات المطلوبة)!"
 scan_filename_manipulation_detected: "الكشف تلاعب اسم الملف"
 scan_missing_filename: "مفقود اسم الملف"
 scan_no_problems_found: "الكشف لا مشاكل."
-scan_not_archive: "فشل (فارغة أو ليس أرشيفا)!"
 scan_reading: "قراءة"
 scan_signature_file_missing: "مفقود ملف التوقيع"
 scan_tampering: "الكشف العبث ملف يحتمل أن تكون خطرة"

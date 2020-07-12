@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Russian language data (last modified: 2020.07.05).
+# This file: Russian language data (last modified: 2020.07.11).
 ##/
 
 # Language settings.
@@ -21,10 +21,6 @@ SafeBrowseLookup_400: "Ошибка запроса API"
 SafeBrowseLookup_401: "Ошибка авторизации API"
 SafeBrowseLookup_503: "Сервис недоступен API"
 SafeBrowseLookup_999: "Неизвестная API ошибка"
-_exclamation: "%s! "
-_exclamation_final: "%s!"
-_fullstop: ". "
-_fullstop_final: "."
 corrupted: "Обнаружена поврежденная ПЭ"
 data_not_available: "Данные недоступны."
 detected: "Обнаружено %s"
@@ -42,6 +38,10 @@ filesize_limit_exceeded: "Размер файла превышает лимит"
 filetype_blacklisted: "Тип файла находится в черном списке"
 finished: "Готово"
 generated_by: "Генерируется от"
+grammar_brackets: "%s (%s)"
+grammar_exclamation_mark: "%s!"
+grammar_fullstop: "%s."
+grammar_spacer: " "
 image: "Изображение"
 invalid_data: "Неверные данные!"
 invalid_file: "Неверный файл"
@@ -52,14 +52,13 @@ only_allow_images: "Разрешены только файлы изображе�
 quarantined_as: "Помещен на карантин в «%s.qfu»."
 recursive: "Лимит глубины рекурсии превышена"
 scan_chameleon: "Обнаружена %s хамелеон-атака"
-scan_checking: "Проверить"
+scan_checking: "Проверяю «%s»."
 scan_command_injection: "Обнаружена попытка командной инъекции"
 scan_complete: "Завершено"
 scan_extensions_missing: "Не удалось (отсутствуют необходимые расширения)!"
 scan_filename_manipulation_detected: "Обнаружена манипуляция имени файла"
 scan_missing_filename: "Отсутствует имя файла"
 scan_no_problems_found: "Проблемы не найдены."
-scan_not_archive: "Не удалось (пуст или не архив)!"
 scan_reading: "Чтение"
 scan_signature_file_missing: "Отсутствует сигнатур файла"
 scan_tampering: "Обнаружена потенциально опасная модификация файла"

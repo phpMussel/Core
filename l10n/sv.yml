@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Swedish language data (last modified: 2020.07.05).
+# This file: Swedish language data (last modified: 2020.07.11).
 ##/
 
 # Language settings.
@@ -21,10 +21,6 @@ SafeBrowseLookup_400: "API-begäran fel"
 SafeBrowseLookup_401: "API-godkännande fel"
 SafeBrowseLookup_503: "API-tjänst inte tillgänglig"
 SafeBrowseLookup_999: "Okänt API fel"
-_exclamation: "%s! "
-_exclamation_final: "%s!"
-_fullstop: ". "
-_fullstop_final: "."
 corrupted: "Upptäckt skadad PE"
 data_not_available: "Data inte tillgängliga."
 detected: "Upptäckt %s"
@@ -42,6 +38,10 @@ filesize_limit_exceeded: "Filstorleksgränsen överskred"
 filetype_blacklisted: "Filtyp svartlistad"
 finished: "Färdiga"
 generated_by: "Genererad av"
+grammar_brackets: "%s (%s)"
+grammar_exclamation_mark: "%s!"
+grammar_fullstop: "%s."
+grammar_spacer: " "
 image: "Bild"
 invalid_data: "Felaktig data!"
 invalid_file: "Felaktig fil"
@@ -52,14 +52,13 @@ only_allow_images: "Endast bildfiler är tillåtna"
 quarantined_as: "Placerad i karantän som "%s.qfu"."
 recursive: "Rekursionsdjupgränsen överskred"
 scan_chameleon: "%s-kameleonattack upptäckt"
-scan_checking: "Kontrollerar"
+scan_checking: "Kontrollerar "%s"."
 scan_command_injection: "Kommandoinjektionsförsök upptäckt"
 scan_complete: "Komplett"
 scan_extensions_missing: "Misslyckades (saknas obligatoriska tillägg)!"
 scan_filename_manipulation_detected: "Filnamn manipulation upptäckt"
 scan_missing_filename: "Filnamn saknas"
 scan_no_problems_found: "Inga problem hittades."
-scan_not_archive: "Misslyckades (tomt eller inte ett arkiv)!"
 scan_reading: "Läser"
 scan_signature_file_missing: "Signaturfil saknas"
 scan_tampering: "Upptäckt potentiellt farligt fil manipulering"

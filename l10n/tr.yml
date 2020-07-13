@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Turkish language data (last modified: 2020.07.11).
+# This file: Turkish language data (last modified: 2020.07.13).
 ##/
 
 # Language settings.
@@ -51,6 +51,7 @@ ok: "Tamam"
 only_allow_images: "Yalnızca resim dosyalarına izin verilir"
 quarantined_as: ""%s.qfu" olarak karantinaya alındı."
 recursive: "Yineleme derinliği sınırı aşıldı"
+response_error: "Hata"
 scan_chameleon: "%s bukalemun saldırısı tespit edildi"
 scan_checking: ""%s" kontrol ediliyor."
 scan_command_injection: "Komuta enjeksiyon girişimi tespit edildi"
@@ -63,6 +64,7 @@ scan_reading: "Okuma"
 scan_signature_file_missing: "İmza dosyası eksik"
 scan_tampering: "Potansiyel olarak tehlikeli dosyaların değiştirilmesi algılandı"
 started: "Başlatılan"
+state_failed_missing: "Gerekli bir bileşen kullanılamaması nedeniyle görev başarısız oldu."
 too_many_files_in_archive: "Arşivde çok fazla dosya var"
 too_many_urls: "Çok fazla URL'ler"
 x_does_not_exist: "%s mevcut değil"

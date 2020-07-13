@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Hindi language data (last modified: 2020.07.11).
+# This file: Hindi language data (last modified: 2020.07.13).
 ##/
 
 # Language settings.
@@ -51,6 +51,7 @@ ok: "OK"
 only_allow_images: "केवल छवियों की अनुमति है"
 quarantined_as: ""%s.qfu" के रूप में क्वारंटाइन।"
 recursive: "पुनरावर्ती गहराई सीमा पार हो गई"
+response_error: "त्रुटि"
 scan_chameleon: "%s गिरगिट के हमले का पता चला"
 scan_checking: ""%s" की जाँच हो रही है।"
 scan_command_injection: "कमान इंजेक्शन प्रयास का पता चला"
@@ -63,6 +64,7 @@ scan_reading: "पढ़ना"
 scan_signature_file_missing: "हस्ताक्षर फाइल लापता है"
 scan_tampering: "संभावित खतरनाक फाइल छेड़छाड़ की गई"
 started: "शुरू कर दिया है"
+state_failed_missing: "कार्य विफल रहा क्योंकि एक आवश्यक घटक अनुपलब्ध है।"
 too_many_files_in_archive: "पुरालेख में बहुत सारी फाइलें"
 too_many_urls: "बहुत सारे URL"
 x_does_not_exist: "%s मौजूद नहीं है"

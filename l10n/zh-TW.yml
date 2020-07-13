@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Chinese (traditional) language data (last modified: 2020.07.11).
+# This file: Chinese (traditional) language data (last modified: 2020.07.13).
 ##/
 
 # Language settings.
@@ -51,6 +51,7 @@ ok: "好"
 only_allow_images: "僅允許圖像文件"
 quarantined_as: "隔離為『%s.qfu』。"
 recursive: "遞歸深度超過是限制"
+response_error: "錯誤"
 scan_chameleon: "%s变色龙攻击检测"
 scan_checking: "正在檢查『%s』。"
 scan_command_injection: "命令注入嘗試檢測"
@@ -63,6 +64,7 @@ scan_reading: "閱讀"
 scan_signature_file_missing: "簽名文件是失踪"
 scan_tampering: "檢測潛在的危險文件篡改"
 started: "開始"
+state_failed_missing: "任務失敗，因為必要的組件不可用。"
 too_many_files_in_archive: "存檔中太多的文件"
 too_many_urls: "太多的URL"
 x_does_not_exist: "%s不存在"

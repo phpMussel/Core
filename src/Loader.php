@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2020.07.11).
+ * This file: The loader (last modified: 2020.07.13).
  */
 
 namespace phpMussel\Core;
@@ -554,11 +554,11 @@ class Loader
 
         /** Instantiate the L10N object, or append to the instance if it already exists. */
         if ($this->L10N instanceof \Maikuolan\Common\L10N && is_array($this->L10N->Data)) {
-            if (!empty($Primary)) {
+            if (!empty($Primary) && is_array($this->L10N->Data)) {
                 $this->L10N->Data = array_merge($this->L10N->Data, $Primary);
             }
             if (!empty($Fallback) && is_array($this->L10N->Fallback)) {
-                $this->L10N->Data = array_merge($this->L10N->Fallback, $Fallback);
+                $this->L10N->Fallback = array_merge($this->L10N->Fallback, $Fallback);
             }
         } else {
             $this->L10N = new \Maikuolan\Common\L10N($Primary, $Fallback);

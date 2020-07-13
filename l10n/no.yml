@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Norwegian language data (last modified: 2020.07.11).
+# This file: Norwegian language data (last modified: 2020.07.13).
 ##/
 
 # Language settings.
@@ -51,6 +51,7 @@ ok: "Greit"
 only_allow_images: "Bare bildefiler er tillatt"
 quarantined_as: "Plassert i karantene som "%s.qfu"."
 recursive: "Grensen for rekursjonsdybde overskredet"
+response_error: "Feil"
 scan_chameleon: "%s-kameleonangrep oppdaget"
 scan_checking: "Kontrollere "%s"."
 scan_command_injection: "Kommandoinjeksjonsforsøk oppdaget"
@@ -63,6 +64,7 @@ scan_reading: "Leser"
 scan_signature_file_missing: "Signaturfil mangler"
 scan_tampering: "Oppdaget potensielt farlig filhindring"
 started: "Startet"
+state_failed_missing: "Oppgave mislyktes fordi en nødvendig komponent ikke er tilgjengelig."
 too_many_files_in_archive: "For mange filer i arkivet"
 too_many_urls: "For mange URLer"
 x_does_not_exist: "%s eksisterer ikke"

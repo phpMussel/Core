@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Thai language data (last modified: 2020.07.11).
+# This file: Thai language data (last modified: 2020.07.13).
 ##/
 
 # Language settings.
@@ -51,6 +51,7 @@ ok: "ตกลง"
 only_allow_images: "อนุญาตเพียงไฟล์รูปภาพ"
 quarantined_as: "เป็นกักกันที่ "%s.qfu"."
 recursive: "จำกัดความลึกสำหรับการทับซ้ำเกินแล้ว"
+response_error: "ข้อผิดพลาด"
 scan_chameleon: "กิ้งก่าโจมตี %s ถูกตรวจพบ"
 scan_checking: "กำลังตรวจสอบ "%s"."
 scan_command_injection: "ความพยายามที่จะฉีดคำสั่งถูกตรวจพบ"
@@ -63,6 +64,7 @@ scan_reading: "การอ่าน"
 scan_signature_file_missing: "ไฟล์ลายเซ็นหายไป"
 scan_tampering: "การปลอมแปลงไฟล์ที่อาจเป็นอันตรายตรวจพบแล้ว"
 started: "เริ่มต้นแล้ว"
+state_failed_missing: "ภารกิจล้มเหลวเนื่องจากคอมโพเนนต์ที่จำเป็นไม่พร้อมใช้งาน."
 too_many_files_in_archive: "มีไฟล์ในไฟล์เก็บถาวรมากเกินไป"
 too_many_urls: "มี URL มากเกินไป"
 x_does_not_exist: "%s ไม่ได้อยู่"

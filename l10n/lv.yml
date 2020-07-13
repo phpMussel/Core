@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Latvian language data (last modified: 2020.07.11).
+# This file: Latvian language data (last modified: 2020.07.13).
 ##/
 
 # Language settings.
@@ -51,6 +51,7 @@ ok: "Labi"
 only_allow_images: "Ir atļauti tikai attēlu faili"
 quarantined_as: "Ievietots karantīnā kā "%s.qfu"."
 recursive: "Ir pārsniegts rekursijas dziļuma ierobežojums"
+response_error: "Kļūda"
 scan_chameleon: "Atrasts %s hameleona uzbrukums"
 scan_checking: "Pārbaudu "%s"."
 scan_command_injection: "Komandas injekcijas mēģinājums ir atrasts"
@@ -63,6 +64,7 @@ scan_reading: "Lasu tagad"
 scan_signature_file_missing: "Trūkst paraksta faila"
 scan_tampering: "Atrasts potenciāli bīstams faila viltojums"
 started: "Sākās"
+state_failed_missing: "Uzdevums neizdevās, jo nepieciešamais komponents nav pieejams."
 too_many_files_in_archive: "Pārāk daudz arhīva failu"
 too_many_urls: "Pārāk daudz URL"
 x_does_not_exist: "%s neeksistē"

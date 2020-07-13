@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Russian language data (last modified: 2020.07.11).
+# This file: Russian language data (last modified: 2020.07.13).
 ##/
 
 # Language settings.
@@ -51,6 +51,7 @@ ok: "Хорошо"
 only_allow_images: "Разрешены только файлы изображений"
 quarantined_as: "Помещен на карантин в «%s.qfu»."
 recursive: "Лимит глубины рекурсии превышена"
+response_error: "Ошибка"
 scan_chameleon: "Обнаружена %s хамелеон-атака"
 scan_checking: "Проверяю «%s»."
 scan_command_injection: "Обнаружена попытка командной инъекции"
@@ -63,6 +64,7 @@ scan_reading: "Чтение"
 scan_signature_file_missing: "Отсутствует сигнатур файла"
 scan_tampering: "Обнаружена потенциально опасная модификация файла"
 started: "Начало работы"
+state_failed_missing: "Не удалось выполнить задачу, потому что необходимый компонент недоступен."
 too_many_files_in_archive: "Слишком много файлов в архиве"
 too_many_urls: "Слишком много URL"
 x_does_not_exist: "%s не существует"

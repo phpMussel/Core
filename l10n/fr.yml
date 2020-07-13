@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: French language data (last modified: 2020.07.11).
+# This file: French language data (last modified: 2020.07.13).
 ##/
 
 # Language settings.
@@ -51,6 +51,7 @@ ok: "Bien"
 only_allow_images: "Seuls les fichiers images sont autorisés"
 quarantined_as: "Mis en quarantaine comme « %s.qfu »."
 recursive: "Profondeur limite de récursion dépassée"
+response_error: "Erreur"
 scan_chameleon: "Attaque %s caméléon détectée"
 scan_checking: "Vérifie « %s »."
 scan_command_injection: "Tentative d'injection de commande détectée"
@@ -63,6 +64,7 @@ scan_reading: "Lecture en cours"
 scan_signature_file_missing: "Fichiers des signatures manquant"
 scan_tampering: "Altération de fichier potentiellement dangereuse détectée"
 started: "Commencé"
+state_failed_missing: "La tâche a échoué car un composant nécessaire n'est pas disponible."
 too_many_files_in_archive: "Trop de fichiers dans les archives"
 too_many_urls: "Trop d'URLs"
 x_does_not_exist: "%s n'existe pas"

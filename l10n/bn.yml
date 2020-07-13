@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Bangla language data (last modified: 2020.07.11).
+# This file: Bangla language data (last modified: 2020.07.13).
 ##/
 
 # Language settings.
@@ -51,6 +51,7 @@ ok: "OK"
 only_allow_images: "কেবলমাত্র ইমেজ ফাইলগুলির অনুমতি রয়েছে"
 quarantined_as: "সংগ্রাহক মধ্যে "%s.qfu" হিসাবে।"
 recursive: "পুনরাবৃত্তি গভীরতা সীমা অতিক্রম করেছে"
+response_error: "ত্রুটি"
 scan_chameleon: "%s বহুরুপী(chameleon) আক্রমণ সনাক্ত হয়েছে।"
 scan_checking: ""%s" পরীক্ষা করা হচ্ছে।"
 scan_command_injection: "কমান্ড ইনজেকশন প্রচেষ্টা সনাক্ত হয়েছে"
@@ -63,6 +64,7 @@ scan_reading: "পড়ছি"
 scan_signature_file_missing: "স্বাক্ষর ফাইলটি অনুপস্থিত"
 scan_tampering: "সম্ভাব্য বিপজ্জনক ফাইল টিমপারিং সনাক্ত হয়েছে"
 started: "শুরু হয়েছে"
+state_failed_missing: "কার্য ব্যর্থ হয়েছে কারণ একটি প্রয়োজনীয় উপাদান অনুপলব্ধ।"
 too_many_files_in_archive: "সংরক্ষণাগার মধ্যে অনেক ফাইল"
 too_many_urls: "অনেকগুলি URLগুলি"
 x_does_not_exist: "%s অস্তিত্ব নেই"

@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Swedish language data (last modified: 2020.07.11).
+# This file: Swedish language data (last modified: 2020.07.13).
 ##/
 
 # Language settings.
@@ -51,6 +51,7 @@ ok: "OK"
 only_allow_images: "Endast bildfiler är tillåtna"
 quarantined_as: "Placerad i karantän som "%s.qfu"."
 recursive: "Rekursionsdjupgränsen överskred"
+response_error: "Fel"
 scan_chameleon: "%s-kameleonattack upptäckt"
 scan_checking: "Kontrollerar "%s"."
 scan_command_injection: "Kommandoinjektionsförsök upptäckt"
@@ -63,6 +64,7 @@ scan_reading: "Läser"
 scan_signature_file_missing: "Signaturfil saknas"
 scan_tampering: "Upptäckt potentiellt farligt fil manipulering"
 started: "Börjat"
+state_failed_missing: "Uppgiften misslyckades eftersom en nödvändig komponent inte är tillgänglig."
 too_many_files_in_archive: "För många filer i arkivet"
 too_many_urls: "För många URLer"
 x_does_not_exist: "%s finns inte"

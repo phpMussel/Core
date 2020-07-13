@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Italian language data (last modified: 2020.07.11).
+# This file: Italian language data (last modified: 2020.07.13).
 ##/
 
 # Language settings.
@@ -51,6 +51,7 @@ ok: "Fatto"
 only_allow_images: "Sono consentiti file di immagini solo"
 quarantined_as: "In quarantena come "%s.qfu"."
 recursive: "Limite di profondità di controllo superato"
+response_error: "Errore"
 scan_chameleon: "Rilevato attacco camaleonte %s"
 scan_checking: "Controllando "%s"."
 scan_command_injection: "Rilevato tentativo di iniezione dei comandi"
@@ -63,6 +64,7 @@ scan_reading: "Lettura in corso"
 scan_signature_file_missing: "File delle firme mancante"
 scan_tampering: "Rilevato potenzialmente pericolosi alterazione del file"
 started: "Iniziato"
+state_failed_missing: "Attività non riuscita perché un componente necessario non è disponibile."
 too_many_files_in_archive: "Troppi file nell'archivio"
 too_many_urls: "Troppi URL"
 x_does_not_exist: "%s non esiste"

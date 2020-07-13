@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Polish language data (last modified: 2020.07.11).
+# This file: Polish language data (last modified: 2020.07.13).
 ##/
 
 # Language settings.
@@ -51,6 +51,7 @@ ok: "Dobrze"
 only_allow_images: "Dozwolone są tylko pliki graficzne"
 quarantined_as: "Poddany kwarantannie jako „%s.qfu”."
 recursive: "Przekroczono limit głębokości rekurencji"
+response_error: "Błąd"
 scan_chameleon: "Wykryto atak kameleona %s"
 scan_checking: "Sprawdzam „%s”."
 scan_command_injection: "Wykryto wstrzyknięcia polecenia"
@@ -63,6 +64,7 @@ scan_reading: "Czytam"
 scan_signature_file_missing: "Brak pliku podpisy"
 scan_tampering: "Wykryto potencjalnie niebezpieczne manipulowanie plików"
 started: "Zaczęło się"
+state_failed_missing: "Zadanie nie powiodło się, ponieważ niezbędny komponent jest niedostępny."
 too_many_files_in_archive: "Zbyt wiele plików w archiwum"
 too_many_urls: "Zbyt wiele adresów URL"
 x_does_not_exist: "%s nie istnieje"

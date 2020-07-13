@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Dutch language data (last modified: 2020.07.11).
+# This file: Dutch language data (last modified: 2020.07.13).
 ##/
 
 # Language settings.
@@ -51,6 +51,7 @@ ok: "OK"
 only_allow_images: "Alleen afbeeldingsbestanden zijn toegestaan"
 quarantined_as: "In quarantaine geplaatst als "%s.qfu"."
 recursive: "Recursie dieptelimiet overschreden"
+response_error: "Fout"
 scan_chameleon: "%s kameleon aanval gedetecteerd"
 scan_checking: ""%s" aan het verifiëren."
 scan_command_injection: "Command injectie poging gedetecteerd"
@@ -63,6 +64,7 @@ scan_reading: "Lezen van"
 scan_signature_file_missing: "Signatuurbestand ontbreekt"
 scan_tampering: "Gedetecteerd potentieel gevaarlijke bestandswijziging"
 started: "Gestart"
+state_failed_missing: "Taak mislukt omdat een noodzakelijk component niet beschikbaar is."
 too_many_files_in_archive: "Te veel bestanden in het archief"
 too_many_urls: "Te veel URL's"
 x_does_not_exist: "%s bestaat niet"

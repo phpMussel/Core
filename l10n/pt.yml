@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Portuguese language data (last modified: 2020.07.11).
+# This file: Portuguese language data (last modified: 2020.07.13).
 ##/
 
 # Language settings.
@@ -51,6 +51,7 @@ ok: "OK"
 only_allow_images: "Somente arquivos de imagem são permitidos"
 quarantined_as: "Em quarentena como "%s.qfu"."
 recursive: "Recursão profundidade limite excedido"
+response_error: "Erro"
 scan_chameleon: "%s camaleão ataque detectado"
 scan_checking: "Verificando "%s"."
 scan_command_injection: "Comando injeção tentativa detectado"
@@ -63,6 +64,7 @@ scan_reading: "Lendo"
 scan_signature_file_missing: "Assinatura arquivo faltando"
 scan_tampering: "Detectado potencialmente perigoso arquivo adulteração"
 started: "Começado"
+state_failed_missing: "A tarefa falhou porque um componente necessário está indisponível."
 too_many_files_in_archive: "Demasiados arquivos no arquivo compactado"
 too_many_urls: "Demasiados URLs"
 x_does_not_exist: "%s não existe"

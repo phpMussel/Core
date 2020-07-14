@@ -1,0 +1,69 @@
+##\
+# This file is a part of the phpMussel\Core package.
+# Homepage: https://phpmussel.github.io/
+#
+# PHPMUSSEL COPYRIGHT 2013 AND BEYOND BY THE PHPMUSSEL TEAM.
+#
+# License: GNU/GPLv2
+# @see LICENSE.txt
+#
+# This file: Tamil language data (last modified: 2020.07.14).
+##/
+
+# Language settings.
+Local Name: "தமிழ்"
+Text Direction: "ltr"
+IntegerRule: "int2Type4"
+FractionRule: "int1"
+
+SafeBrowseLookup_200: "தீங்கு விளைவிக்கும் URL கண்டறியப்பட்டது"
+SafeBrowseLookup_400: "API கோரிக்கை பிழை"
+SafeBrowseLookup_401: "API அங்கீகார பிழை"
+SafeBrowseLookup_503: "API சேவை கிடைக்கவில்லை"
+SafeBrowseLookup_999: "தெரியாத API பிழை"
+corrupted: "சிதைந்த PE கண்டறியப்பட்டது"
+data_not_available: "தரவு கிடைக்கவில்லை."
+detected: "%s கண்டறியப்பட்டது"
+detected_control_characters: "கட்டுப்பாட்டு பைட்டுகள் கண்டறியப்பட்டது"
+encrypted_archive: "மறைகுறியாக்கப்பட்ட காப்பகம் கண்டறியப்பட்டது; மறைகுறியாக்கப்பட்ட காப்பகங்கள் அனுமதிக்கப்படவில்லை"
+error_log_header: "பின்வரும் பிழைகள் ஏதேனும் காலப்போக்கில் தொடர்ந்தால், உங்களுக்கு ஓய்வு நேரம் கிடைத்ததும், சிக்கலைப் புகாரளிக்கவும் ஆதரவைப் பெறவும் GitHub இல் phpMussel issues பக்கத்தில் ஒரு புதிய issue உருவாக்கவும். இணைக்கப்பட்ட வேறு எந்த தகவலுடனும் கேள்விக்குரிய பிழைகளை குறிப்பிடுங்கள். நன்றி."
+failed_to_access: ""%s" ஐ அணுகுவதில் தோல்வி!"
+field_date: "தேதி"
+field_header_hash_reconstruction: "ஹாஷ் கையொப்பங்கள் புனரமைப்பு"
+field_header_pe_reconstruction: "PE பிரிவு கையொப்பங்கள் புனரமைப்பு"
+field_header_scan_results_why_flagged: "ஸ்கேன் முடிவுகள் (ஏன் கொடியிடப்பட்டது)"
+field_ip_address: "ஐபி முகவரி"
+file: "கோப்பு"
+filesize_limit_exceeded: "கோப்பு அளவு வரம்பை மீறியது"
+filetype_blacklisted: "கோப்பு வகை கருப்புபட்டியலிடப்பட்டுள்ளது"
+finished: "முடிந்துவிட்டது"
+generated_by: "ஜெனரேட்டர்"
+grammar_brackets: "%s (%s)"
+grammar_exclamation_mark: "%s!"
+grammar_fullstop: "%s."
+grammar_spacer: " "
+image: "படம்"
+invalid_data: "தவறான தரவு!"
+invalid_file: "தவறான கோப்பு"
+invalid_url: "தவறான URL!"
+macros_not_permitted: "மேக்ரோக்கள் அனுமதிக்கப்படவில்லை"
+only_allow_images: "படக் கோப்புகள் மட்டுமே அனுமதிக்கப்படுகின்றன"
+quarantined_as: ""%s.qfu" என தனிமைப்படுத்தப்பட்டுள்ளது."
+recursive: "மறுநிகழ்வு ஆழ வரம்பு மீறியது"
+response_error: "பிழை"
+scan_chameleon: "%s பச்சோந்தி தாக்குதல் கண்டறியப்பட்டது"
+scan_checking: ""%s" ஐ சரிபார்க்கிறது."
+scan_command_injection: "கட்டளை ஊசி முயற்சி கண்டறியப்பட்டது"
+scan_complete: "முடிந்தது"
+scan_extensions_missing: "தோல்வி (தேவையான நீட்டிப்புகளைக் காணவில்லை)!"
+scan_filename_manipulation_detected: "கோப்பு பெயர் கையாளுதல் கண்டறியப்பட்டது"
+scan_missing_filename: "கோப்பு பெயர் இல்லை"
+scan_no_problems_found: "எந்த சிக்கலும் காணப்படவில்லை."
+scan_reading: "படித்தல்"
+scan_signature_file_missing: "கையொப்ப கோப்பு இல்லை"
+scan_tampering: "ஆபத்தான கோப்பு சேதமடைதல் கண்டறியப்பட்டது"
+started: "தொடங்கியது"
+state_failed_missing: "தேவையான கூறு கிடைக்காததால் பணி தோல்வியடைந்தது."
+too_many_files_in_archive: "காப்பகத்தில் அதிக எண்ணிக்கையிலான கோப்புகள்"
+too_many_urls: "பல URL கள்"
+x_does_not_exist: "%s இல்லை"

@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2020.07.13).
+ * This file: The loader (last modified: 2020.07.16).
  */
 
 namespace phpMussel\Core;
@@ -567,29 +567,31 @@ class Loader
         /** Load client-specified L10N data if possible. */
         if (!$this->Configuration['core']['lang_override'] || empty($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
             if (!($this->ClientL10N instanceof \Maikuolan\Common\L10N)) {
-                $this->ClientL10N = &$L10N;
+                $this->ClientL10N = &$this->L10N;
             }
         } else {
             $Accepted = preg_replace(['~^([^,]*).*$~', '~[^-A-Za-z]~'], ['\1', ''], $_SERVER['HTTP_ACCEPT_LANGUAGE']);
             $Primary = '';
-            if (
-                $this->Configuration['core']['lang'] !== $Accepted &&
-                is_readable($Path . $Accepted . '.yml')
-            ) {
+            $IsSameAs = false;
+            if ($this->Configuration['core']['lang'] === $Accepted) {
+                $IsSameAs = true;
+            } elseif (is_readable($Path . $Accepted . '.yml')) {
                 $Primary = $this->readFile($Path . $Accepted . '.yml');
-            }
-            if (!$Primary) {
+            } else {
                 $Accepted = strtolower(preg_replace('~^([^-]*).*$~', '\1', $Accepted));
-                if (
-                    $this->Configuration['core']['lang'] !== $Accepted &&
-                    is_readable($Path . $Accepted . '.yml')
-                ) {
+                if ($this->Configuration['core']['lang'] === $Accepted) {
+                    $IsSameAs = true;
+                } elseif (is_readable($Path . $Accepted . '.yml')) {
                     $Primary = $this->readFile($Path . $Accepted . '.yml');
                 }
             }
 
             /** Process client-specified L10N data. */
-            if ($Primary) {
+            if ($IsSameAs) {
+                if (!($this->ClientL10N instanceof \Maikuolan\Common\L10N)) {
+                    $this->ClientL10N = &$this->L10N;
+                }
+            } elseif ($Primary) {
                 $Arr = [];
                 if (!$this->ClientL10NAccepted) {
                     $this->ClientL10NAccepted = $Accepted;
@@ -603,7 +605,6 @@ class Loader
                     $this->ClientL10N = new \Maikuolan\Common\L10N($Arr, $this->L10N);
                 }
             } elseif (!($this->ClientL10N instanceof \Maikuolan\Common\L10N)) {
-                $this->ClientL10NAccepted = $Accepted;
                 $this->ClientL10N = new \Maikuolan\Common\L10N([], $this->L10N);
             }
         }

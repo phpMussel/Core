@@ -7,13 +7,12 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Alternative channels data for failed curl requests (last modified: 2020.06.12).
+# This file: Alternative channels data for failed curl requests (last modified: 2020.07.16).
 ##/
 
 Triggers:
  GitHub: "https://raw.githubusercontent.com/"
  VirusTotal_HTTPS: "https://www.virustotal.com/vtapi"
- hpHosts_HTTPS: "https://verify.hosts-file.net/"
 GitHub:
  Charts:
   GitHub: "https://raw.githubusercontent.com/Maikuolan/Compatibility-Charts/"
@@ -22,7 +21,3 @@ VirusTotal_HTTPS:
  VirusTotal:
   VirusTotal_HTTPS: https://www.virustotal.com/vtapi
   VirusTotal_HTTP: http://www.virustotal.com/vtapi
-hpHosts_HTTPS:
- hpHosts:
-  hpHosts_HTTPS: https://verify.hosts-file.net/
-  hpHosts_HTTP: http://verify.hosts-file.net/

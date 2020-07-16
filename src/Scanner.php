@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2020.07.12).
+ * This file: The scanner (last modified: 2020.07.16).
  */
 
 namespace phpMussel\Core;
@@ -1308,7 +1308,6 @@ class Scanner
         /** Begin URL scanner. */
         if (
             isset($this->Loader->InstanceCache['URL_Scanner']) ||
-            !empty($this->Loader->Configuration['urlscanner']['lookup_hphosts']) ||
             !empty($this->Loader->Configuration['urlscanner']['google_api_key'])
         ) {
             $this->Loader->InstanceCache['LookupCount'] = 0;
@@ -2006,88 +2005,6 @@ class Scanner
         if (isset($URLScanner) && empty($this->Loader->ScanResultsText[$AtInstanceLookupKey])) {
 
             $URLScanner['DomainsCount'] = count($URLScanner['DomainParts']);
-
-            /** Codeblock for performing hpHosts API lookups. */
-            if ($this->Loader->Configuration['urlscanner']['lookup_hphosts'] && $URLScanner['DomainsCount']) {
-
-                /** Fetch the cache entry for hpHosts, if it doesn't already exist. */
-                if (!isset($this->Loader->InstanceCache['urlscanner_domains'])) {
-                    $this->Loader->InstanceCache['urlscanner_domains'] = $this->Loader->Cache->getEntry('urlscanner_domains');
-                }
-
-                $URLExpiry = $this->Loader->Time + $this->Loader->Configuration['urlscanner']['cache_time'];
-                $URLScanner['ScriptIdentEncoded'] = urlencode($this->Loader->ScriptIdent);
-                $URLScanner['classes'] = [
-                    'EMD' => "\x1a\x82\x10\x1bXXX",
-                    'EXP' => "\x1a\x82\x10\x16XXX",
-                    'GRM' => "\x1a\x82\x10\x32XXX",
-                    'HFS' => "\x1a\x82\x10\x32XXX",
-                    'PHA' => "\x1a\x82\x10\x32XXX",
-                    'PSH' => "\x1a\x82\x10\x31XXX"
-                ];
-                for ($i = 0; $i < $URLScanner['DomainsCount']; $i++) {
-                    if (!empty($URLScanner['DomainPartsNoLookup'][$URLScanner['DomainParts'][$i]])) {
-                        continue;
-                    }
-                    if (
-                        $this->Loader->Configuration['urlscanner']['maximum_api_lookups'] > 0 &&
-                        $this->Loader->InstanceCache['LookupCount'] > $this->Loader->Configuration['urlscanner']['maximum_api_lookups']
-                    ) {
-                        if ($this->Loader->Configuration['urlscanner']['maximum_api_lookups_response']) {
-                            $this->Loader->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
-                                $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                                $this->Loader->L10N->getString('too_many_urls')
-                            ), 2, $Depth);
-                        }
-                        break;
-                    }
-                    $URLHash = hash('md5', $URLScanner['DomainParts'][$i]) . ':' . strlen($URLScanner['DomainParts'][$i]) . ':';
-                    while (substr_count($this->Loader->InstanceCache['urlscanner_domains'], $URLHash)) {
-                        $URLScanner['Class'] =
-                            $this->Loader->substrBeforeFirst($this->Loader->substrAfterLast($this->Loader->InstanceCache['urlscanner_domains'], $URLHash), ';');
-                        if (!substr_count($this->Loader->InstanceCache['urlscanner_domains'], $URLHash . ':' . $URLScanner['Class'] . ';')) {
-                            break;
-                        }
-                        $URLScanner['Expiry'] = (int)$this->Loader->substrBeforeFirst($URLScanner['Class'], ':');
-                        if ($URLScanner['Expiry'] > $this->Loader->Time) {
-                            $URLScanner['Class'] = $this->Loader->substrAfterFirst($URLScanner['Class'], ':');
-                            if (!$URLScanner['Class']) {
-                                continue 2;
-                            }
-                            $URLScanner['Class'] = $this->getShorthand($URLScanner['Class']);
-                            $this->detected($URLScanner['Class'], $OriginalFilename, $sha256, $StringLength, $Depth);
-                        }
-                        $this->Loader->InstanceCache['urlscanner_domains'] =
-                            str_ireplace($URLHash . $URLScanner['Class'] . ';', '', $this->Loader->InstanceCache['urlscanner_domains']);
-                    }
-                    $URLScanner['req'] =
-                        'v=' . $URLScanner['ScriptIdentEncoded'] .
-                        '&s=' . $URLScanner['DomainParts'][$i] .
-                        '&class=true';
-                    $URLScanner['req_result'] = $this->Loader->request(
-                        'https://verify.hosts-file.net/?' . $URLScanner['req'],
-                        ['v' => $URLScanner['ScriptIdentEncoded'], 's' => $URLScanner['DomainParts'][$i], 'Class' => true],
-                        12
-                    );
-                    $this->Loader->InstanceCache['LookupCount']++;
-                    if (substr($URLScanner['req_result'], 0, 6) === 'Listed') {
-                        $URLScanner['Class'] = substr($URLScanner['req_result'], 7, 3);
-                        $URLScanner['Class'] = $URLScanner['classes'][$URLScanner['Class']] ?? "\x1a\x82\x10\x3fXXX";
-                        $this->Loader->InstanceCache['urlscanner_domains'] .=
-                            $URLHash .
-                            $URLExpiry . ':' .
-                            $URLScanner['Class'] . ';';
-                        $URLScanner['Class'] = $this->getShorthand($URLScanner['Class']);
-                        $this->detected($URLScanner['Class'], $OriginalFilename, $sha256, $StringLength, $Depth);
-                    }
-                    $this->Loader->InstanceCache['urlscanner_domains'] .= $URLScanner['Domains'][$i] . $URLExpiry . ':;';
-                }
-                $this->Loader->Cache->setEntry(
-                    'urlscanner_domains',
-                    $this->Loader->InstanceCache['urlscanner_domains'],
-                    $this->Loader->Configuration['urlscanner']['cache_time']
-                );
-            }
 
             $URLScanner['URLsCount'] = count($URLScanner['URLParts']);
 

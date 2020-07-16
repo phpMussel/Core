@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: phpMussel shorthand data (last modified: 2020.06.12).
+# This file: phpMussel shorthand data (last modified: 2020.07.16).
 #
 # Warning: When modifying the information in this file, be careful to ensure
 # that any changes made won't conflict with the what phpMussel recognises as
@@ -21,17 +21,13 @@
 Vendor Shorthand:
  2: ClamAV
  3: phpMussel
- 4: SecuriteInfo
  5: ZBB
  6: NLNetLabs
  7: FoxIT
  8:
   0: PhishTank
-  1: Malc0de
-  2: hpHosts
   3: Spam404
   4: Cybercrime.Tracker
-  5: abuse.ch
  9: phpMussel
  10: Malware.Expert
 Vendor Weight Options:
@@ -40,16 +36,12 @@ Vendor Weight Options:
 Vendor Search Patterns:
  ClamAV: "\x1a[\x20-\x2f]|ClamAV"
  phpMussel: "\x1a[\x30-\x3f\x90-\x9f]|phpMussel"
- SecuriteInfo: "\x1a[\x40-\x4f]"
  ZBB: "\x1a[\x50-\x5f]"
  NLNetLabs: "\x1a[\x60-\x6f]"
  FoxIT: "\x1a[\x70-\x7f]"
  PhishTank: "\x1a\x80"
- Malc0de: "\x1a\x81"
- hpHosts: "\x1a\x82"
  Spam404: "\x1a\x83"
  Cybercrime.Tracker: "\x1a\x84"
- abuse.ch: "\x1a\x85"
  Malware.Expert: "\x1a[\xa0-\xaf]"
 Metadata Shorthand:
  1: Testfile

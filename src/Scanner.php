@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2020.07.16).
+ * This file: The scanner (last modified: 2020.07.19).
  */
 
 namespace phpMussel\Core;
@@ -258,6 +258,9 @@ class Scanner
                 0
             );
         }
+
+        /** Fire event: "atEndOf_scan". */
+        $this->Loader->Events->fireEvent('atEndOf_scan');
 
         /** Return human-readable text. */
         if ($Format === 4) {

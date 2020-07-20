@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2020.07.19).
+ * This file: The scanner (last modified: 2020.07.20).
  */
 
 namespace phpMussel\Core;
@@ -778,7 +778,7 @@ class Scanner
             $this->Loader->Configuration['core']['scan_cache_expiry'] > 0 &&
             ($HashCacheID = $sha256 . hash('sha256', $OriginalFilename)) &&
             ($HashCacheEntry = $this->Loader->Cache->getEntry($HashCacheID)) &&
-            preg_match('~^\[\-?\d,".*",".*"\]$~', $HashCacheEntry)
+            preg_match('~^\[\-?\d,".*"\]$~', $HashCacheEntry)
         ) {
             /** 0: (int) {-5...2}; 1: Text. */
             if (($HashCacheEntry = json_decode($HashCacheEntry, true, 2)) === false) {

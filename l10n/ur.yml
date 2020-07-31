@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Urdu language data (last modified: 2020.07.13).
+# This file: Urdu language data (last modified: 2020.07.31).
 ##/
 
 # Language settings.
@@ -37,7 +37,7 @@ file: "فائل"
 filesize_limit_exceeded: "فائل کی حد سے تجاوز کر گئی"
 filetype_blacklisted: "قسم کی فائل کو بلیک لسٹ"
 finished: "ختم"
-generated_by: "کی طرف سے پیدا"
+generated_by: "%s کے ذریعہ تیار کردہ"
 grammar_brackets: "%s (%s)"
 grammar_exclamation_mark: "%s!"
 grammar_fullstop: "%s."

@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Spanish language data (last modified: 2020.07.13).
+# This file: Spanish language data (last modified: 2020.07.31).
 ##/
 
 # Language settings.
@@ -37,7 +37,7 @@ file: "Archivo"
 filesize_limit_exceeded: "Excede el límite del archivo tamaño"
 filetype_blacklisted: "Tipo de archivo en la lista negra"
 finished: "Terminado"
-generated_by: "Generado por"
+generated_by: "Generado por %s"
 grammar_brackets: "%s (%s)"
 grammar_exclamation_mark: "¡%s!"
 grammar_fullstop: "%s."

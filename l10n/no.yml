@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Norwegian language data (last modified: 2020.07.13).
+# This file: Norwegian language data (last modified: 2020.07.31).
 ##/
 
 # Language settings.
@@ -37,7 +37,7 @@ file: "Fil"
 filesize_limit_exceeded: "Filstørrelsen overskredet"
 filetype_blacklisted: "Filtype svartelistet"
 finished: "Ferdig"
-generated_by: "Generert av"
+generated_by: "Generert av %s"
 grammar_brackets: "%s (%s)"
 grammar_exclamation_mark: "%s!"
 grammar_fullstop: "%s."

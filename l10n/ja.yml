@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Japanese language data (last modified: 2020.07.13).
+# This file: Japanese language data (last modified: 2020.07.31).
 ##/
 
 # Language settings.
@@ -37,7 +37,7 @@ file: "ファイル"
 filesize_limit_exceeded: "容範囲外ファイルサイズです"
 filetype_blacklisted: "ファイルタイプがブラックリスト記載です"
 finished: "完了"
-generated_by: "作成者"
+generated_by: "%sによって生成されました"
 grammar_brackets: "%s（%s）"
 grammar_exclamation_mark: "%s！"
 grammar_fullstop: "%s。"
@@ -48,7 +48,7 @@ invalid_file: "不正ファイル"
 invalid_url: "不正ＵＲＬ！"
 macros_not_permitted: "マクロは許可されていません"
 only_allow_images: "画像ファイルのみ許可されています"
-quarantined_as: "「%s.qfu」として隔離。"
+quarantined_as: "「%s.qfu」として検疫。"
 recursive: "再帰定義呼び出しの繰り返し回数が上限を超えました"
 response_error: "エラー"
 scan_chameleon: "%s Chameleon（カメレオン）攻撃が検出されました"

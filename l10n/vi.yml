@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Vietnamese language data (last modified: 2020.07.13).
+# This file: Vietnamese language data (last modified: 2020.07.31).
 ##/
 
 # Language settings.
@@ -37,7 +37,7 @@ file: "Tập tin"
 filesize_limit_exceeded: "Cở của tập tin đã bị quá giới hạn"
 filetype_blacklisted: "Loại tập tin đã vào danh sách đen"
 finished: "Hoàn thành"
-generated_by: "Được tạo bởi"
+generated_by: "Được tạo bởi %s"
 grammar_brackets: "%s (%s)"
 grammar_exclamation_mark: "%s!"
 grammar_fullstop: "%s."

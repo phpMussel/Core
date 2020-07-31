@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Korean language data (last modified: 2020.07.13).
+# This file: Korean language data (last modified: 2020.07.31).
 ##/
 
 # Language settings.
@@ -37,7 +37,7 @@ file: "파일"
 filesize_limit_exceeded: "용 범위를 벗어난 파일 크기입니다"
 filetype_blacklisted: "파일 형식이 블랙리스트입니다"
 finished: "완료"
-generated_by: "작성자"
+generated_by: "%s에 의해 생성됩니다"
 grammar_brackets: "%s (%s)"
 grammar_exclamation_mark: "%s!"
 grammar_fullstop: "%s."

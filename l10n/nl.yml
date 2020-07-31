@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Dutch language data (last modified: 2020.07.13).
+# This file: Dutch language data (last modified: 2020.07.31).
 ##/
 
 # Language settings.
@@ -37,7 +37,7 @@ file: "Bestand"
 filesize_limit_exceeded: "Bestandsgrootte limiet overschreden"
 filetype_blacklisted: "Bestandstype in zwarte lijst"
 finished: "Afgewerkt"
-generated_by: "Gegenereerde door"
+generated_by: "Gegenereerde door %s"
 grammar_brackets: "%s (%s)"
 grammar_exclamation_mark: "%s!"
 grammar_fullstop: "%s."

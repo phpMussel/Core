@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Tamil language data (last modified: 2020.07.15).
+# This file: Tamil language data (last modified: 2020.07.31).
 ##/
 
 # Language settings.
@@ -37,7 +37,7 @@ file: "கோப்பு"
 filesize_limit_exceeded: "கோப்பு அளவு வரம்பை மீறியது"
 filetype_blacklisted: "கோப்பு வகை கருப்புபட்டியலிடப்பட்டுள்ளது"
 finished: "முடிந்துவிட்டது"
-generated_by: "ஜெனரேட்டர்"
+generated_by: "%s ஆல் உருவாக்கப்பட்டது"
 grammar_brackets: "%s (%s)"
 grammar_exclamation_mark: "%s!"
 grammar_fullstop: "%s."

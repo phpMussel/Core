@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Bangla language data (last modified: 2020.07.13).
+# This file: Bangla language data (last modified: 2020.07.31).
 ##/
 
 # Language settings.
@@ -37,7 +37,7 @@ file: "ফাইল"
 filesize_limit_exceeded: "ফাইলের আকার সীমা অতিক্রম করেছে"
 filetype_blacklisted: "ফাইলের ধরন কালো তালিকাতে রয়েছে।"
 finished: "শেষ হয়েছে"
-generated_by: "জেনারেটর:"
+generated_by: "%s দ্বারা উত্পাদিত"
 grammar_brackets: "%s (%s)"
 grammar_exclamation_mark: "%s!"
 grammar_fullstop: "%s।"

@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Italian language data (last modified: 2020.07.13).
+# This file: Italian language data (last modified: 2020.07.31).
 ##/
 
 # Language settings.
@@ -37,7 +37,7 @@ file: "File"
 filesize_limit_exceeded: "Dimensione massima del file superata"
 filetype_blacklisted: "Tipo di file nella lista nera"
 finished: "Finito"
-generated_by: "Generato da"
+generated_by: "Generato da %s"
 grammar_brackets: "%s (%s)"
 grammar_exclamation_mark: "%s!"
 grammar_fullstop: "%s."

@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Indonesian language data (last modified: 2020.07.13).
+# This file: Indonesian language data (last modified: 2020.07.31).
 ##/
 
 # Language settings.
@@ -37,7 +37,7 @@ file: "File"
 filesize_limit_exceeded: "File ukuran batas melebihi"
 filetype_blacklisted: "File jenis pada hitam daftar"
 finished: "Selesai"
-generated_by: "Dihasilkan oleh"
+generated_by: "Dihasilkan oleh %s"
 grammar_brackets: "%s (%s)"
 grammar_exclamation_mark: "%s!"
 grammar_fullstop: "%s."

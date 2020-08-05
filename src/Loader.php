@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2020.07.20).
+ * This file: The loader (last modified: 2020.08.05).
  */
 
 namespace phpMussel\Core;
@@ -213,9 +213,20 @@ class Loader
             $VendorPath = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'vendor';
         }
 
-        /** Generate exception if the vendor directory doesn't exist or isn't readable. */
+        /** The specified vendor directory doesn't exist or isn't readable. */
         if (!is_dir($VendorPath) || !is_readable($VendorPath)) {
-            throw new \Exception('Vendor directory is undefined or unreadable.');
+            if (isset($_SERVER['DOCUMENT_ROOT'], $_SERVER['SCRIPT_NAME'])) {
+                /** Safeguard for symlinked installations. */
+                $VendorPath = $this->buildPath(dirname($_SERVER['DOCUMENT_ROOT'] . $_SERVER['SCRIPT_NAME']) . DIRECTORY_SEPARATOR . 'vendor', false);
+
+                /** Eep.. Still not working. Generate exception. */
+                if (!is_dir($VendorPath) || !is_readable($VendorPath)) {
+                    throw new \Exception('Vendor directory is undefined or unreadable.');
+                }
+            } else {
+                /** Further safeguards not possible. Generate exception. */
+                throw new \Exception('Vendor directory is undefined or unreadable.');
+            }
         }
 
         /** Prepare the phpMussel version identifier. */

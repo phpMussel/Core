@@ -310,7 +310,7 @@ class Loader
                 $$Path = $VendorPath . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'phpmussel-' . strtolower(substr($Path, 0, -4));
             }
             if (!$this->buildPath($$Path, false)) {
-                throw new \Exception(sprint('Unable to build the path, "%s".', $$Path));
+                throw new \Exception(sprintf('Unable to build the path, "%s".', $$Path));
             }
             if (($End = substr($$Path, -1)) && $End !== '/' && $End !== '\\') {
                 $$Path .= DIRECTORY_SEPARATOR;

@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2020.07.20).
+ * This file: The scanner (last modified: 2020.10.01).
  */
 
 namespace phpMussel\Core;
@@ -2066,6 +2066,13 @@ class Scanner
         /** Fire event: "beforeChameleonDetections". */
         $this->Loader->Events->fireEvent('beforeChameleonDetections');
 
+        /** Chameleon attack bypasses for Mac OS X thumbnails and screenshots. */
+        $ThumbnailBypass = (
+            substr($OriginalFilename, 0, 2) === '._' &&
+            !preg_match('~[^\x00-\x1f]~', substr($str, 0, 8)) &&
+            substr($str, 8, 8) === 'Mac OS X'
+        );
+
         /** PHP chameleon attack detection. */
         if ($this->Loader->Configuration['files']['chameleon_from_php']) {
             if ($this->containsMustAssert([
@@ -2147,7 +2154,7 @@ class Scanner
         }
 
         /** Image chameleon attack detection. */
-        if ($this->Loader->Configuration['files']['chameleon_to_img']) {
+        if (!$ThumbnailBypass && $this->Loader->Configuration['files']['chameleon_to_img']) {
             $Chameleon = '';
             if (
                 (($xt === 'bmp' || $xt === 'dib') && $twocc !== '424d') ||

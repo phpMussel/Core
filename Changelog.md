@@ -11,3 +11,9 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 [2020.08.05; Maikuolan]: Addressed a potential compatibility problem with some specific kinds of symlinked installations.
 
 [2020.10.01; Bug-fix; Maikuolan]: Discovered that the image chameleon attack detection could generate false positives against Mac OS X thumbnails; Fixed. *Refer [#223](https://github.com/phpMussel/phpMussel/issues/223).*
+
+### v3.0.2
+
+[2020.10.01; Bug-fix; v10mthibault]: Typo in Loader.php; Trying to call function sprint instead of sprintf which leads to an error; Fixed.
+
+[2020.10.15; Bug-fix; Maikuolan]: Wrong number of files reported when recursively scanning through directories; Fixed. *Refer [#225](https://github.com/phpMussel/phpMussel/issues/225).*

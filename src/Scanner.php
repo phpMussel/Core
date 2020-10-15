@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2020.10.01).
+ * This file: The scanner (last modified: 2020.10.15).
  */
 
 namespace phpMussel\Core;
@@ -345,8 +345,6 @@ class Scanner
             } elseif ($SizeOfDir > 1) {
                 if ($this->Loader->InstanceCache['ThisScanTotal'] === 0) {
                     $this->Loader->InstanceCache['ThisScanTotal'] = $SizeOfDir;
-                } else {
-                    $this->Loader->InstanceCache['ThisScanTotal'] += $SizeOfDir - 1;
                 }
                 $this->Loader->Events->fireEvent('countersChanged');
                 foreach ($Files as $Key => $Value) {
@@ -378,8 +376,6 @@ class Scanner
             $SizeOfDir = count($Dir);
             if ($this->Loader->InstanceCache['ThisScanTotal'] === 0) {
                 $this->Loader->InstanceCache['ThisScanTotal'] = $SizeOfDir;
-            } else {
-                $this->Loader->InstanceCache['ThisScanTotal'] += $SizeOfDir - 1;
             }
             $this->Loader->Events->fireEvent('countersChanged');
             foreach ($Dir as &$Sub) {
@@ -450,8 +446,6 @@ class Scanner
                 $this->Loader->InstanceCache['ThisScanDone']++;
                 $this->Loader->Events->fireEvent('countersChanged');
                 if (!$this->Loader->Configuration['files']['filesize_response']) {
-                    $this->Loader->InstanceCache['ThisScanDone']++;
-                    $this->Loader->Events->fireEvent('countersChanged');
                     $this->Loader->atHit('', $fS, $OriginalFilenameClean, '', 1, $Depth + 1);
                     return;
                 }
@@ -2793,15 +2787,19 @@ class Scanner
      * Used both by the scanner as well as by CLI.
      *
      * @param string $Base Directory root.
+     * @param bool $Directories Includes directories in the array when true.
      * @return array Directory tree.
      */
-    public function directoryRecursiveList(string $Base): array
+    public function directoryRecursiveList(string $Base, bool $Directories = false): array
     {
         $Arr = [];
         $Offset = strlen($Base);
         $List = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($Base), \RecursiveIteratorIterator::SELF_FIRST);
         foreach ($List as $Item => $List) {
             if (preg_match('~^(?:/\.\.|./\.|\.{3})$~', str_replace("\\", '/', substr($Item, -3))) || !is_readable($Item)) {
+                continue;
+            }
+            if (is_dir($Item) && !$Directories) {
                 continue;
             }
             $Arr[] = substr($Item, $Offset);

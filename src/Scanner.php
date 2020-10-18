@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2020.10.15).
+ * This file: The scanner (last modified: 2020.10.18).
  */
 
 namespace phpMussel\Core;
@@ -1941,7 +1941,7 @@ class Scanner
                                     strpos($VNLC, '-php') !== false || strpos($VNLC, '.php') !== false
                             )) || ($is_not_html && (
                                     strpos($VNLC, '-htm') !== false || strpos($VNLC, '.htm') !== false
-                            )) || $$DataSourceLen < $ThisSigLen) {
+                            ))) {
                                 continue;
                             }
                             if (

@@ -17,3 +17,7 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 [2020.10.01; Bug-fix; v10mthibault]: Typo in Loader.php; Trying to call function sprint instead of sprintf which leads to an error; Fixed.
 
 [2020.10.15; Bug-fix; Maikuolan]: Wrong number of files reported when recursively scanning through directories; Fixed. *Refer [#225](https://github.com/phpMussel/phpMussel/issues/225).*
+
+### v3.0.3
+
+[2020.10.18; Bug-fix; Maikuolan]: A small, minor scan optimisation mechanism found to be faulty, causing signatures to sometimes be skipped when not intended; Removed it. *Refer [#224](https://github.com/phpMussel/phpMussel/issues/224).*

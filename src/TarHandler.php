@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: Tar handler (last modified: 2020.07.12).
+ * This file: Tar handler (last modified: 2020.10.26).
  */
 
 namespace phpMussel\Core;
@@ -43,7 +43,7 @@ class TarHandler extends ArchiveHandler
     public function __construct($Pointer)
     {
         /** Guard against wrong type of file used as pointer. */
-        if (empty($Pointer) || substr($Pointer, 257, 6) !== "ustar\x00") {
+        if (empty($Pointer) || substr($Pointer, 257, 6) !== "ustar\0") {
             $this->ErrorState = 2;
             return;
         }

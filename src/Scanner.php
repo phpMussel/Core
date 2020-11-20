@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2020.10.30).
+ * This file: The scanner (last modified: 2020.11.20).
  */
 
 namespace phpMussel\Core;
@@ -581,7 +581,7 @@ class Scanner
             }
 
             /** Cleanup. */
-            unset($CompressionResults, $CompressionObject);
+            unset($CompressionObject);
         }
 
         $inLen = strlen($in);
@@ -736,6 +736,15 @@ class Scanner
             $$Algo = hash($Algo, $str);
         }
 
+        /** Scan target has no name? That's a little suspicious. */
+        if (!$OriginalFilename) {
+            $this->Loader->atHit($sha256, $StringLength, '', sprintf(
+                $this->Loader->L10N->getString('grammar_exclamation_mark'),
+                $this->Loader->L10N->getString('scan_missing_filename')
+            ), 2, $Depth);
+            return;
+        }
+
         /** Needed for hash caching plus some other checks. */
         $AtInstanceLookupKey = sprintf('%s:%d:%s', $sha256, $StringLength, $OriginalFilename);
 
@@ -751,20 +760,11 @@ class Scanner
          */
         $CoExMeta = '';
         foreach (['OriginalFilename', 'Depth', 'StringLength', 'md5', 'sha1', 'sha256', 'crc32b', 'fourcc', 'twocc'] as $AppendToCoExMeta) {
-            if (!empty($$$AppendToCoExMeta)) {
+            if (!empty($$AppendToCoExMeta)) {
                 $CoExMeta .= '$' . $AppendToCoExMeta . ':' . $$AppendToCoExMeta . ';';
             }
         }
         unset($AppendToCoExMeta);
-
-        /** Scan target has no name? That's a little suspicious. */
-        if (!$OriginalFilename) {
-            $this->Loader->atHit($sha256, $StringLength, '', sprintf(
-                $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                $this->Loader->L10N->getString('scan_missing_filename')
-            ), 2, $Depth);
-            return;
-        }
 
         /**
          * Check whether the file being scanned has already been recently
@@ -2414,10 +2414,14 @@ class Scanner
             $Handler = 'TarHandler';
             $ConType = 'TarFile';
             $this->Loader->InstanceCache['container'] = 'tarfile';
-        } elseif (substr($Data, 0, 4) === 'Rar!' || substr($Data, 0, 4) === "\x52\x45\x7e\x5e") {
+        } elseif (substr($Data, 0, 4) === 'Rar!' || substr($Data, 0, 4) === 'RE~^') {
             $Handler = 'RarHandler';
             $ConType = 'RarFile';
             $this->Loader->InstanceCache['container'] = 'rarfile';
+        } elseif (substr($Data, 0, 4) === "\x25PDF") {
+            $Handler = 'PdfHandler';
+            $ConType = 'PdfFile';
+            $this->Loader->InstanceCache['container'] = 'pdffile';
         }
 
         /** Not an archive. Exit early. */
@@ -2454,7 +2458,7 @@ class Scanner
             }
 
             /** Guard. */
-            if (!class_exists('ZipArchive')) {
+            if (!class_exists('\ZipArchive')) {
                 if (!$this->Loader->Configuration['signatures']['fail_extensions_silently']) {
                     $this->Loader->atHit($DataHash, $DataLen, $ItemRef, $this->Loader->L10N->getString('scan_extensions_missing'), -1, $ScanDepth);
                     return;
@@ -2494,7 +2498,7 @@ class Scanner
         if ($Handler === 'RarHandler') {
 
             /** Guard. */
-            if (!class_exists('RarArchive') || !class_exists('RarEntry')) {
+            if (!class_exists('\RarArchive') || !class_exists('\RarEntry')) {
                 if (!$this->Loader->Configuration['signatures']['fail_extensions_silently']) {
                     $this->Loader->atHit($DataHash, $DataLen, $ItemRef, $this->Loader->L10N->getString('scan_extensions_missing'), -1, $ScanDepth);
                     return;
@@ -2521,6 +2525,28 @@ class Scanner
             if ($Pointer) {
                 $ArchiveObject = new RarHandler($Pointer);
             }
+        }
+
+        /** Handle PDF files. */
+        if ($Handler === 'PdfHandler') {
+
+            /** Encryption guard. */
+            if ($this->Loader->Configuration['files']['block_encrypted_archives']) {
+                if (preg_match('~xref.*/Encrypt .*startxref$~', $Data)) {
+                    $this->Loader->atHit($DataHash, $DataLen, $ItemRef, sprintf(
+                        $this->Loader->L10N->getString('grammar_exclamation_mark'),
+                        sprintf(
+                            $this->Loader->L10N->getString('grammar_brackets'),
+                            $this->Loader->L10N->getString('encrypted_archive'),
+                            $ItemRef
+                        )
+                    ), -4, $ScanDepth);
+                    return;
+                }
+            }
+
+            /** PdfHandler can work with data directly. */
+            $ArchiveObject = new PdfHandler($Data);
         }
 
         /** Archive object has been instantiated. Let's proceed. */
@@ -3006,7 +3032,7 @@ class Scanner
         $List = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($Path), \RecursiveIteratorIterator::SELF_FIRST);
         foreach ($List as $Item => $List) {
             $File = str_replace("\\", '/', substr($Item, $Offset));
-            if ($File && preg_match('~\.qfu$~i', $Item) && is_file($Item) && !is_link($Item) && is_readable($Item)) {
+            if ($File && strtolower(substr($Item, -4)) === '.qfu' && is_file($Item) && !is_link($Item) && is_readable($Item)) {
                 $Files[$File] = filemtime($Item);
             }
         }
@@ -3088,7 +3114,7 @@ class Scanner
                 }
                 if ($c = preg_match_all(
                     '/(hex2bin\s*\(\s*["\'])([\da-f]{1,4096})(["\']\s*\))/i',
-                $str, $matches )) {
+                $str, $matches)) {
                     for ($i = 0; $c > $i; $i++) {
                         $str = str_ireplace(
                             $matches[0][$i],
@@ -3758,7 +3784,7 @@ class Scanner
 
         /** Determine whether the file being scanned is a macro. */
         $this->Loader->InstanceCache['file_is_macro'] = (
-            preg_match('~vbaProject\.bin$~i', $Filename) ||
+            strtolower(substr($Filename, -14)) === 'vbaproject.bin' ||
             preg_match('~^\xd0\xcf|\x00Attribut|\x01CompObj|\x05Document~', $Data)
         );
 
@@ -3805,7 +3831,7 @@ class Scanner
             }
 
             /** Cleanup. */
-            unset($CompressionResults, $CompressionObject);
+            unset($CompressionObject);
         }
 
         /** Reset Crx variables. */

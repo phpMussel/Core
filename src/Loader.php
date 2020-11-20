@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2020.10.15).
+ * This file: The loader (last modified: 2020.11.20).
  */
 
 namespace phpMussel\Core;
@@ -275,7 +275,7 @@ class Loader
         }
 
         /** Read the phpMussel configuration file. */
-        if (preg_match('~\.ini$~i', $this->ConfigurationPath)) {
+        if (strtolower(substr($this->ConfigurationPath, -4)) === '.ini') {
             $this->Configuration = parse_ini_file($this->ConfigurationPath, true);
         } elseif (preg_match('~\.ya?ml$~i', $this->ConfigurationPath)) {
             if ($Configuration = $this->readFile($this->ConfigurationPath)) {
@@ -1323,7 +1323,7 @@ class Loader
      */
     public function updateConfiguration(): bool
     {
-        if (preg_match('~\.ini$~i', $this->ConfigurationPath)) {
+        if (strtolower(substr($this->ConfigurationPath, -4)) === '.ini') {
             $Reconstructed = '';
             foreach ($this->Configuration as $CatKey => $CatValue) {
                 if (!is_array($CatValue)) {

@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: Tar handler (last modified: 2020.10.26).
+ * This file: Tar handler (last modified: 2020.11.19).
  */
 
 namespace phpMussel\Core;
@@ -38,21 +38,21 @@ class TarHandler extends ArchiveHandler
     /**
      * Construct the tar archive object.
      *
-     * @param string $Pointer
+     * @param string $File
      */
-    public function __construct($Pointer)
+    public function __construct($File)
     {
-        /** Guard against wrong type of file used as pointer. */
-        if (empty($Pointer) || substr($Pointer, 257, 6) !== "ustar\0") {
+        /** Guard against the wrong type of file being used as pointer. */
+        if (substr($File, 257, 6) !== "ustar\0") {
             $this->ErrorState = 2;
             return;
         }
 
         /** Set total size. */
-        $this->TotalSize = strlen($Pointer);
+        $this->TotalSize = strlen($File);
 
         /** Set archive data. */
-        $this->Data = $Pointer;
+        $this->Data = $File;
 
         /** All is good. */
         $this->ErrorState = 0;
@@ -105,7 +105,7 @@ class TarHandler extends ArchiveHandler
     /**
      * Return whether the entry at the current entry pointer is encrypted.
      *
-     * @return bool Tar doesn't use encryption, therefore always false.
+     * @return false Tar doesn't use encryption.
      */
     public function EntryIsEncrypted(): bool
     {
@@ -114,6 +114,8 @@ class TarHandler extends ArchiveHandler
 
     /**
      * Return the reported internal CRC hash for the entry, if it exists.
+     *
+     * @return false Tar doesn't provide internal CRCs.
      */
     public function EntryCRC()
     {

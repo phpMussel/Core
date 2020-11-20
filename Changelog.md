@@ -21,3 +21,7 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 ### v3.0.3
 
 [2020.10.18; Bug-fix; Maikuolan]: A small, minor scan optimisation mechanism found to be faulty, causing signatures to sometimes be skipped when not intended; Removed it. *Refer [#224](https://github.com/phpMussel/phpMussel/issues/224).*
+
+### v3.1.0
+
+[2020.11.20; Maikuolan]: Added partial support for detecting objects and files embedded within pdf files (due to the nature of how this has been implemented, for the purpose of scanning these embedded objects and files, phpMussel will regard pdf as an archive format; this is intentional).

@@ -2532,7 +2532,7 @@ class Scanner
 
             /** Encryption guard. */
             if ($this->Loader->Configuration['files']['block_encrypted_archives']) {
-                if (preg_match('~xref.*/Encrypt .*startxref$~', $Data)) {
+                if (($XPos = strrpos($Data, "\nxref")) !== false && strpos($Data, "\n/Encrypt", $XPos + 5) !== false) {
                     $this->Loader->atHit($DataHash, $DataLen, $ItemRef, sprintf(
                         $this->Loader->L10N->getString('grammar_exclamation_mark'),
                         sprintf(

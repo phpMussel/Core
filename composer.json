@@ -16,24 +16,19 @@
         "ext-pcre": "*"
     },
     "suggest": {
+        "ext-apcu": "*",
         "ext-bz2": "*",
         "ext-curl": "*",
         "ext-lzf": "*",
         "ext-rar": "*",
         "ext-zip": "*"
     },
-    "require-dev": {
-        "codeception/codeception": "^2.3",
-        "symfony/event-dispatcher": "3.4.28"
+    "scripts": {
+        "test": "@php tests.php"
     },
     "autoload": {
         "psr-4": {
             "phpMussel\\Core\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "phpMussel\\Core\\Tests\\": "tests/"
         }
     }
 }

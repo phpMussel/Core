@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2020.11.20).
+ * This file: The loader (last modified: 2020.11.27).
  */
 
 namespace phpMussel\Core;
@@ -256,7 +256,7 @@ class Loader
          * @return bool True to end further processing; False to defer processing.
          * @return callable
          */
-        set_error_handler(function($errno, $errstr, $errfile, $errline) use (&$Errors, &$Events) {
+        set_error_handler(function ($errno, $errstr, $errfile, $errline) use (&$Errors, &$Events) {
             $Errors[] = [$errno, $errstr, $errfile, $errline];
             if ($Events->assigned('error')) {
                 $Events->fireEvent('error', '', $errno, $errstr, $errfile, $errline);
@@ -409,7 +409,8 @@ class Loader
     /**
      * Destruct the loader.
      */
-    public function __destruct() {
+    public function __destruct()
+    {
         /** Fire any final shutdown events. */
         if ($this->Events->assigned('final')) {
             $this->Events->fireEvent('final');
@@ -1012,7 +1013,11 @@ class Loader
 
             /** Used for debugging. */
             $this->debugMessage(sprintf(
-                "\r%s - %s - %s - %s\n", $Post ? 'POST' : 'GET', $URI, $Info['http_code'], (floor($Time * 100) / 100) . 's'
+                "\r%s - %s - %s - %s\n",
+                $Post ? 'POST' : 'GET',
+                $URI,
+                $Info['http_code'],
+                (floor($Time * 100) / 100) . 's'
             ));
 
             /** Most recent HTTP code flag. */
@@ -1027,7 +1032,11 @@ class Loader
 
             /** Used for debugging. */
             $this->debugMessage(sprintf(
-                "\r%s - %s - %s - %s\n", $Post ? 'POST' : 'GET', $URI, 200, (floor($Time * 100) / 100) . 's'
+                "\r%s - %s - %s - %s\n",
+                $Post ? 'POST' : 'GET',
+                $URI,
+                200,
+                (floor($Time * 100) / 100) . 's'
             ));
 
             /** Most recent HTTP code flag. */

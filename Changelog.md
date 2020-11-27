@@ -27,3 +27,5 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 [2020.11.20; Maikuolan]: Added partial support for detecting objects and files embedded within pdf files (due to the nature of how this has been implemented, for the purpose of scanning these embedded objects and files, phpMussel will regard pdf as an archive format; this is intentional).
 
 [2020.11.26; Maikuolan]: Ditched external test frameworks in favour of GitHub Actions. Replaced existing tests. (More work needs to eventually be done towards tests. This will eventually happen at some point).
+
+[2020.11.27; Maikuolan]: Some minor code-style cleanup.

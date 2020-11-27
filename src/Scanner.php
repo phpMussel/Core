@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2020.11.20).
+ * This file: The scanner (last modified: 2020.11.27).
  */
 
 namespace phpMussel\Core;
@@ -921,7 +921,8 @@ class Scanner
             '/0a(?:4(?:36f6e74656e742d54797065|4617465|6726f6d|d6573736167652d4944|d4' .
             '94d452d56657273696f6e)|5(?:265706c792d546f|2657475726e2d50617468|3656e64' .
             '6572|375626a656374|46f|82d4d61696c6572))3a20/i',
-        $str_hex) || preg_match('/0a2d2d.{32}(?:2d2d)?(?:0d)?0a/i', $str_hex));
+            $str_hex
+        ) || preg_match('/0a2d2d.{32}(?:2d2d)?(?:0d)?0a/i', $str_hex));
 
         /** Look for potential Mach-O indicators. */
         $is_macho = preg_match('/^(?:cafe(?:babe|d00d)|c[ef]faedfe|feedfac[ef])$/', $fourcc);
@@ -975,7 +976,7 @@ class Scanner
                     if (!isset($Fragment[1]) || substr($Fragment[1], 0, 1) !== '$') {
                         continue 2;
                     }
-                    $lv_haystack = substr($Fragment[1],1);
+                    $lv_haystack = substr($Fragment[1], 1);
                     if (!isset($$lv_haystack) || is_array($$lv_haystack)) {
                         continue 2;
                     }
@@ -1940,9 +1941,9 @@ class Scanner
                             $VN = $this->getShorthand($VN[0]);
                             $VNLC = strtolower($VN);
                             if (($is_not_php && (
-                                    strpos($VNLC, '-php') !== false || strpos($VNLC, '.php') !== false
+                                strpos($VNLC, '-php') !== false || strpos($VNLC, '.php') !== false
                             )) || ($is_not_html && (
-                                    strpos($VNLC, '-htm') !== false || strpos($VNLC, '.htm') !== false
+                                strpos($VNLC, '-htm') !== false || strpos($VNLC, '.htm') !== false
                             ))) {
                                 continue;
                             }
@@ -2002,7 +2003,6 @@ class Scanner
 
         /** Perform API lookups for domains. */
         if (isset($URLScanner) && empty($this->Loader->ScanResultsText[$AtInstanceLookupKey])) {
-
             $URLScanner['DomainsCount'] = count($URLScanner['DomainParts']);
 
             $URLScanner['URLsCount'] = count($URLScanner['URLParts']);
@@ -2236,7 +2236,9 @@ class Scanner
                         'https://www.virustotal.com/vtapi/v2/file/report?apikey=' .
                         urlencode($this->Loader->Configuration['virustotal']['vt_public_api_key']) .
                         '&resource=' . $md5,
-                    $VTParams, 12);
+                        $VTParams,
+                        12
+                    );
                     $VTJSON = json_decode($VTRequest, true);
                     $VTCacheTime = $this->Loader->Configuration['virustotal']['vt_quota_time'] * 60;
                     $this->Loader->InstanceCache['vt_quota'] .= ($this->Loader->Time + $VTCacheTime) . ';';
@@ -2615,7 +2617,8 @@ class Scanner
                     $ThisItemRef = $ItemRef . '→' . preg_replace(['~[\x00-\x1f]~', '~^[\\\/]~'], '', $Filename);
 
                     /** Verify filesize, integrity, etc. Exit early in case of problems. */
-                    if ($Filesize !== strlen($Content) || ($InternalCRC &&
+                    if ($Filesize !== strlen($Content) || (
+                        $InternalCRC &&
                         preg_replace('~^0+~', '', $DataCRC32) !== preg_replace('~^0+~', '', $InternalCRC)
                     )) {
                         $this->Loader->atHit($Hash, $Filesize, $ThisItemRef, sprintf(
@@ -2905,11 +2908,13 @@ class Scanner
         return (
             preg_match(
                 '/^(?:bm[2p]|c(d5|gm)|d(ib|w[fg]|xf)|ecw|fits|gif|img|j(f?if?|p[2s]|pe?g?2?|xr)|p(bm|cx|dd|gm|ic|n[gms]|' .
-                'pm|s[dp])|s(id|v[ag])|tga|w(bmp?|ebp|mp)|x(cf|bmp))$/'
-            , $Ext) ||
+                'pm|s[dp])|s(id|v[ag])|tga|w(bmp?|ebp|mp)|x(cf|bmp))$/',
+                $Ext
+            ) ||
             preg_match(
-                '/^(?:0000000c6a502020|25504446|38425053|424d|474946383[79]61|57454250|67696d7020786366|89504e47|ffd8ff)/'
-            , $Head)
+                '/^(?:0000000c6a502020|25504446|38425053|424d|474946383[79]61|57454250|67696d7020786366|89504e47|ffd8ff)/',
+                $Head
+            )
         );
     }
 
@@ -3090,7 +3095,9 @@ class Scanner
                     '/(base64_decode|decode_base64|base64\.b64decode|atob|Base64\.decode64)(\s*' .
                     '\(\s*["\'\`])([\da-z+\/]{4})*([\da-z+\/]{4}|[\da-z+\/]{3}=|[\da-z+\/]{2}==)(["\'\`]' .
                     '\s*\))/i',
-                $str, $matches)) {
+                    $str,
+                    $matches
+                )) {
                     for ($i = 0; $c > $i; $i++) {
                         $str = str_ireplace(
                             $matches[0][$i],
@@ -3102,7 +3109,9 @@ class Scanner
                 }
                 if ($c = preg_match_all(
                     '/(str_rot13\s*\(\s*["\'])([^\'"\(\)]{1,4096})(["\']\s*\))/i',
-                $str, $matches)) {
+                    $str,
+                    $matches
+                )) {
                     for ($i = 0; $c > $i; $i++) {
                         $str = str_ireplace(
                             $matches[0][$i],
@@ -3114,7 +3123,9 @@ class Scanner
                 }
                 if ($c = preg_match_all(
                     '/(hex2bin\s*\(\s*["\'])([\da-f]{1,4096})(["\']\s*\))/i',
-                $str, $matches)) {
+                    $str,
+                    $matches
+                )) {
                     for ($i = 0; $c > $i; $i++) {
                         $str = str_ireplace(
                             $matches[0][$i],
@@ -3126,7 +3137,9 @@ class Scanner
                 }
                 if ($c = preg_match_all(
                     '/([Uu][Nn][Pp][Aa][Cc][Kk]\s*\(\s*["\']\s*H\*\s*["\']\s*,\s*["\'])([\da-fA-F]{1,4096})(["\']\s*\))/',
-                $str, $matches)) {
+                    $str,
+                    $matches
+                )) {
                     for ($i = 0; $c > $i; $i++) {
                         $str = str_replace($matches[0][$i], '"' . $this->Loader->hexSafe($this->Loader->substrBeforeLast($this->Loader->substrAfterFirst($matches[0][$i], $matches[1][$i]), $matches[3][$i])) . '"', $str);
                     }

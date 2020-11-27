@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: Pdf handler (last modified: 2020.11.20).
+ * This file: Pdf handler (last modified: 2020.11.27).
  */
 
 namespace phpMussel\Core;
@@ -129,11 +129,14 @@ class PdfHandler extends ArchiveHandler
                             $BoundaryOpen !== false &&
                             $BoundaryClose !== false &&
                             $BoundaryClose > $BoundaryOpen &&
-                            ($NextSPos === false || (
-                                $BoundaryOpen < $NextSPos &&
-                                trim(substr($Tree[$Iterator]['Data'], $BoundaryClose + $BoundaryWidth, $NextSPos - $BoundaryClose - $BoundaryWidth)) === ''
+                            (
+                                $NextSPos === false ||
+                                (
+                                    $BoundaryOpen < $NextSPos &&
+                                    trim(substr($Tree[$Iterator]['Data'], $BoundaryClose + $BoundaryWidth, $NextSPos - $BoundaryClose - $BoundaryWidth)) === ''
+                                )
                             )
-                        )) {
+                        ) {
                             $Label = trim(substr($Tree[$Iterator]['Data'], $Offset, $BoundaryOpen - $Offset));
                             $Property = trim(substr($Tree[$Iterator]['Data'], $BoundaryOpen + $BoundaryWidth, $BoundaryClose - $BoundaryOpen - $BoundaryWidth));
                             if (strlen($Label)) {

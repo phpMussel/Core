@@ -1,4 +1,11 @@
 <?php
+/**
+ * This file is a part of the phpMussel\Core package.
+ * Homepage: https://phpmussel.github.io/
+ *
+ * PHPMUSSEL COPYRIGHT 2013 AND BEYOND BY THE PHPMUSSEL TEAM.
+ */
+
 // Prevent running tests outside of Composer (if the package is deployed
 // somewhere live with this file still intact, useful to prevent hammering and
 // cycles being needlessly wasted).
@@ -36,7 +43,7 @@ $TestsPath = __DIR__ . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR;
 
 // Fetch the signatures needed for testing the scanner.
 $ZipObj = new \ZipArchive();
-if ($ZipObj->open($TestsPath . 'signatures.zip') === TRUE) {
+if ($ZipObj->open($TestsPath . 'signatures.zip') === true) {
     $ZipObj->extractTo($TestsPath . 'signatures' . DIRECTORY_SEPARATOR);
     $ZipObj->close();
     unset($ZipObj);

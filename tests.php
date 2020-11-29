@@ -15,6 +15,7 @@ if (!isset($_SERVER['COMPOSER_BINARY'])) {
 
 // Suppress unexpected errors from output and exit early as a failure when encountered.
 set_error_handler(function ($errno, $errstr, $errfile, $errline) {
+    echo 'Error triggered: ' . $errstr . PHP_EOL;
     exit(1);
 });
 
@@ -34,6 +35,7 @@ spl_autoload_register(function ($Class) {
 
 $Autoloader = __DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
 if (!is_readable($Autoloader)) {
+    echo 'Autoloader is not readable.' . PHP_EOL;
     exit(2);
 }
 require $Autoloader;
@@ -49,6 +51,7 @@ if ($ZipObj->open($TestsPath . 'signatures.zip') === true) {
     unset($ZipObj);
     $SigPath = $TestsPath . 'signatures';
 } else {
+    echo 'Problem encountered trying to open signatures.zip.' . PHP_EOL;
     exit(3);
 }
 
@@ -56,6 +59,7 @@ $Samples = $TestsPath . 'samples';
 
 $Config = $TestsPath . 'phpmussel.yml';
 if (!is_readable($Config) || !is_readable($Samples) || !is_readable($SigPath)) {
+    echo 'Configuration, samples, or signatures are not readable.' . PHP_EOL;
     exit(4);
 }
 
@@ -85,10 +89,11 @@ $Expected = [
 $Actual = $Scanner->scan($Samples, 3);
 ksort($Actual);
 if ($Actual !== $Expected) {
+    echo 'Actual scan results does not match expected scan results.' . PHP_EOL;
     exit(5);
 }
 
 restore_error_handler();
 
-// All tests passed.
+echo 'All tests passed.' . PHP_EOL;
 exit(0);

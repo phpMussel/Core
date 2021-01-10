@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2020.11.27).
+ * This file: The scanner (last modified: 2021.01.10).
  */
 
 namespace phpMussel\Core;
@@ -2232,7 +2232,7 @@ class Scanner
                         'apikey' => $this->Loader->Configuration['virustotal']['vt_public_api_key'],
                         'resource' => $md5
                     ];
-                    $VTRequest = $this->Loader->request(
+                    $VTRequest = $this->Loader->Request->request(
                         'https://www.virustotal.com/vtapi/v2/file/report?apikey=' .
                         urlencode($this->Loader->Configuration['virustotal']['vt_public_api_key']) .
                         '&resource=' . $md5,
@@ -3501,10 +3501,10 @@ class Scanner
         }
 
         /** Perform lookup. */
-        $Response = $this->Loader->request(
+        $Response = $this->Loader->Request->request(
             'https://safebrowsing.googleapis.com/v4/threatMatches:find?key=' . $this->Loader->Configuration['urlscanner']['google_api_key'],
             $Arr,
-            $this->Loader->Timeout,
+            $this->Loader->Request->Timeout,
             ['Content-type: application/json']
         );
         $this->Loader->InstanceCache['LookupCount']++;

@@ -31,3 +31,7 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 [2020.11.27; Maikuolan]: Some minor code-style cleanup.
 
 [2020.12.04; Maikuolan]: Maintenance release (dependencies update, repository cleanup, etc).
+
+### v3.1.1
+
+[2021.01.10; Maikuolan]: Separated the code for performing outbound requests through cURL out to its own independent class.

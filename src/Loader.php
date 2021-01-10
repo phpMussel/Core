@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2020.11.27).
+ * This file: The loader (last modified: 2021.01.10).
  */
 
 namespace phpMussel\Core;
@@ -61,6 +61,11 @@ class Loader
     public $Events;
 
     /**
+     * @var \Maikuolan\Common\Request An object for sending cURL requests.
+     */
+    public $Request;
+
+    /**
      * @var \Maikuolan\Common\L10N An object for handling configuration-defined L10N data.
      */
     public $L10N;
@@ -83,7 +88,7 @@ class Loader
     /**
      * @var string phpMussel version number (SemVer).
      */
-    public $ScriptVersion = '3.1.0';
+    public $ScriptVersion = '3.1.1';
 
     /**
      * @var string phpMussel version identifier (complete notation).
@@ -139,11 +144,6 @@ class Loader
     public $HashReference = '';
 
     /**
-     * @var bool Set as true at the implementation to enable debug messages.
-     */
-    public $EnableDebugMessages = false;
-
-    /**
      * @var int Populated by the request method.
      */
     public $MostRecentHttpCode = 0;
@@ -157,11 +157,6 @@ class Loader
      * @var string The path to the core L10N files.
      */
     private $L10NPath = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'l10n' . DIRECTORY_SEPARATOR;
-
-    /**
-     * @var int The default timeout for request.
-     */
-    private $Timeout = 12;
 
     /**
      * @var array Channels information for request.
@@ -331,8 +326,16 @@ class Loader
             date_default_timezone_set($this->Configuration['core']['timezone']);
         }
 
-        /** Calculate instantiation time. */
-        $this->Time = time() + ($this->Configuration['core']['time_offset'] * 60);
+        /** Instantiate request class. */
+        $this->Request = new \Maikuolan\Common\Request();
+        $this->Request->Channels = (
+            $Channels = $this->readFileBlocks($this->AssetsPath . 'channels.yaml')
+        ) ? (new \Maikuolan\Common\YAML($Channels))->Data : [];
+        if (!isset($this->Request->Channels['Triggers'])) {
+            $this->Request->Channels['Triggers'] = [];
+        }
+        $this->Request->Disabled = $this->Configuration['core']['disabled_channels'];
+        $this->Request->UserAgent = $this->ScriptUA;
 
         /** If the language directive is empty, default to English. */
         if (empty($this->Configuration['core']['lang'])) {
@@ -341,6 +344,9 @@ class Loader
 
         /** Load phpMussel core L10N data. */
         $this->loadL10N($this->L10NPath);
+
+        /** Calculate instantiation time. */
+        $this->Time = time() + ($this->Configuration['core']['time_offset'] * 60);
 
         /** Initialise the cache. */
         $this->initialiseCache();
@@ -909,148 +915,6 @@ class Loader
     }
 
     /**
-     * Used to send cURL requests.
-     *
-     * @param string $URI The resource to request.
-     * @param mixed $Params If empty or omitted, CURLOPT_POST is false. Otherwise,
-     *      CURLOPT_POST is true, and the parameter is used to supply
-     *      CURLOPT_POSTFIELDS. Normally an associative array of key-value pairs,
-     *      but can be any kind of value supported by CURLOPT_POSTFIELDS. Optional.
-     * @param int $Timeout An optional timeout limit.
-     * @param array $Headers An optional array of headers to send with the request.
-     * @param int $Depth Recursion depth of the current closure instance.
-     * @return string The results of the request, or an empty string upon failure.
-     */
-    public function request(string $URI, $Params = [], int $Timeout = -1, array $Headers = [], int $Depth = 0): string
-    {
-        /** Fetch channel information. */
-        if (empty($this->Channels)) {
-            $this->Channels = (
-                $Channels = $this->readFileBlocks($this->AssetsPath . 'channels.yaml')
-            ) ? (new \Maikuolan\Common\YAML($Channels))->Data : [];
-            if (!isset($this->Channels['Triggers'])) {
-                $this->Channels['Triggers'] = [];
-            }
-        }
-
-        /** Test channel triggers. */
-        foreach ($this->Channels['Triggers'] as $TriggerName => $TriggerURI) {
-            if (
-                !isset($this->Channels[$TriggerName]) ||
-                !is_array($this->Channels[$TriggerName]) ||
-                substr($URI, 0, strlen($TriggerURI)) !== $TriggerURI
-            ) {
-                continue;
-            }
-            foreach ($this->Channels[$TriggerName] as $Channel => $Options) {
-                if (!is_array($Options) || !isset($Options[$TriggerName])) {
-                    continue;
-                }
-                $Len = strlen($Options[$TriggerName]);
-                if (substr($URI, 0, $Len) !== $Options[$TriggerName]) {
-                    continue;
-                }
-                unset($Options[$TriggerName]);
-                if (empty($Options) || $this->inCsv(key($Options), $this->Configuration['core']['disabled_channels'])) {
-                    continue;
-                }
-                $AlternateURI = current($Options) . substr($URI, $Len);
-                break;
-            }
-            if ($this->inCsv($TriggerName, $this->Configuration['core']['disabled_channels'])) {
-                if (isset($AlternateURI)) {
-                    return $this->request($AlternateURI, $Params, $Timeout, $Headers, $Depth);
-                }
-                return '';
-            }
-            if (isset($this->Channels['Overrides'], $this->Channels['Overrides'][$TriggerName])) {
-                $Overrides = $this->Channels['cURL Overrides'][$TriggerName];
-            }
-            break;
-        }
-
-        /** Empty overrides in case none declared. */
-        $Overrides = [];
-
-        /** Initialise the cURL session. */
-        $Request = curl_init($URI);
-
-        $LCURI = strtolower($URI);
-        $SSL = (substr($LCURI, 0, 6) === 'https:');
-
-        curl_setopt($Request, CURLOPT_FRESH_CONNECT, true);
-        curl_setopt($Request, CURLOPT_HEADER, false);
-        if (empty($Params)) {
-            curl_setopt($Request, CURLOPT_POST, false);
-            $Post = false;
-        } else {
-            curl_setopt($Request, CURLOPT_POST, true);
-            curl_setopt($Request, CURLOPT_POSTFIELDS, $Params);
-            $Post = true;
-        }
-        if ($SSL) {
-            curl_setopt($Request, CURLOPT_PROTOCOLS, CURLPROTO_HTTPS);
-            curl_setopt($Request, CURLOPT_SSL_VERIFYPEER, (
-                isset($Overrides['CURLOPT_SSL_VERIFYPEER']) ? !empty($Overrides['CURLOPT_SSL_VERIFYPEER']) : false
-            ));
-        }
-        curl_setopt($Request, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($Request, CURLOPT_MAXREDIRS, 1);
-        curl_setopt($Request, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($Request, CURLOPT_TIMEOUT, ($Timeout > 0 ? $Timeout : $this->Timeout));
-        curl_setopt($Request, CURLOPT_USERAGENT, $this->ScriptUA);
-        curl_setopt($Request, CURLOPT_HTTPHEADER, $Headers ?: []);
-        $Time = microtime(true);
-
-        /** Execute and get the response. */
-        $Response = curl_exec($Request);
-
-        /** Used for debugging. */
-        $Time = microtime(true) - $Time;
-
-        /** Check for problems (e.g., resource not found, server errors, etc). */
-        if (($Info = curl_getinfo($Request)) && is_array($Info) && isset($Info['http_code'])) {
-
-            /** Used for debugging. */
-            $this->debugMessage(sprintf(
-                "\r%s - %s - %s - %s\n",
-                $Post ? 'POST' : 'GET',
-                $URI,
-                $Info['http_code'],
-                (floor($Time * 100) / 100) . 's'
-            ));
-
-            /** Most recent HTTP code flag. */
-            $this->MostRecentHttpCode = $Info['http_code'];
-
-            /** Request failed. Try again using an alternative address. */
-            if ($Info['http_code'] >= 400 && isset($AlternateURI) && $Depth < 3) {
-                curl_close($Request);
-                return $this->request($AlternateURI, $Params, $Timeout, $Headers, $Depth + 1);
-            }
-        } else {
-
-            /** Used for debugging. */
-            $this->debugMessage(sprintf(
-                "\r%s - %s - %s - %s\n",
-                $Post ? 'POST' : 'GET',
-                $URI,
-                200,
-                (floor($Time * 100) / 100) . 's'
-            ));
-
-            /** Most recent HTTP code flag. */
-            $this->MostRecentHttpCode = 200;
-        }
-
-        /** Close the cURL session. */
-        curl_close($Request);
-
-        /** Return the results of the request. */
-        return $Response;
-    }
-
-    /**
      * A simple safety wrapper for unpack.
      *
      * @param string $Format Anything supported by unpack (usually "S" or "*l").
@@ -1272,47 +1136,6 @@ class Loader
         if (!$this->Cache->connect()) {
             throw new \Exception('Cache connect failed.');
         }
-    }
-
-    /**
-     * Checks for a value within CSV.
-     *
-     * @param string $Value The value to look for.
-     * @param string $CSV The CSV to look in.
-     * @return bool True when found; False when not found.
-     */
-    public function inCsv(string $Value, string $CSV): bool
-    {
-        if (!$Value || !$CSV) {
-            return false;
-        }
-        $Arr = explode(',', $CSV);
-        if (strpos($CSV, '"') !== false) {
-            foreach ($Arr as &$Item) {
-                if (substr($Item, 0, 1) === '"' && substr($Item, -1) === '"') {
-                    $Item = substr($Item, 1, -1);
-                }
-            }
-        }
-        return in_array($Value, $Arr, true);
-    }
-
-    /**
-     * Prints debug messages (used in dev; not needed for production).
-     *
-     * @param string $Message The debug message to send.
-     */
-    public function debugMessage(string $Message)
-    {
-        if ($this->EnableDebugMessages !== true) {
-            return;
-        }
-        $Handle = fopen('php://stdout', 'wb');
-        if (!is_resource($Handle)) {
-            return;
-        }
-        fwrite($Handle, $Message);
-        fclose($Handle);
     }
 
     /**

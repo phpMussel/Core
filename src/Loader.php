@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2021.01.10).
+ * This file: The loader (last modified: 2021.02.05).
  */
 
 namespace phpMussel\Core;
@@ -328,6 +328,7 @@ class Loader
 
         /** Instantiate request class. */
         $this->Request = new \Maikuolan\Common\Request();
+        $this->Request->DefaultTimeout = $this->Configuration['core']['default_timeout'];
         $this->Request->Channels = (
             $Channels = $this->readFileBlocks($this->AssetsPath . 'channels.yaml')
         ) ? (new \Maikuolan\Common\YAML($Channels))->Data : [];

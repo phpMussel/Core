@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2021.02.05).
+ * This file: The loader (last modified: 2021.02.07).
  */
 
 namespace phpMussel\Core;
@@ -88,7 +88,7 @@ class Loader
     /**
      * @var string phpMussel version number (SemVer).
      */
-    public $ScriptVersion = '3.1.1';
+    public $ScriptVersion = '3.2.0';
 
     /**
      * @var string phpMussel version identifier (complete notation).
@@ -326,7 +326,12 @@ class Loader
             date_default_timezone_set($this->Configuration['core']['timezone']);
         }
 
-        /** Instantiate request class. */
+        /** Revert script ident if "hide_version" is true. */
+        if ($this->Configuration['core']['hide_version']) {
+            $this->ScriptIdent = 'phpMussel';
+        }
+
+        /** Instantiate the request class. */
         $this->Request = new \Maikuolan\Common\Request();
         $this->Request->DefaultTimeout = $this->Configuration['core']['default_timeout'];
         $this->Request->Channels = (

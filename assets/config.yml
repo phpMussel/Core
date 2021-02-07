@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Configuration defaults file (last modified: 2021.02.05).
+# This file: Configuration defaults file (last modified: 2021.02.07).
 ##/
 
 core:
@@ -176,6 +176,9 @@ core:
   type: "bool"
   default: false
  statistics:
+  type: "bool"
+  default: false
+ hide_version:
   type: "bool"
   default: false
  disabled_channels:

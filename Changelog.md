@@ -32,8 +32,10 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 
 [2020.12.04; Maikuolan]: Maintenance release (dependencies update, repository cleanup, etc).
 
-### v3.1.1
+### v3.2.0
 
 [2021.01.10; Maikuolan]: Separated the code for performing outbound requests through cURL out to its own independent class.
 
 [2021.02.05; Maikuolan]: The default timeout for external requests is now configurable.
+
+[2021.02.07; Maikuolan]: Added the ability to hide the phpMussel version used.

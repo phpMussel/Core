@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2021.02.07).
+ * This file: The loader (last modified: 2021.03.03).
  */
 
 namespace phpMussel\Core;
@@ -171,7 +171,7 @@ class Loader
     /**
      * @var string Safety mechanism for logging events.
      */
-    const SAFETY = "\x3c\x3fphp die; \x3f\x3e";
+    public const SAFETY = "\x3c\x3fphp die; \x3f\x3e";
 
     /**
      * Construct the loader.

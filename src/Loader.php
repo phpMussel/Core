@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2021.03.03).
+ * This file: The loader (last modified: 2021.03.11).
  */
 
 namespace phpMussel\Core;
@@ -484,8 +484,9 @@ class Loader
      *
      * @param mixed $Var The variable to fix (passed by reference).
      * @param string $Type The type (or pseudo-type) to cast the variable to.
+     * @return void
      */
-    public function autoType(&$Var, string $Type = '')
+    public function autoType(&$Var, string $Type = ''): void
     {
         if (in_array($Type, ['string', 'timezone', 'checkbox', 'url', 'email'], true)) {
             $Var = (string)$Var;
@@ -513,8 +514,9 @@ class Loader
      * Performs fallbacks and autotyping for missing configuration directives.
      *
      * @param array $Fallbacks The fallback source.
+     * @return void
      */
-    public function fallback(array $Fallbacks)
+    public function fallback(array $Fallbacks): void
     {
         foreach ($Fallbacks as $KeyCat => $DCat) {
             if (!isset($this->Configuration[$KeyCat])) {
@@ -551,8 +553,9 @@ class Loader
      * Load L10N data.
      *
      * @param string $Path Where to find the L10N data to load.
+     * @return void
      */
-    public function loadL10N(string $Path = '')
+    public function loadL10N(string $Path = ''): void
     {
         if ($this->Configuration['core']['lang'] === 'en') {
             $Primary = $this->readFile($Path . 'en.yml');
@@ -905,7 +908,7 @@ class Loader
      * @param resource|null $Context Refer to the description for file().
      * @return array The file's contents or an empty array on failure.
      */
-    public function readFileAsArray(string $Filename, int $Flags = 0, $Context = null)
+    public function readFileAsArray(string $Filename, int $Flags = 0, $Context = null): array
     {
         /** Guard. */
         if (!is_file($Filename) || !is_readable($Filename) || !$Filesize = filesize($Filename)) {
@@ -939,8 +942,9 @@ class Loader
      * If input isn't an array, make it so. Remove empty elements.
      *
      * @param mixed $Input
+     * @return void
      */
-    public function arrayify(&$Input)
+    public function arrayify(&$Input): void
     {
         if (!is_array($Input)) {
             $Input = [$Input];
@@ -993,8 +997,9 @@ class Loader
      * Deletes empty directories (used by some front-end methods and log rotation).
      *
      * @param string $Dir The directory to delete.
+     * @return void
      */
-    public function deleteDirectory(string $Dir)
+    public function deleteDirectory(string $Dir): void
     {
         while (strrpos($Dir, DIRECTORY_SEPARATOR) !== false) {
             $Dir = substr($Dir, 0, strrpos($Dir, DIRECTORY_SEPARATOR));
@@ -1110,8 +1115,9 @@ class Loader
      *
      * @throws Exception if using flatfiles for caching and if an appropriate
      *      cache directory hasn't been specified or can't be written to.
+     * @return void
      */
-    private function initialiseCache()
+    private function initialiseCache(): void
     {
         /** Exit early if already initialised. */
         if ($this->Cache instanceof \Maikuolan\Common\Cache) {
@@ -1224,8 +1230,9 @@ class Loader
      * @param string $Text A human-readable explanation of the hit.
      * @param int $Code The integer results of the scan.
      * @param int $Depth The current depth of the scan process.
+     * @return void
      */
-    public function atHit(string $Hash, int $Size = -1, string $Name = '', string $Text = '', int $Code = 2, int $Depth = 0)
+    public function atHit(string $Hash, int $Size = -1, string $Name = '', string $Text = '', int $Code = 2, int $Depth = 0): void
     {
         /** Fallback for missing item hash. */
         if ($Hash === '') {

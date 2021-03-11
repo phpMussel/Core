@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: Zip handler (last modified: 2021.03.03).
+ * This file: Zip handler (last modified: 2021.03.11).
  */
 
 namespace phpMussel\Core;
@@ -88,18 +88,22 @@ class ZipHandler extends ArchiveHandler
 
     /**
      * Return the compressed size of the entry at the current entry pointer.
+     *
+     * @return int
      */
-    public function EntryCompressedSize()
+    public function EntryCompressedSize(): int
     {
-        return isset($this->StatIndex['comp_size']) ? $this->StatIndex['comp_size'] : 0;
+        return (int)($this->StatIndex['comp_size'] ?? 0);
     }
 
     /**
      * Return the actual size of the entry at the current entry pointer.
+     *
+     * @return int
      */
-    public function EntryActualSize()
+    public function EntryActualSize(): int
     {
-        return isset($this->StatIndex['size']) ? $this->StatIndex['size'] : 0;
+        return (int)($this->StatIndex['size'] ?? 0);
     }
 
     /**
@@ -124,10 +128,12 @@ class ZipHandler extends ArchiveHandler
 
     /**
      * Return the reported internal CRC hash for the entry, if it exists.
+     *
+     * @return string
      */
-    public function EntryCRC()
+    public function EntryCRC(): string
     {
-        return (isset($this->StatIndex['crc']) && is_int($this->StatIndex['crc'])) ? dechex($this->StatIndex['crc']) : false;
+        return (isset($this->StatIndex['crc']) && is_int($this->StatIndex['crc'])) ? dechex($this->StatIndex['crc']) : '';
     }
 
     /**

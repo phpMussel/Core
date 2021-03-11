@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: Pdf handler (last modified: 2020.11.27).
+ * This file: Pdf handler (last modified: 2021.03.11).
  */
 
 namespace phpMussel\Core;
@@ -348,7 +348,7 @@ class PdfHandler extends ArchiveHandler
      */
     public function EntryCompressedSize(): int
     {
-        return $this->Objects[$this->Index]['EntryCompressedSize'] ?? 0;
+        return (int)($this->Objects[$this->Index]['EntryCompressedSize'] ?? 0);
     }
 
     /**
@@ -358,7 +358,7 @@ class PdfHandler extends ArchiveHandler
      */
     public function EntryActualSize(): int
     {
-        return $this->Objects[$this->Index]['EntryActualSize'] ?? 0;
+        return (int)($this->Objects[$this->Index]['EntryActualSize'] ?? 0);
     }
 
     /**
@@ -384,11 +384,11 @@ class PdfHandler extends ArchiveHandler
     /**
      * Return the reported internal CRC hash for the entry, if it exists.
      *
-     * @return false Pdf doesn't provide internal CRCs.
+     * @return string Empty because PDF doesn't provide internal CRCs.
      */
-    public function EntryCRC(): bool
+    public function EntryCRC(): string
     {
-        return false;
+        return '';
     }
 
     /**

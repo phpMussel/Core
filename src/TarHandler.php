@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: Tar handler (last modified: 2020.11.20).
+ * This file: Tar handler (last modified: 2021.03.11).
  */
 
 namespace phpMussel\Core;
@@ -76,16 +76,20 @@ class TarHandler extends ArchiveHandler
     /**
      * Return the compressed size of the entry at the current entry pointer.
      * Note: Tar doesn't compress, so in this case, it's the same as the uncompressed size.
+     *
+     * @return int
      */
-    public function EntryCompressedSize()
+    public function EntryCompressedSize(): int
     {
         return octdec(preg_replace('/\D/', '', substr($this->Data, $this->Offset + 124, 12))) ?: 0;
     }
 
     /**
      * Return the actual size of the entry at the current entry pointer.
+     *
+     * @return int
      */
-    public function EntryActualSize()
+    public function EntryActualSize(): int
     {
         return octdec(preg_replace('/\D/', '', substr($this->Data, $this->Offset + 124, 12))) ?: 0;
     }
@@ -115,11 +119,11 @@ class TarHandler extends ArchiveHandler
     /**
      * Return the reported internal CRC hash for the entry, if it exists.
      *
-     * @return false Tar doesn't provide internal CRCs.
+     * @return string Empty because TAR doesn't provide internal CRCs.
      */
-    public function EntryCRC(): bool
+    public function EntryCRC(): string
     {
-        return false;
+        return '';
     }
 
     /**

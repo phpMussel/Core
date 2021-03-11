@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2021.01.10).
+ * This file: The scanner (last modified: 2021.03.11).
  */
 
 namespace phpMussel\Core;
@@ -314,8 +314,9 @@ class Scanner
      * @param string|array $Files Supplied by the scan method.
      * @param int $Depth Represents the current depth of recursion from which the
      *      method has been called.
+     * @return void
      */
-    private function recursor($Files = '', int $Depth = -1)
+    private function recursor($Files = '', int $Depth = -1): void
     {
         /** Fire event: "atStartOf_recursor". */
         $this->Loader->Events->fireEvent('atStartOf_recursor');
@@ -716,8 +717,9 @@ class Scanner
      *      scanned (in this context, referring to the name supplied by the upload
      *      client or CLI operator, as opposed to the temporary filename assigned
      *      by the server or anything else).
+     * @return void
      */
-    private function dataHandler(string $str = '', int $Depth = 0, string $OriginalFilename = '')
+    private function dataHandler(string $str = '', int $Depth = 0, string $OriginalFilename = ''): void
     {
         /** Fire event: "atStartOf_dataHandler". */
         $this->Loader->Events->fireEvent('atStartOf_dataHandler');
@@ -2339,9 +2341,10 @@ class Scanner
      *      needed (because the zip and rar classes require a file pointer).
      * @param int $ScanDepth The current scan depth (supplied during recursion).
      * @param string $ItemRef A reference to the parent container (for logging).
+     * @return void
      * @throws Exception if the metadata scanner throws an exception (forwarded on).
      */
-    private function archiveRecursor(string $Data, string $File = '', int $ScanDepth = 0, string $ItemRef = '')
+    private function archiveRecursor(string $Data, string $File = '', int $ScanDepth = 0, string $ItemRef = ''): void
     {
         /** Fire event: "atStartOf_archiveRecursor". */
         $this->Loader->Events->fireEvent('atStartOf_archiveRecursor');
@@ -2687,8 +2690,10 @@ class Scanner
 
     /**
      * Initialise statistics if they've been enabled.
+     *
+     * @return void
      */
-    public function statsInitialise()
+    public function statsInitialise(): void
     {
         /** Guard. */
         if (!$this->Loader->Configuration['core']['statistics']) {
@@ -2724,8 +2729,9 @@ class Scanner
      *
      * @param string $Statistic The statistic to increment.
      * @param int $Amount The amount to increment it by.
+     * @return void
      */
-    public function statsIncrement(string $Statistic, int $Amount)
+    public function statsIncrement(string $Statistic, int $Amount): void
     {
         /** Guard. */
         if (!$this->Loader->Configuration['core']['statistics'] || !isset($this->Loader->InstanceCache['Statistics'][$Statistic])) {
@@ -2738,8 +2744,10 @@ class Scanner
 
     /**
      * Fetch information about signature files for the scan process.
+     *
+     * @return void
      */
-    private function organiseSigFiles()
+    private function organiseSigFiles(): void
     {
         /** Guard. */
         if (empty($this->Loader->Configuration['signatures']['active']) || !$this->Loader->SignaturesPath) {
@@ -3597,8 +3605,9 @@ class Scanner
      * @param string $Checksum
      * @param int $StringLength
      * @param int $Depth
+     * @return void
      */
-    private function detected(string $VN, string $OriginalFilename, string $Checksum, int $StringLength, int $Depth)
+    private function detected(string $VN, string $OriginalFilename, string $Checksum, int $StringLength, int $Depth): void
     {
         /** Prepare detection text. */
         $Text = sprintf($this->Loader->L10N->getString('grammar_exclamation_mark'), sprintf(
@@ -3631,8 +3640,9 @@ class Scanner
      * @param string|int $Initial The start of the boundary or string initial offset value.
      * @param string|int $Terminal The end of the boundary or string terminal offset value.
      * @param array $SectionOffsets Section offset values.
+     * @return void
      */
-    private function dataConfineByOffsets(string &$Data, &$Initial, &$Terminal, array &$SectionOffsets)
+    private function dataConfineByOffsets(string &$Data, &$Initial, &$Terminal, array &$SectionOffsets): void
     {
         /** Guard. */
         if ($Initial === '*' && $Terminal === '*') {
@@ -3738,8 +3748,9 @@ class Scanner
      * @param int $Depth The depth of the item being scanned in relation to its
      *      container and/or its hierarchy within the scan process.
      * @param string $Checksum A hash for the content, inherited from the parent.
+     * @return void
      */
-    private function metaDataScan(string $ItemRef, string $Filename, string &$Data, int $Depth, string $Checksum)
+    private function metaDataScan(string $ItemRef, string $Filename, string &$Data, int $Depth, string $Checksum): void
     {
         $Depth++;
 
@@ -3903,8 +3914,9 @@ class Scanner
      * Assigns an array to use for dumping scan debug information (optional).
      *
      * @param array $Arr
+     * @return void
      */
-    public function setScanDebugArray(&$Arr)
+    public function setScanDebugArray(&$Arr): void
     {
         unset($this->debugArr);
         if (!is_array($Arr)) {
@@ -3917,8 +3929,9 @@ class Scanner
      * Destroys the scan debug array (optional).
      *
      * @param array $Arr
+     * @return void
      */
-    public function destroyScanDebugArray(&$Arr)
+    public function destroyScanDebugArray(&$Arr): void
     {
         unset($this->Loader->InstanceCache['DebugArrKey'], $this->debugArr);
         $Arr = null;
@@ -3926,8 +3939,10 @@ class Scanner
 
     /**
      * Reset heuristics.
+     *
+     * @return void
      */
-    private function resetHeuristics()
+    private function resetHeuristics(): void
     {
         $this->HeuristicText = [];
         $this->HeuristicCount = 0;

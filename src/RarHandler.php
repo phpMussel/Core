@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: Rar handler (last modified: 2020.07.11).
+ * This file: Rar handler (last modified: 2021.03.11).
  */
 
 namespace phpMussel\Core;
@@ -89,18 +89,22 @@ class RarHandler extends ArchiveHandler
 
     /**
      * Return the compressed size of the entry at the current entry pointer.
+     *
+     * @return int
      */
-    public function EntryCompressedSize()
+    public function EntryCompressedSize(): int
     {
-        return is_object($this->RarEntry) ? $this->RarEntry->getPackedSize() : false;
+        return is_object($this->RarEntry) ? (int)$this->RarEntry->getPackedSize() : 0;
     }
 
     /**
      * Return the actual size of the entry at the current entry pointer.
+     *
+     * @return int
      */
-    public function EntryActualSize()
+    public function EntryActualSize(): int
     {
-        return is_object($this->RarEntry) ? $this->RarEntry->getUnpackedSize() : false;
+        return is_object($this->RarEntry) ? (int)$this->RarEntry->getUnpackedSize() : 0;
     }
 
     /**
@@ -125,10 +129,12 @@ class RarHandler extends ArchiveHandler
 
     /**
      * Return the reported internal CRC hash for the entry, if it exists.
+     *
+     * @return string
      */
-    public function EntryCRC()
+    public function EntryCRC(): string
     {
-        return is_object($this->RarEntry) ? $this->RarEntry->getCrc() : false;
+        return is_object($this->RarEntry) ? (string)$this->RarEntry->getCrc() : '';
     }
 
     /**

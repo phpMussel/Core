@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Latvian language data (last modified: 2020.07.31).
+# This file: Latvian language data (last modified: 2021.03.20).
 ##/
 
 # Language settings.
@@ -44,7 +44,7 @@ grammar_fullstop: "%s."
 grammar_spacer: " "
 image: "Attēls"
 invalid_data: "Nederīgi dati!"
-invalid_file: "Nederīgs fails"
+invalid_file: "Nederīgs fails!"
 invalid_url: "Nederīgs URL!"
 macros_not_permitted: "Makro nav atļauts"
 only_allow_images: "Ir atļauti tikai attēlu faili"

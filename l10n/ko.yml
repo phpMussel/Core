@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Korean language data (last modified: 2020.07.31).
+# This file: Korean language data (last modified: 2021.03.20).
 ##/
 
 # Language settings.
@@ -44,7 +44,7 @@ grammar_fullstop: "%s."
 grammar_spacer: " "
 image: "이미지"
 invalid_data: "유효하지 않은 데이터!"
-invalid_file: "유효하지 않은 파일"
+invalid_file: "유효하지 않은 파일!"
 invalid_url: "유효하지 않은 URL!"
 macros_not_permitted: "매크로는 허용되지 않습니다"
 only_allow_images: "이미지 파일 만 허용"

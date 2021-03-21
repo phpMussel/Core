@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: German language data (last modified: 2020.07.31).
+# This file: German language data (last modified: 2021.03.20).
 ##/
 
 # Language settings.
@@ -44,7 +44,7 @@ grammar_fullstop: "%s."
 grammar_spacer: " "
 image: "Bild"
 invalid_data: "Ungültige Daten!"
-invalid_file: "Ungültige Datei"
+invalid_file: "Ungültige Datei!"
 invalid_url: "Ungültige URL!"
 macros_not_permitted: "Makros sind nicht erlaubt"
 only_allow_images: "Nur Bilddateien erlaubt"

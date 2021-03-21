@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Vietnamese language data (last modified: 2020.07.31).
+# This file: Vietnamese language data (last modified: 2021.03.20).
 ##/
 
 # Language settings.
@@ -44,7 +44,7 @@ grammar_fullstop: "%s."
 grammar_spacer: " "
 image: "Hình ảnh"
 invalid_data: "Dữ liệu không hợp lệ!"
-invalid_file: "Tập tin không hợp lệ"
+invalid_file: "Tập tin không hợp lệ!"
 invalid_url: "URL không hợp lệ!"
 macros_not_permitted: "Macro không được phép"
 only_allow_images: "Chỉ cho phép tập tin hình ảnh"

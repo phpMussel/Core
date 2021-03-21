@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Norwegian language data (last modified: 2020.07.31).
+# This file: Norwegian language data (last modified: 2021.03.20).
 ##/
 
 # Language settings.
@@ -44,7 +44,7 @@ grammar_fullstop: "%s."
 grammar_spacer: " "
 image: "Bilde"
 invalid_data: "Ugyldig data!"
-invalid_file: "Ugyldig fil"
+invalid_file: "Ugyldig fil!"
 invalid_url: "Ugyldig URL!"
 macros_not_permitted: "Makroer er ikke tillatt"
 only_allow_images: "Bare bildefiler er tillatt"

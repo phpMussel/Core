@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Tamil language data (last modified: 2020.07.31).
+# This file: Tamil language data (last modified: 2021.03.20).
 ##/
 
 # Language settings.
@@ -44,7 +44,7 @@ grammar_fullstop: "%s."
 grammar_spacer: " "
 image: "படம்"
 invalid_data: "தவறான தரவு!"
-invalid_file: "தவறான கோப்பு"
+invalid_file: "தவறான கோப்பு!"
 invalid_url: "தவறான URL!"
 macros_not_permitted: "மேக்ரோக்கள் அனுமதிக்கப்படவில்லை"
 only_allow_images: "படக் கோப்புகள் மட்டுமே அனுமதிக்கப்படுகின்றன"

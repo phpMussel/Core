@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2021.03.11).
+ * This file: The scanner (last modified: 2021.03.20).
  */
 
 namespace phpMussel\Core;
@@ -436,10 +436,7 @@ class Scanner
         if (!$Files || !is_file($Files)) {
             $this->Loader->InstanceCache['ThisScanDone']++;
             $this->Loader->Events->fireEvent('countersChanged');
-            $this->Loader->atHit('', -1, $OriginalFilenameClean, sprintf(
-                $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                $this->Loader->L10N->getString('invalid_file')
-            ), 0, $Depth + 1);
+            $this->Loader->atHit('', -1, $OriginalFilenameClean, $this->Loader->L10N->getString('invalid_file'), 0, $Depth + 1);
             return;
         }
 

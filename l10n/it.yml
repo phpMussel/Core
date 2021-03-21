@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Italian language data (last modified: 2020.07.31).
+# This file: Italian language data (last modified: 2021.03.20).
 ##/
 
 # Language settings.
@@ -44,7 +44,7 @@ grammar_fullstop: "%s."
 grammar_spacer: " "
 image: "Immagine"
 invalid_data: "Dati non validi!"
-invalid_file: "File non valido"
+invalid_file: "File non valido!"
 invalid_url: "URL non valido!"
 macros_not_permitted: "Macro non sono permesse"
 only_allow_images: "Sono consentiti file di immagini solo"

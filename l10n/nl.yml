@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Dutch language data (last modified: 2020.07.31).
+# This file: Dutch language data (last modified: 2021.03.20).
 ##/
 
 # Language settings.
@@ -44,7 +44,7 @@ grammar_fullstop: "%s."
 grammar_spacer: " "
 image: "Beeld"
 invalid_data: "Ongeldige data!"
-invalid_file: "Ongeldige bestand"
+invalid_file: "Ongeldige bestand!"
 invalid_url: "Ongeldige URL!"
 macros_not_permitted: "Macro's zijn niet toegestaan"
 only_allow_images: "Alleen afbeeldingsbestanden zijn toegestaan"

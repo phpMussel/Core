@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Thai language data (last modified: 2020.07.31).
+# This file: Thai language data (last modified: 2021.03.20).
 ##/
 
 # Language settings.
@@ -44,7 +44,7 @@ grammar_fullstop: "%s."
 grammar_spacer: " "
 image: "ภาพ"
 invalid_data: "ข้อมูลไม่ถูกต้อง!"
-invalid_file: "ไฟล์ไม่ถูกต้อง"
+invalid_file: "ไฟล์ไม่ถูกต้อง!"
 invalid_url: "URL ไม่ถูกต้อง!"
 macros_not_permitted: "ไม่อนุญาตให้ใช้แมโคร"
 only_allow_images: "อนุญาตเพียงไฟล์รูปภาพ"

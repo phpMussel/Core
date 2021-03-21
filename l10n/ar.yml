@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Arabic language data (last modified: 2020.07.31).
+# This file: Arabic language data (last modified: 2021.03.20).
 ##/
 
 # Language settings.
@@ -44,7 +44,7 @@ grammar_fullstop: "%s."
 grammar_spacer: " "
 image: "صورة"
 invalid_data: "بيانات غير صالحة!"
-invalid_file: "ملف غير صالح"
+invalid_file: "ملف غير صالح!"
 invalid_url: "URL غير صالح!"
 macros_not_permitted: "وحدات الماكرو غير مسموح بها"
 only_allow_images: "يسمح بملفات الصور فقط"

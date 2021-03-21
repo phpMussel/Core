@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Bangla language data (last modified: 2020.07.31).
+# This file: Bangla language data (last modified: 2021.03.20).
 ##/
 
 # Language settings.
@@ -44,7 +44,7 @@ grammar_fullstop: "%s।"
 grammar_spacer: " "
 image: "চিত্র"
 invalid_data: "অবৈধ তথ্য!"
-invalid_file: "অবৈধ ফাইল"
+invalid_file: "অবৈধ ফাইল!"
 invalid_url: "অবৈধ URL!"
 macros_not_permitted: "ম্যাক্রো অনুমোদিত নয়"
 only_allow_images: "কেবলমাত্র ইমেজ ফাইলগুলির অনুমতি রয়েছে"

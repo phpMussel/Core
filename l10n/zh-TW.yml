@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Chinese (traditional) language data (last modified: 2020.07.31).
+# This file: Chinese (traditional) language data (last modified: 2021.03.20).
 ##/
 
 # Language settings.
@@ -44,7 +44,7 @@ grammar_fullstop: "%s。"
 grammar_spacer: ""
 image: "圖像"
 invalid_data: "無效數據！"
-invalid_file: "無效的文件"
+invalid_file: "無效的文件！"
 invalid_url: "無效的網址！"
 macros_not_permitted: "不允許使用宏"
 only_allow_images: "僅允許圖像文件"

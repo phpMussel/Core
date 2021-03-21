@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Japanese language data (last modified: 2020.07.31).
+# This file: Japanese language data (last modified: 2021.03.20).
 ##/
 
 # Language settings.
@@ -44,7 +44,7 @@ grammar_fullstop: "%s。"
 grammar_spacer: ""
 image: "画像"
 invalid_data: "不正データ！"
-invalid_file: "不正ファイル"
+invalid_file: "不正ファイル！"
 invalid_url: "不正ＵＲＬ！"
 macros_not_permitted: "マクロは許可されていません"
 only_allow_images: "画像ファイルのみ許可されています"

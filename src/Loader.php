@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2021.03.11).
+ * This file: The loader (last modified: 2021.04.19).
  */
 
 namespace phpMussel\Core;
@@ -737,13 +737,16 @@ class Loader
      */
     public function buildPath(string $Path, bool $PointsToFile = true): string
     {
-        /** Guard. */
-        if (!$Path) {
+        /** Input guard. */
+        if (!strlen($Path)) {
             return '';
         }
 
         /** Applies time/date replacements. */
         $Path = $this->timeFormat($this->Time, $Path);
+
+        /** We'll skip is_dir/mkdir calls if open_basedir is populated (to avoid PHP bug #69240). */
+        $Restrictions = strlen(ini_get('open_basedir')) > 0;
 
         /** Split path into steps. */
         $Steps = preg_split('~[\\\/]~', $Path, -1, PREG_SPLIT_NO_EMPTY);
@@ -761,9 +764,14 @@ class Loader
             if (preg_match('~^\.+$~', $Step)) {
                 continue;
             }
-            if (!is_dir($Rebuilt) && !mkdir($Rebuilt)) {
+            if (!$Restrictions && !is_dir($Rebuilt) && !mkdir($Rebuilt)) {
                 return '';
             }
+        }
+
+        /** Ensure rebuilt is defined. */
+        if (!isset($Rebuilt)) {
+            $Rebuilt = '';
         }
 
         /** Return an empty string if the final rebuilt path isn't writable. */

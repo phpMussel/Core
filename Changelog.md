@@ -43,3 +43,5 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 ### v3.2.1
 
 [2021.03.11; Maikuolan]: Added some missing return type declarations.
+
+[2021.04.19; Bug-fix; Maikuolan]: BuildPath could potentially trigger warnings when open_basedir is defined, causing logging, among various other internal file operations, to fail (related to PHP bug 69240); Fixed.

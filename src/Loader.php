@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2021.04.19).
+ * This file: The loader (last modified: 2021.05.01).
  */
 
 namespace phpMussel\Core;
@@ -371,17 +371,14 @@ class Loader
                 return false;
             }
 
-            if (!file_exists($File) || !filesize($File) || (
-                $this->Configuration['core']['truncate'] > 0 &&
-                filesize($File) >= $this->readBytes($this->Configuration['core']['truncate'])
-            )) {
+            $Truncate = $this->readBytes($this->Configuration['core']['truncate']);
+            if (!file_exists($File) || !filesize($File) || ($Truncate && filesize($File) >= $Truncate)) {
                 $WriteMode = 'wb';
                 $Data = $this->L10N->getString('error_log_header') . "\n=====\n" . $this->InstanceCache['PendingErrorLogData'];
             } else {
                 $WriteMode = 'ab';
                 $Data = $this->InstanceCache['PendingErrorLogData'];
             }
-
             $Handle = fopen($File, $WriteMode);
             if (is_resource($Handle)) {
                 fwrite($Handle, $Data);
@@ -475,7 +472,10 @@ class Loader
             return $Unit === 'B' || $Unit === 'o' ? $In . 'B' : $In . $Unit . 'B';
         }
         $Multiply = ['K' => 1024, 'M' => 1048576, 'G' => 1073741824, 'T' => 1099511627776];
-        return (int)floor($In * (isset($Multiply[$Unit]) ? $Multiply[$Unit] : 1));
+        if (isset($Multiply[$Unit])) {
+            $In *= $Multiply[$Unit];
+        }
+        return (int)floor($In);
     }
 
     /**

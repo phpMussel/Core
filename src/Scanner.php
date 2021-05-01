@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2021.03.20).
+ * This file: The scanner (last modified: 2021.05.01).
  */
 
 namespace phpMussel\Core;
@@ -105,11 +105,8 @@ class Scanner
                 'ScanErrors' => $this->Loader->InstanceCache['ScanErrors'] ?? 1,
                 'Detections' => $Detections
             ]) . "\n";
-            $WriteMode = (!file_exists($File) || (
-                $this->Loader->Configuration['core']['truncate'] > 0 &&
-                filesize($File) >= $this->Loader->readBytes($this->Loader->Configuration['core']['truncate'])
-            )) ? 'wb' : 'ab';
-
+            $Truncate = $this->Loader->readBytes($this->Loader->Configuration['core']['truncate']);
+            $WriteMode = (!file_exists($File) || ($Truncate > 0 && filesize($File) >= $Truncate)) ? 'wb' : 'ab';
             $Stream = fopen($File, $WriteMode);
             fwrite($Stream, $Data);
             fclose($Stream);
@@ -145,12 +142,9 @@ class Scanner
                 $Results = \phpMussel\Core\Loader::SAFETY . "\n" . $Results;
                 $WriteMode = 'wb';
             } else {
-                $WriteMode = (
-                    $this->Loader->Configuration['core']['truncate'] > 0 &&
-                    filesize($File) >= $this->Loader->readBytes($this->Loader->Configuration['core']['truncate'])
-                ) ? 'wb' : 'ab';
+                $Truncate = $this->Loader->readBytes($this->Loader->Configuration['core']['truncate']);
+                $WriteMode = ($Truncate > 0 && filesize($File) >= $Truncate) ? 'wb' : 'ab';
             }
-
             $Handle = fopen($File, 'ab');
             fwrite($Handle, $Results);
             fclose($Handle);

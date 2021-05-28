@@ -514,19 +514,19 @@ class Scanner
         }
 
         /** Read in the file to be scanned. */
-        $in = $this->Loader->readFileBlocks($Files, (
+        $In = $this->Loader->readFileBlocks($Files, (
             $this->Loader->Configuration['files']['scannable_threshold'] > 0 &&
             $fS > $this->Loader->readBytes($this->Loader->Configuration['files']['scannable_threshold'])
         ) ? $this->Loader->readBytes($this->Loader->Configuration['files']['scannable_threshold']) : $fS, true);
 
         /** Generate CRC for the file to be scanned. */
-        $fdCRC = hash('crc32b', $in);
+        $fdCRC = hash('crc32b', $In);
 
         /** Generate SHA256 for the file to be scanned. */
-        $SHA256 = hash('sha256', $in);
+        $SHA256 = hash('sha256', $In);
 
         /** Check for non-image items. */
-        if (!empty($in) && $this->Loader->Configuration['files']['only_allow_images'] && !$this->imageIndicators($xt, bin2hex(substr($in, 0, 16)))) {
+        if (!empty($In) && $this->Loader->Configuration['files']['only_allow_images'] && !$this->imageIndicators($xt, bin2hex(substr($In, 0, 16)))) {
             $this->Loader->InstanceCache['ThisScanDone']++;
             $this->Loader->Events->fireEvent('countersChanged');
             $this->Loader->atHit($SHA256, $fS, $OriginalFilenameClean, sprintf(
@@ -547,7 +547,7 @@ class Scanner
         $this->Loader->InstanceCache['ObjectsScanned']++;
 
         /** Send the scan target to the data handler. */
-        $this->dataHandler($in, $Depth, $OriginalFilenameClean);
+        $this->dataHandler($In, $Depth, $OriginalFilenameClean);
 
         /**
          * Check whether the file is compressed. If it's compressed, attempt to
@@ -557,7 +557,7 @@ class Scanner
         if (!empty($this->Loader->InstanceCache['CheckWasLast'])) {
 
             /** Create a new compression object. */
-            $CompressionObject = new CompressionHandler($in);
+            $CompressionObject = new CompressionHandler($In);
 
             /** Now we'll try to decompress the file. */
             if (!$CompressionResults = $CompressionObject->TryEverything()) {
@@ -569,14 +569,14 @@ class Scanner
                  * Replace originally scanned data with decompressed data in case
                  * needed by the archive handler.
                  */
-                $in = $CompressionObject->Data;
+                $In = $CompressionObject->Data;
             }
 
             /** Cleanup. */
             unset($CompressionObject);
         }
 
-        $inLen = strlen($in);
+        $InLen = strlen($In);
 
         /** Executed if any problems were detected. */
         if (empty($this->Loader->InstanceCache['CheckWasLast'])) {
@@ -584,13 +584,13 @@ class Scanner
             /** Quarantine if necessary. */
             if (
                 $this->Loader->Configuration['quarantine']['quarantine_key'] &&
-                $inLen > 0 &&
-                $inLen < $this->Loader->readBytes($this->Loader->Configuration['quarantine']['quarantine_max_filesize'])
+                $InLen > 0 &&
+                $InLen < $this->Loader->readBytes($this->Loader->Configuration['quarantine']['quarantine_max_filesize'])
             ) {
                 /** Note: "qfu" = "Quarantined File Upload". */
                 $qfu = $this->Loader->Time . '-' . hash('md5', $this->Loader->Configuration['quarantine']['quarantine_key'] . $fdCRC . $this->Loader->Time);
                 $this->quarantine(
-                    $in,
+                    $In,
                     $this->Loader->Configuration['quarantine']['quarantine_key'],
                     $_SERVER[$this->Loader->Configuration['core']['ipaddr']],
                     $qfu
@@ -615,7 +615,7 @@ class Scanner
          */
         if (
             $this->Loader->Configuration['files']['check_archives'] &&
-            !empty($in) &&
+            !empty($In) &&
             $this->Loader->Configuration['files']['max_recursion'] > 1
         ) {
             /** Define archive phase. */
@@ -625,7 +625,7 @@ class Scanner
             $this->Loader->InstanceCache['tempfilesToDelete'] = [];
 
             /** Begin processing archives. */
-            $this->archiveRecursor($in, (isset($CompressionResults) && !$CompressionResults) ? '' : $Files, $Depth, $OriginalFilenameClean);
+            $this->archiveRecursor($In, (isset($CompressionResults) && !$CompressionResults) ? '' : $Files, $Depth, $OriginalFilenameClean);
 
             /** Begin deleting any temporary files that snuck through. */
             foreach ($this->Loader->InstanceCache['tempfilesToDelete'] as $DeleteThis) {
@@ -636,7 +636,7 @@ class Scanner
 
             /** Add hash cache entry here if necessary (e.g., because of encryption). */
             if (
-                ($InSha256 = hash('sha256', $in)) &&
+                ($InSha256 = hash('sha256', $In)) &&
                 ($AtInstanceLookupKey = sprintf('%s:%d:%s', $InSha256, strlen($In), $OriginalFilenameClean)) &&
                 isset($this->Loader->ScanResultsIntegers[$AtInstanceLookupKey]) &&
                 $this->Loader->ScanResultsIntegers[$AtInstanceLookupKey] === -4 &&
@@ -657,12 +657,12 @@ class Scanner
         if (empty($this->Loader->InstanceCache['CheckWasLast'])) {
             if (
                 $this->Loader->Configuration['quarantine']['quarantine_key'] &&
-                strlen($in) < $this->Loader->readBytes($this->Loader->Configuration['quarantine']['quarantine_max_filesize'])
+                strlen($In) < $this->Loader->readBytes($this->Loader->Configuration['quarantine']['quarantine_max_filesize'])
             ) {
                 /** Note: "qfu" = "Quarantined File Upload". */
                 $qfu = $this->Loader->Time . '-' . hash('md5', $this->Loader->Configuration['quarantine']['quarantine_key'] . $fdCRC . $this->Loader->Time);
                 $this->quarantine(
-                    $in,
+                    $In,
                     $this->Loader->Configuration['quarantine']['quarantine_key'],
                     $_SERVER[$this->Loader->Configuration['core']['ipaddr']],
                     $qfu

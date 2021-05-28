@@ -47,3 +47,5 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 [2021.04.19; Bug-fix; Maikuolan]: BuildPath could potentially trigger warnings when open_basedir is defined, causing logging, among various other internal file operations, to fail (related to PHP bug 69240); Fixed.
 
 [2021.05.01; Bug-fix; Maikuolan]: Log truncation not being calculated properly; Fixed.
+
+[2021.05.28; Maikuolan]: Performed some minor refactoring.

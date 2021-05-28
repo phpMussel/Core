@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2021.05.01).
+ * This file: The scanner (last modified: 2021.05.28).
  */
 
 namespace phpMussel\Core;
@@ -74,7 +74,7 @@ class Scanner
         $this->Loader->Events->addHandler('writeToSerialLog', function (): bool {
             /** Guard. */
             if (
-                !$this->Loader->Configuration['core']['scan_log_serialized'] ||
+                $this->Loader->Configuration['core']['scan_log_serialized'] === '' ||
                 !($File = $this->Loader->buildPath($this->Loader->Configuration['core']['scan_log_serialized']))
             ) {
                 return false;
@@ -123,7 +123,7 @@ class Scanner
             /** Guard. */
             if (
                 strlen($this->Loader->ScanResultsFormatted) === 0 ||
-                !$this->Loader->Configuration['core']['scan_log'] ||
+                $this->Loader->Configuration['core']['scan_log'] === '' ||
                 !($File = $this->Loader->buildPath($this->Loader->Configuration['core']['scan_log']))
             ) {
                 return false;

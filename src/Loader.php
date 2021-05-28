@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2021.05.01).
+ * This file: The loader (last modified: 2021.05.28).
  */
 
 namespace phpMussel\Core;
@@ -365,6 +365,7 @@ class Loader
         $this->Events->addHandler('final', function (): bool {
             /** Guard. */
             if (
+                $this->Configuration['core']['error_log'] === '' ||
                 !isset($this->InstanceCache['PendingErrorLogData']) ||
                 !($File = $this->buildPath($this->Configuration['core']['error_log']))
             ) {
@@ -395,7 +396,7 @@ class Loader
          */
         $this->Events->addHandler('error', function (string $Data, array $Err): bool {
             /** Guard. */
-            if (!$this->Configuration['core']['error_log']) {
+            if ($this->Configuration['core']['error_log'] === '') {
                 return false;
             }
 

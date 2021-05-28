@@ -88,7 +88,7 @@ class Loader
     /**
      * @var string phpMussel version number (SemVer).
      */
-    public $ScriptVersion = '3.2.0';
+    public $ScriptVersion = '3.2.1';
 
     /**
      * @var string phpMussel version identifier (complete notation).

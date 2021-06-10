@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2021.05.28).
+ * This file: The scanner (last modified: 2021.06.10).
  */
 
 namespace phpMussel\Core;
@@ -497,6 +497,7 @@ class Scanner
                 $this->Loader->Configuration['files']['filetype_greylist']
             ], [$xt, $xts, $gzxt, $gzxts]))
         ) {
+            $this->Loader->InstanceCache['blacklist_triggered'] = true;
             $this->Loader->InstanceCache['ThisScanDone']++;
             $this->Loader->Events->fireEvent('countersChanged');
             $this->Loader->atHit('', $fS, $OriginalFilenameClean, sprintf(
@@ -2362,7 +2363,6 @@ class Scanner
 
         /** Check whether Crx, and convert if necessary. */
         if ($this->convertCrx($Data)) {
-
             /** Reset the file pointer (because the content has been modified anyway). */
             $File = '';
         }
@@ -2433,7 +2433,6 @@ class Scanner
 
         /** Handle zip files. */
         if ($Handler === 'ZipHandler') {
-
             /**
              * Encryption guard.
              * @link https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT
@@ -2463,7 +2462,6 @@ class Scanner
 
             /** ZipHandler needs a file pointer. */
             if (!$File || !is_readable($File)) {
-
                 /**
                  * File pointer not available. Probably already inside an
                  * archive. Let's create a temporary file for this.
@@ -2472,7 +2470,6 @@ class Scanner
                 $Pointer = &$PointerObject->Filename;
                 $this->Loader->InstanceCache['tempfilesToDelete'][] = $Pointer;
             } else {
-
                 /** File pointer available. Let's reference it. */
                 $Pointer = &$File;
             }
@@ -2485,14 +2482,12 @@ class Scanner
 
         /** Handle tar files. */
         if ($Handler === 'TarHandler') {
-
             /** TarHandler can work with data directly. */
             $ArchiveObject = new TarHandler($Data);
         }
 
         /** Handle rar files. */
         if ($Handler === 'RarHandler') {
-
             /** Guard. */
             if (!class_exists('\RarArchive') || !class_exists('\RarEntry')) {
                 if (!$this->Loader->Configuration['signatures']['fail_extensions_silently']) {
@@ -2503,7 +2498,6 @@ class Scanner
 
             /** RarHandler needs a file pointer. */
             if (!$File || !is_readable($File)) {
-
                 /**
                  * File pointer not available. Probably already inside an
                  * archive. Let's create a temporary file for this.
@@ -2512,7 +2506,6 @@ class Scanner
                 $Pointer = &$PointerObject->Filename;
                 $this->Loader->InstanceCache['tempfilesToDelete'][] = $Pointer;
             } else {
-
                 /** File pointer available. Let's reference it. */
                 $Pointer = &$File;
             }
@@ -2525,7 +2518,6 @@ class Scanner
 
         /** Handle PDF files. */
         if ($Handler === 'PdfHandler') {
-
             /** Encryption guard. */
             if ($this->Loader->Configuration['files']['block_encrypted_archives']) {
                 if (($XPos = strrpos($Data, "\nxref")) !== false && strpos($Data, "\n/Encrypt", $XPos + 5) !== false) {
@@ -2547,16 +2539,13 @@ class Scanner
 
         /** Archive object has been instantiated. Let's proceed. */
         if (isset($ArchiveObject) && is_object($ArchiveObject)) {
-
             /** No errors reported. Let's try checking its contents. */
             if ($ArchiveObject->ErrorState === 0) {
-
                 /** Used to count the number of entries processed. */
                 $Processed = 0;
 
                 /** Iterate through the archive's contents. */
                 while ($ArchiveObject->EntryNext()) {
-
                     /** Skip directories (useless for scanning here). */
                     if ($ArchiveObject->EntryIsDirectory()) {
                         continue;
@@ -2983,11 +2972,10 @@ class Scanner
             }
         }
         $Out =
-            "\x2f\x3d\x3d\x20phpMussel\x20Quarantined\x20File\x20Upload\x20\x3d" .
-            "\x3d\x5c\n\x7c\x20Time\x2fDate\x20Uploaded\x3a\x20" .
+            "\x2f\x3d\x3d phpMussel Quarantined File Upload \x3d\x3d\x5c\n\x7c Time\x2fDate Uploaded\x3a " .
             str_pad($this->Loader->Time, 18, ' ') .
-            "\x7c\n\x7c\x20Uploaded\x20From\x3a\x20" . str_pad($IP, 22, ' ') .
-            "\x20\x7c\n\x5c" . str_repeat("\x3d", 39) . "\x2f\n\n\n" . $Head . $Out;
+            "\x7c\n\x7c Uploaded From\x3a " . str_pad($IP, 22, ' ') .
+            " \x7c\n\x5c" . str_repeat("\x3d", 39) . "\x2f\n\n\n" . $Head . $Out;
         $UsedMemory = $this->memoryUse($this->Loader->QuarantinePath);
         $UsedMemory['Size'] += strlen($Out);
         $UsedMemory['Count']++;
@@ -3785,6 +3773,7 @@ class Scanner
                 !empty($this->Loader->Configuration['files']['filetype_greylist']) &&
                 $this->containsMustAssert([$this->Loader->Configuration['files']['filetype_greylist']], [$xt, $xts])
             )) {
+                $this->Loader->InstanceCache['blacklist_triggered'] = true;
                 $this->Loader->atHit($Checksum, $Filesize, $ItemRef, sprintf(
                     $this->Loader->L10N->getString('grammar_exclamation_mark'),
                     sprintf(

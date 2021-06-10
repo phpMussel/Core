@@ -51,3 +51,7 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 [2021.05.28; Maikuolan]: Performed some minor refactoring.
 
 [2021.05.28; Bug-fix; Maikuolan]: Wrong casing used for some variables would cause undefined variable errors to occur; Fixed (#3).
+
+### v3.2.2
+
+[2021.06.10; Maikuolan]: Added a flag for successful hits against blacklisted filetypes (needed by the upload handler for a newly added configuration directive). Also did some very minor refactoring.

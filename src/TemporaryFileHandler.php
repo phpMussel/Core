@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: Temporary file handler (last modified: 2020.07.04).
+ * This file: Temporary file handler (last modified: 2021.07.10).
  */
 
 namespace phpMussel\Core;
@@ -21,8 +21,11 @@ class TemporaryFileHandler
     public $Filename = '';
 
     /**
+     * Constructor.
+     *
      * @param string $Content The temporary file content.
      * @param string $Location The temporary file location.
+     * @return void
      */
     public function __construct(string $Content, string $Location)
     {
@@ -49,7 +52,11 @@ class TemporaryFileHandler
         }
     }
 
-    /** Destructor will unlink the temporary file upon object destruction. */
+    /**
+     * Destructor will unlink the temporary file upon object destruction.
+     *
+     * @return void
+     */
     public function __destruct()
     {
         if ($this->Filename && file_exists($this->Filename)) {

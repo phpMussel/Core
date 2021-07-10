@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: Archive handler (last modified: 2021.03.11).
+ * This file: Archive handler (last modified: 2021.07.10).
  */
 
 namespace phpMussel\Core;
@@ -24,6 +24,7 @@ interface ArchiveHandlerInterface
      * Return the actual entry in the archive at the current entry pointer.
      *
      * @param int $Bytes Optionally, how many bytes to read from the entry.
+     * @return string The entry's content or an empty string.
      */
     public function EntryRead(int $Bytes = -1);
 
@@ -64,8 +65,11 @@ interface ArchiveHandlerInterface
 
     /**
      * Return the name of the entry at the current entry pointer.
+     *
+     * @return string The name of the entry at the current entry pointer, or an
+     *      empty string if there's no entry or if the entry pointer is invalid.
      */
-    public function EntryName();
+    public function EntryName(): string;
 
     /**
      * Move the entry pointer ahead.

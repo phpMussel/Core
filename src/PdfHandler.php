@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: Pdf handler (last modified: 2021.03.11).
+ * This file: Pdf handler (last modified: 2021.07.10).
  */
 
 namespace phpMussel\Core;
@@ -63,6 +63,7 @@ class PdfHandler extends ArchiveHandler
      * Construct the instance.
      *
      * @param string $File
+     * @return void
      */
     public function __construct(string $File)
     {
@@ -384,7 +385,7 @@ class PdfHandler extends ArchiveHandler
     /**
      * Return the reported internal CRC hash for the entry, if it exists.
      *
-     * @return string Empty because PDF doesn't provide internal CRCs.
+     * @return string Empty because Pdf doesn't provide internal CRCs.
      */
     public function EntryCRC(): string
     {
@@ -394,11 +395,11 @@ class PdfHandler extends ArchiveHandler
     /**
      * Return the name of the entry at the current entry pointer.
      *
-     * @return string
+     * @return string Using 'PDFStream' because entries here don't have names.
      */
     public function EntryName(): string
     {
-        return $this->Objects[$this->Index]['EntryName'] ?? 'PDFStream';
+        return 'PDFStream';
     }
 
     /**

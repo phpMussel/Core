@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2021.05.28).
+ * This file: The loader (last modified: 2021.07.10).
  */
 
 namespace phpMussel\Core;
@@ -88,7 +88,7 @@ class Loader
     /**
      * @var string phpMussel version number (SemVer).
      */
-    public $ScriptVersion = '3.2.1';
+    public $ScriptVersion = '3.2.2';
 
     /**
      * @var string phpMussel version identifier (complete notation).
@@ -190,6 +190,7 @@ class Loader
      * @throws Exception if the PHP version requirements aren't met, if the
      *      vendor directory can't be located, or if the phpMussel
      *      configuration file can't be located.
+     * @return void
      */
     public function __construct(
         string $ConfigurationPath = '',
@@ -418,6 +419,8 @@ class Loader
 
     /**
      * Destruct the loader.
+     *
+     * @return void
      */
     public function __destruct()
     {

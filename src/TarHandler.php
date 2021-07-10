@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: Tar handler (last modified: 2021.03.11).
+ * This file: Tar handler (last modified: 2021.07.10).
  */
 
 namespace phpMussel\Core;
@@ -39,6 +39,7 @@ class TarHandler extends ArchiveHandler
      * Construct the tar archive object.
      *
      * @param string $File
+     * @return void
      */
     public function __construct($File)
     {
@@ -119,7 +120,7 @@ class TarHandler extends ArchiveHandler
     /**
      * Return the reported internal CRC hash for the entry, if it exists.
      *
-     * @return string Empty because TAR doesn't provide internal CRCs.
+     * @return string Empty because Tar doesn't provide internal CRCs.
      */
     public function EntryCRC(): string
     {
@@ -128,8 +129,11 @@ class TarHandler extends ArchiveHandler
 
     /**
      * Return the name of the entry at the current entry pointer.
+     *
+     * @return string The name of the entry at the current entry pointer, or an
+     *      empty string if there's no entry or if the entry pointer is invalid.
      */
-    public function EntryName()
+    public function EntryName(): string
     {
         return preg_replace('/[^\x20-\xff]/', '', substr($this->Data, $this->Offset, 100));
     }

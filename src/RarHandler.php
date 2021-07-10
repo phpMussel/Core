@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: Rar handler (last modified: 2021.03.11).
+ * This file: Rar handler (last modified: 2021.07.10).
  */
 
 namespace phpMussel\Core;
@@ -39,6 +39,7 @@ class RarHandler extends ArchiveHandler
      * Construct the rar archive object.
      *
      * @param string $Pointer
+     * @return void
      */
     public function __construct($Pointer)
     {
@@ -59,7 +60,11 @@ class RarHandler extends ArchiveHandler
         $this->PointerSelf = $Pointer;
     }
 
-    /** Destruct the Rar archive object. */
+    /**
+     * Destruct the Rar archive object.
+     *
+     * @return void
+     */
     public function __destruct()
     {
         if (is_object($this->RarObject) && $this->ErrorState === 0) {
@@ -139,10 +144,19 @@ class RarHandler extends ArchiveHandler
 
     /**
      * Return the name of the entry at the current entry pointer.
+     *
+     * @return string The name of the entry at the current entry pointer, or an
+     *      empty string if there's no entry or if the entry pointer is invalid.
      */
-    public function EntryName()
+    public function EntryName(): string
     {
-        return is_object($this->RarEntry) ? $this->RarEntry->getName() : false;
+        if (is_object($this->RarEntry)) {
+            $Try = $this->RarEntry->getName();
+            if (is_string($Try)) {
+                return $Try;
+            }
+        }
+        return '';
     }
 
     /**

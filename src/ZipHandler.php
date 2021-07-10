@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: Zip handler (last modified: 2021.03.11).
+ * This file: Zip handler (last modified: 2021.07.10).
  */
 
 namespace phpMussel\Core;
@@ -39,6 +39,7 @@ class ZipHandler extends ArchiveHandler
      * Construct the zip archive object.
      *
      * @param string $Pointer
+     * @return void
      */
     public function __construct($Pointer)
     {
@@ -63,7 +64,11 @@ class ZipHandler extends ArchiveHandler
         $this->NumFiles = $this->ZipObject->numFiles;
     }
 
-    /** Destruct the Zip archive object. */
+    /**
+     * Destruct the Zip archive object.
+     *
+     * @return void
+     */
     public function __destruct()
     {
         if (is_object($this->ZipObject) && $this->ErrorState === 0) {
@@ -138,10 +143,13 @@ class ZipHandler extends ArchiveHandler
 
     /**
      * Return the name of the entry at the current entry pointer.
+     *
+     * @return string The name of the entry at the current entry pointer, or an
+     *      empty string if there's no entry or if the entry pointer is invalid.
      */
-    public function EntryName()
+    public function EntryName(): string
     {
-        return isset($this->StatIndex['name']) ? $this->StatIndex['name'] : '';
+        return (isset($this->StatIndex['name']) && is_string($this->StatIndex['name'])) ? $this->StatIndex['name'] : '';
     }
 
     /**

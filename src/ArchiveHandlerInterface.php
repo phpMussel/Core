@@ -24,9 +24,9 @@ interface ArchiveHandlerInterface
      * Return the actual entry in the archive at the current entry pointer.
      *
      * @param int $Bytes Optionally, how many bytes to read from the entry.
-     * @return string The entry's content or an empty string.
+     * @return string The entry's content, or an empty string if not available.
      */
-    public function EntryRead(int $Bytes = -1);
+    public function EntryRead(int $Bytes = -1): string;
 
     /**
      * Return the compressed size of the entry at the current entry pointer.

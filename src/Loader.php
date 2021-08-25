@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2021.07.10).
+ * This file: The loader (last modified: 2021.08.25).
  */
 
 namespace phpMussel\Core;
@@ -285,7 +285,7 @@ class Loader
             $Configuration = $this->readFile($this->AssetsPath . 'config.yml')
         ) {
             $Defaults = [];
-            $this->YAML->process($Configuration, $Defaults);
+            $this->YAML->process($Configuration, $Defaults, 0, true);
             if (isset($Defaults)) {
                 $this->fallback($Defaults);
                 $this->ConfigurationDefaults = array_merge_recursive($this->ConfigurationDefaults, $Defaults);
@@ -335,9 +335,10 @@ class Loader
         /** Instantiate the request class. */
         $this->Request = new \Maikuolan\Common\Request();
         $this->Request->DefaultTimeout = $this->Configuration['core']['default_timeout'];
-        $this->Request->Channels = (
-            $Channels = $this->readFileBlocks($this->AssetsPath . 'channels.yaml')
-        ) ? (new \Maikuolan\Common\YAML($Channels))->Data : [];
+        $ChannelsDataArray = [];
+        $this->YAML->process($this->readFileBlocks($this->AssetsPath . 'channels.yaml'), $ChannelsDataArray);
+        $this->Request->Channels = $ChannelsDataArray ?: [];
+        unset($ChannelsDataArray);
         if (!isset($this->Request->Channels['Triggers'])) {
             $this->Request->Channels['Triggers'] = [];
         }

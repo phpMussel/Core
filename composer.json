@@ -13,7 +13,7 @@
     },
     "require": {
         "php": ">=7.2.0",
-        "maikuolan/common": "^2.5",
+        "maikuolan/common": "^2.7",
         "ext-pcre": "*"
     },
     "suggest": {

@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2021.08.25).
+ * This file: The loader (last modified: 2021.09.05).
  */
 
 namespace phpMussel\Core;
@@ -285,11 +285,9 @@ class Loader
             $Configuration = $this->readFile($this->AssetsPath . 'config.yml')
         ) {
             $Defaults = [];
-            $this->YAML->process($Configuration, $Defaults, 0, true);
-            if (isset($Defaults)) {
-                $this->fallback($Defaults);
-                $this->ConfigurationDefaults = array_merge_recursive($this->ConfigurationDefaults, $Defaults);
-            }
+            $this->YAML->process($Configuration, $Defaults);
+            $this->fallback($Defaults);
+            $this->ConfigurationDefaults = array_merge_recursive($this->ConfigurationDefaults, $Defaults);
         }
 
         /** Register log paths. */
@@ -540,6 +538,9 @@ class Loader
                 }
                 if (isset($Dir)) {
                     unset($Dir);
+                }
+                if (!isset($Cat[$DKey])) {
+                    $Cat[$DKey] = '';
                 }
                 $Dir = &$Cat[$DKey];
                 if (isset($DData['value_preg_filter']) && is_array($DData['value_preg_filter'])) {

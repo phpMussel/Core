@@ -234,6 +234,9 @@ class Loader
         /** Instantiate YAML object. */
         $this->YAML = new \Maikuolan\Common\YAML();
 
+        /** Make configuration referable by YAML object. */
+        $this->YAML->Refs['Config Defaults'] = &$this->ConfigurationDefaults;
+
         /** Instantiate events orchestrator. */
         $this->Events = new \Maikuolan\Common\Events();
 

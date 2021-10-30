@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2021.09.05).
+ * This file: The loader (last modified: 2021.10.30).
  */
 
 namespace phpMussel\Core;
@@ -1128,46 +1128,6 @@ class Loader
     }
 
     /**
-     * Initialise the cache.
-     *
-     * @throws Exception if using flatfiles for caching and if an appropriate
-     *      cache directory hasn't been specified or can't be written to.
-     * @return void
-     */
-    private function initialiseCache(): void
-    {
-        /** Exit early if already initialised. */
-        if ($this->Cache instanceof \Maikuolan\Common\Cache) {
-            return;
-        }
-
-        /** Create new cache object. */
-        $this->Cache = new \Maikuolan\Common\Cache();
-        $this->Cache->EnableAPCu = $this->Configuration['supplementary_cache_options']['enable_apcu'];
-        $this->Cache->EnableMemcached = $this->Configuration['supplementary_cache_options']['enable_memcached'];
-        $this->Cache->EnableRedis = $this->Configuration['supplementary_cache_options']['enable_redis'];
-        $this->Cache->EnablePDO = $this->Configuration['supplementary_cache_options']['enable_pdo'];
-        $this->Cache->MemcachedHost = $this->Configuration['supplementary_cache_options']['memcached_host'];
-        $this->Cache->MemcachedPort = $this->Configuration['supplementary_cache_options']['memcached_port'];
-        $this->Cache->RedisHost = $this->Configuration['supplementary_cache_options']['redis_host'];
-        $this->Cache->RedisPort = $this->Configuration['supplementary_cache_options']['redis_port'];
-        $this->Cache->RedisTimeout = $this->Configuration['supplementary_cache_options']['redis_timeout'];
-        $this->Cache->PDOdsn = $this->Configuration['supplementary_cache_options']['pdo_dsn'];
-        $this->Cache->PDOusername = $this->Configuration['supplementary_cache_options']['pdo_username'];
-        $this->Cache->PDOpassword = $this->Configuration['supplementary_cache_options']['pdo_password'];
-
-        /** Assign cache path. */
-        if ($this->CachePath) {
-            $this->Cache->FFDefault = $this->CachePath . DIRECTORY_SEPARATOR . 'cache.dat';
-        }
-
-        /** Attempt to connect. */
-        if (!$this->Cache->connect()) {
-            throw new \Exception('Cache connect failed.');
-        }
-    }
-
-    /**
      * Fetch favicon.
      *
      * @return string The phpMussel favicon (raw PNG data).
@@ -1315,5 +1275,45 @@ class Loader
 
         /** Update flags. */
         $this->InstanceCache['CheckWasLast'] = false;
+    }
+
+    /**
+     * Initialise the cache.
+     *
+     * @throws Exception if using flatfiles for caching and if an appropriate
+     *      cache directory hasn't been specified or can't be written to.
+     * @return void
+     */
+    private function initialiseCache(): void
+    {
+        /** Exit early if already initialised. */
+        if ($this->Cache instanceof \Maikuolan\Common\Cache) {
+            return;
+        }
+
+        /** Create new cache object. */
+        $this->Cache = new \Maikuolan\Common\Cache();
+        $this->Cache->EnableAPCu = $this->Configuration['supplementary_cache_options']['enable_apcu'];
+        $this->Cache->EnableMemcached = $this->Configuration['supplementary_cache_options']['enable_memcached'];
+        $this->Cache->EnableRedis = $this->Configuration['supplementary_cache_options']['enable_redis'];
+        $this->Cache->EnablePDO = $this->Configuration['supplementary_cache_options']['enable_pdo'];
+        $this->Cache->MemcachedHost = $this->Configuration['supplementary_cache_options']['memcached_host'];
+        $this->Cache->MemcachedPort = $this->Configuration['supplementary_cache_options']['memcached_port'];
+        $this->Cache->RedisHost = $this->Configuration['supplementary_cache_options']['redis_host'];
+        $this->Cache->RedisPort = $this->Configuration['supplementary_cache_options']['redis_port'];
+        $this->Cache->RedisTimeout = $this->Configuration['supplementary_cache_options']['redis_timeout'];
+        $this->Cache->PDOdsn = $this->Configuration['supplementary_cache_options']['pdo_dsn'];
+        $this->Cache->PDOusername = $this->Configuration['supplementary_cache_options']['pdo_username'];
+        $this->Cache->PDOpassword = $this->Configuration['supplementary_cache_options']['pdo_password'];
+
+        /** Assign cache path. */
+        if ($this->CachePath) {
+            $this->Cache->FFDefault = $this->CachePath . DIRECTORY_SEPARATOR . 'cache.dat';
+        }
+
+        /** Attempt to connect. */
+        if (!$this->Cache->connect()) {
+            throw new \Exception('Cache connect failed.');
+        }
     }
 }

@@ -57,3 +57,5 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 [2021.06.10; Maikuolan]: Added a flag for successful hits against blacklisted filetypes (needed by the upload handler for a newly added configuration directive). Also did some very minor refactoring.
 
 [2021.09.05; Maikuolan]: Precaution against potential future undefined index added to fallback method.
+
+[2021.10.30; Maikuolan]: Code-style cleanup: Public before private properties, magic before public before private methods.

@@ -8,13 +8,19 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2021.07.10).
+ * This file: The scanner (last modified: 2021.10.30).
  */
 
 namespace phpMussel\Core;
 
 class Scanner
 {
+    /**
+     * @var string If called from another class, useful as an internal
+     *      indicator in some specific situations.
+     */
+    public $CalledFrom = '';
+
     /**
      * @var \phpMussel\Core\Loader The instantiated loader object.
      */
@@ -24,12 +30,6 @@ class Scanner
      * @var string The path to the core asset files.
      */
     private $AssetsPath = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR;
-
-    /**
-     * @var string If called from another class, useful as an internal
-     *      indicator in some specific situations.
-     */
-    public $CalledFrom = '';
 
     /**
      * @var string Crx public key (only populated if the scanned file is Crx).
@@ -288,6 +288,329 @@ class Scanner
             $this->Loader->InstanceCache['EndTime2822'],
             sprintf($this->Loader->L10N->getString('grammar_fullstop'), $this->Loader->L10N->getString('finished'))
         );
+    }
+
+    /**
+     * Initialise statistics if they've been enabled.
+     *
+     * @return void
+     */
+    public function statsInitialise(): void
+    {
+        /** Guard. */
+        if (!$this->Loader->Configuration['core']['statistics']) {
+            return;
+        }
+
+        $this->Loader->InstanceCache['StatisticsModified'] = false;
+        if ($this->Loader->InstanceCache['Statistics'] = ($this->Loader->Cache->getEntry('Statistics') ?: [])) {
+            if (is_string($this->Loader->InstanceCache['Statistics'])) {
+                unserialize($this->Loader->InstanceCache['Statistics']) ?: [];
+            }
+        }
+        if (empty($this->Loader->InstanceCache['Statistics']['Other-Since'])) {
+            $this->Loader->InstanceCache['Statistics'] = [
+                'Other-Since' => $this->Loader->Time,
+                'Web-Events' => 0,
+                'Web-Scanned' => 0,
+                'Web-Blocked' => 0,
+                'Web-Quarantined' => 0,
+                'CLI-Events' => 0,
+                'CLI-Scanned' => 0,
+                'CLI-Flagged' => 0,
+                'API-Events' => 0,
+                'API-Scanned' => 0,
+                'API-Flagged' => 0
+            ];
+            $this->Loader->InstanceCache['StatisticsModified'] = true;
+        }
+    }
+
+    /**
+     * Increments statistics if they've been enabled.
+     *
+     * @param string $Statistic The statistic to increment.
+     * @param int $Amount The amount to increment it by.
+     * @return void
+     */
+    public function statsIncrement(string $Statistic, int $Amount): void
+    {
+        /** Guard. */
+        if (!$this->Loader->Configuration['core']['statistics'] || !isset($this->Loader->InstanceCache['Statistics'][$Statistic])) {
+            return;
+        }
+
+        $this->Loader->InstanceCache['Statistics'][$Statistic] += $Amount;
+        $this->Loader->InstanceCache['StatisticsModified'] = true;
+    }
+
+    /**
+     * Implodes multidimensional arrays.
+     *
+     * @param array $Arr An array to implode.
+     * @return string The imploded array.
+     */
+    public function implodeMd(array $Arr): string
+    {
+        foreach ($Arr as &$Key) {
+            if (is_array($Key)) {
+                $Key = $this->implodeMd($Key);
+            }
+        }
+        return implode($Arr);
+    }
+
+    /**
+     * Uses iterators to generate an array of the contents of a specified directory.
+     * Used both by the scanner as well as by CLI.
+     *
+     * @param string $Base Directory root.
+     * @param bool $Directories Includes directories in the array when true.
+     * @return array Directory tree.
+     */
+    public function directoryRecursiveList(string $Base, bool $Directories = false): array
+    {
+        $Arr = [];
+        $Offset = strlen($Base);
+        $List = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($Base), \RecursiveIteratorIterator::SELF_FIRST);
+        foreach ($List as $Item => $List) {
+            if (preg_match('~^(?:/\.\.|./\.|\.{3})$~', str_replace("\\", '/', substr($Item, -3))) || !is_readable($Item)) {
+                continue;
+            }
+            if (is_dir($Item) && !$Directories) {
+                continue;
+            }
+            $Arr[] = substr($Item, $Offset);
+        }
+        return $Arr;
+    }
+
+    /**
+     * Quarantines file uploads by bitshifting the input string (the uploaded
+     * file's content) on the basis of your quarantine key, appending a header
+     * with an explanation of what the bitshifted data is, along with an MD5
+     * hash checksum of the original data, and then saves it all to a QFU file,
+     * storing these QFU files in your quarantine directory.
+     *
+     * This isn't hardcore encryption, but it should be sufficient to prevent
+     * accidental execution of quarantined files and to allow safe handling of
+     * those files, which is the whole point of quarantining them in the first
+     * place. Improvements might be made in the future.
+     *
+     * @param string $In The input string (the file upload / source data).
+     * @param string $Key Your quarantine key.
+     * @param string $IP Data origin (usually, the IP address of the uploader).
+     * @param string $ID The QFU filename to use (calculated beforehand).
+     * @return bool True on success; False on failure.
+     */
+    public function quarantine(string $In, string $Key, string $IP, string $ID): bool
+    {
+        /** Fire event: "atStartOf_quarantine". */
+        $this->Loader->Events->fireEvent('atStartOf_quarantine');
+
+        /** Guard against missing or unwritable quarantine directory. */
+        if (!$this->Loader->QuarantinePath) {
+            return false;
+        }
+
+        if (!$In || !$Key || !$IP || !$ID || !function_exists('gzdeflate') || (
+            strlen($Key) < 128 &&
+            !$Key = $this->Loader->hexSafe(hash('sha512', $Key) . hash('whirlpool', $Key))
+        )) {
+            return false;
+        }
+        if ($this->Loader->Configuration['legal']['pseudonymise_ip_addresses']) {
+            $IP = $this->Loader->pseudonymiseIP($IP);
+        }
+        $k = strlen($Key);
+        $FileSize = strlen($In);
+        $Head = "\xa1phpMussel\x21" . $this->Loader->hexSafe(hash('md5', $In)) . pack('l*', $FileSize) . "\1";
+        $In = gzdeflate($In, 9);
+        $Out = '';
+        $i = 0;
+        while ($i < $FileSize) {
+            for ($j = 0; $j < $k; $j++, $i++) {
+                if (strlen($Out) >= $FileSize) {
+                    break 2;
+                }
+                $L = substr($In, $i, 1);
+                $R = substr($Key, $j, 1);
+                $Out .= ($L === false ? "\0" : $L) ^ ($R === false ? "\0" : $R);
+            }
+        }
+        $Out =
+            "\x2f\x3d\x3d phpMussel Quarantined File Upload \x3d\x3d\x5c\n\x7c Time\x2fDate Uploaded\x3a " .
+            str_pad($this->Loader->Time, 18, ' ') .
+            "\x7c\n\x7c Uploaded From\x3a " . str_pad($IP, 22, ' ') .
+            " \x7c\n\x5c" . str_repeat("\x3d", 39) . "\x2f\n\n\n" . $Head . $Out;
+        $UsedMemory = $this->memoryUse($this->Loader->QuarantinePath);
+        $UsedMemory['Size'] += strlen($Out);
+        $UsedMemory['Count']++;
+        if ($DeductBytes = $this->Loader->readBytes($this->Loader->Configuration['quarantine']['quarantine_max_usage'])) {
+            $DeductBytes = $UsedMemory['Size'] - $DeductBytes;
+            $DeductBytes = ($DeductBytes > 0) ? $DeductBytes : 0;
+        }
+        if ($DeductFiles = $this->Loader->Configuration['quarantine']['quarantine_max_files']) {
+            $DeductFiles = $UsedMemory['Count'] - $DeductFiles;
+            $DeductFiles = ($DeductFiles > 0) ? $DeductFiles : 0;
+        }
+        if ($DeductBytes > 0 || $DeductFiles > 0) {
+            $UsedMemory = $this->memoryUse($this->Loader->QuarantinePath, $DeductBytes, $DeductFiles);
+        }
+        $Trail = substr($this->Loader->QuarantinePath, -1);
+        if ($Trail !== '/' && $Trail !== '\\') {
+            $ID .= DIRECTORY_SEPARATOR;
+        }
+        $Handle = fopen($this->Loader->QuarantinePath . $ID . '.qfu', 'ab');
+        fwrite($Handle, $Out);
+        fclose($Handle);
+        if ($this->CalledFrom === 'Web') {
+            $this->statsIncrement('Web-Quarantined', 1);
+        }
+        return true;
+    }
+
+    /**
+     * Returns the high and low nibbles corresponding to the first byte of the
+     * input string.
+     *
+     * @param string $Input The input string.
+     * @return array Contains two elements, both standard decimal integers; The
+     *      first is the high nibble of the input string, and the second is the low
+     *      nibble of the input string.
+     */
+    public function splitNibble(string $Input): array
+    {
+        $Input = bin2hex($Input);
+        return [hexdec(substr($Input, 0, 1)), hexdec(substr($Input, 1, 1))];
+    }
+
+    /**
+     * Checks if $Needle (string) matches (is equal or identical to) $Haystack
+     * (string), or a specific substring of $Haystack, to within a specific
+     * threshold of the levenshtein distance between the $Needle and the
+     * $Haystack or the $Haystack substring specified.
+     *
+     * @param string $Needle The needle (will be matched against the $Haystack,
+     *      or, if substring positions are specified, against the $Haystack
+     *      substring specified).
+     * @param string $Haystack The haystack (will be matched against the
+     *      $Needle). Note that for the purposes of calculating the levenshtein
+     *      distance, it doesn't matter which string is a $Needle and which is
+     *      a $Haystack (the value should be the same if the two were
+     *      reversed). However, when specifying substring positions, those
+     *      substring positions are applied to the $Haystack, and not the
+     *      $Needle. Note, too, that if the $Needle length is greater than the
+     *      $Haystack length (after having applied the substring positions to
+     *      the $Haystack), $Needle and $Haystack will be switched.
+     * @param int $pos_A The initial position of the $Haystack to use for the
+     *      substring, if using a substring (optional; defaults to `0`; `0` is
+     *      the beginning of the $Haystack).
+     * @param int $pos_Z The final position of the $Haystack to use for the
+     *      substring, if using a substring (optional; defaults to `0`; `0`
+     *      will instruct the method to continue to the end of the $Haystack,
+     *      and thus, if both $pos_A and $pos_Z are `0`, the entire $Haystack
+     *      will be used).
+     * @param int $min The threshold minimum (the minimum levenshtein distance
+     *      required in order for the two strings to be considered a match).
+     *      Optional; Defaults to `0`. If `0` or less is specified, there is no
+     *      minimum, and so, any and all strings should always match, as long
+     *      as the levenshtein distance doesn't surpass the threshold maximum.
+     * @param int $max The threshold maximum (the maximum levenshtein distance
+     *      allowed for the two strings to be considered a match). Optional;
+     *      Defaults to `-1`. If exactly `-1` is specified, there is no
+     *      maximum, and so, any and all strings should always match, as long
+     *      as the threshold minimum is met.
+     * @return bool True if the values are confined to the threshold; False
+     *      otherwise and on error.
+     */
+    public function lvMatch(string $Needle, string $Haystack, int $pos_A = 0, int $pos_Z = 0, int $min = 0, int $max = -1): bool
+    {
+        /** Guard. */
+        if (!function_exists('levenshtein') || is_array($Needle) || is_array($Haystack)) {
+            return false;
+        }
+
+        $nlen = strlen($Needle);
+        $pos_A = (int)$pos_A;
+        $pos_Z = (int)$pos_Z;
+        $min = (int)$min;
+        $max = (int)$max;
+        if ($pos_A !== 0 || $pos_Z !== 0) {
+            $Haystack = (
+                $pos_Z === 0
+            ) ? substr($Haystack, $pos_A) : substr($Haystack, $pos_A, $pos_Z);
+        }
+        $hlen = strlen($Haystack);
+        if ($nlen < 1 || $hlen < 1) {
+            return false;
+        }
+        if ($nlen > $hlen) {
+            [$Haystack, $hlen, $Needle, $nlen] = [$Needle, $nlen, $Haystack, $hlen];
+        }
+        $lv = levenshtein(strtolower($Haystack), strtolower($Needle));
+        return (($min === 0 || $lv >= $min) && ($max === -1 || $lv <= $max));
+    }
+
+    /**
+     * Returns a string representing the binary bits of its input, whereby each
+     * byte of the output is either one or zero.
+     * Output can be reversed with implodeBits.
+     *
+     * @param string $Input The input string (see method description above).
+     * @return string The output string (see method description above).
+     */
+    public function explodeBits(string $Input): string
+    {
+        $Out = '';
+        $Len = strlen($Input);
+        for ($Byte = 0; $Byte < $Len; $Byte++) {
+            $Out .= str_pad(decbin(ord($Input[$Byte])), 8, '0', STR_PAD_LEFT);
+        }
+        return $Out;
+    }
+
+    /**
+     * The reverse of explodeBits.
+     *
+     * @param string $Input The input string (see method description above).
+     * @return string The output string (see method description above).
+     */
+    public function implodeBits(string $Input): string
+    {
+        $Chunks = str_split($Input, 8);
+        $Count = count($Chunks);
+        for ($Out = '', $Chunk = 0; $Chunk < $Count; $Chunk++) {
+            $Out .= chr(bindec($Chunks[$Chunk]));
+        }
+        return $Out;
+    }
+
+    /**
+     * Assigns an array to use for dumping scan debug information (optional).
+     *
+     * @param array $Arr
+     * @return void
+     */
+    public function setScanDebugArray(&$Arr): void
+    {
+        unset($this->debugArr);
+        if (!is_array($Arr)) {
+            $Arr = [];
+        }
+        $this->debugArr = &$Arr;
+    }
+
+    /**
+     * Destroys the scan debug array (optional).
+     *
+     * @param array $Arr
+     * @return void
+     */
+    public function destroyScanDebugArray(&$Arr): void
+    {
+        unset($this->Loader->InstanceCache['DebugArrKey'], $this->debugArr);
+        $Arr = null;
     }
 
     /**
@@ -2670,60 +2993,6 @@ class Scanner
     }
 
     /**
-     * Initialise statistics if they've been enabled.
-     *
-     * @return void
-     */
-    public function statsInitialise(): void
-    {
-        /** Guard. */
-        if (!$this->Loader->Configuration['core']['statistics']) {
-            return;
-        }
-
-        $this->Loader->InstanceCache['StatisticsModified'] = false;
-        if ($this->Loader->InstanceCache['Statistics'] = ($this->Loader->Cache->getEntry('Statistics') ?: [])) {
-            if (is_string($this->Loader->InstanceCache['Statistics'])) {
-                unserialize($this->Loader->InstanceCache['Statistics']) ?: [];
-            }
-        }
-        if (empty($this->Loader->InstanceCache['Statistics']['Other-Since'])) {
-            $this->Loader->InstanceCache['Statistics'] = [
-                'Other-Since' => $this->Loader->Time,
-                'Web-Events' => 0,
-                'Web-Scanned' => 0,
-                'Web-Blocked' => 0,
-                'Web-Quarantined' => 0,
-                'CLI-Events' => 0,
-                'CLI-Scanned' => 0,
-                'CLI-Flagged' => 0,
-                'API-Events' => 0,
-                'API-Scanned' => 0,
-                'API-Flagged' => 0
-            ];
-            $this->Loader->InstanceCache['StatisticsModified'] = true;
-        }
-    }
-
-    /**
-     * Increments statistics if they've been enabled.
-     *
-     * @param string $Statistic The statistic to increment.
-     * @param int $Amount The amount to increment it by.
-     * @return void
-     */
-    public function statsIncrement(string $Statistic, int $Amount): void
-    {
-        /** Guard. */
-        if (!$this->Loader->Configuration['core']['statistics'] || !isset($this->Loader->InstanceCache['Statistics'][$Statistic])) {
-            return;
-        }
-
-        $this->Loader->InstanceCache['Statistics'][$Statistic] += $Amount;
-        $this->Loader->InstanceCache['StatisticsModified'] = true;
-    }
-
-    /**
      * Fetch information about signature files for the scan process.
      *
      * @return void
@@ -2772,22 +3041,6 @@ class Scanner
     }
 
     /**
-     * Implodes multidimensional arrays.
-     *
-     * @param array $Arr An array to implode.
-     * @return string The imploded array.
-     */
-    public function implodeMd(array $Arr): string
-    {
-        foreach ($Arr as &$Key) {
-            if (is_array($Key)) {
-                $Key = $this->implodeMd($Key);
-            }
-        }
-        return implode($Arr);
-    }
-
-    /**
      * Does some simple decoding work on strings.
      *
      * @param string $str The string to be decoded.
@@ -2800,31 +3053,6 @@ class Scanner
             $nstr = $this->prescanDecode($nstr);
         }
         return $nstr;
-    }
-
-    /**
-     * Uses iterators to generate an array of the contents of a specified directory.
-     * Used both by the scanner as well as by CLI.
-     *
-     * @param string $Base Directory root.
-     * @param bool $Directories Includes directories in the array when true.
-     * @return array Directory tree.
-     */
-    public function directoryRecursiveList(string $Base, bool $Directories = false): array
-    {
-        $Arr = [];
-        $Offset = strlen($Base);
-        $List = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($Base), \RecursiveIteratorIterator::SELF_FIRST);
-        foreach ($List as $Item => $List) {
-            if (preg_match('~^(?:/\.\.|./\.|\.{3})$~', str_replace("\\", '/', substr($Item, -3))) || !is_readable($Item)) {
-                continue;
-            }
-            if (is_dir($Item) && !$Directories) {
-                continue;
-            }
-            $Arr[] = substr($Item, $Offset);
-        }
-        return $Arr;
     }
 
     /**
@@ -2917,91 +3145,6 @@ class Scanner
     private function dropTrailingCompressionExtension(string $Filename): string
     {
         return preg_replace(['~\.t[gbl]?z[\da-z]?$~i', '~\.(?:bz2?|gz|lha|lz[fhowx])$~i'], ['.tar', ''], $Filename);
-    }
-
-    /**
-     * Quarantines file uploads by bitshifting the input string (the uploaded
-     * file's content) on the basis of your quarantine key, appending a header
-     * with an explanation of what the bitshifted data is, along with an MD5
-     * hash checksum of the original data, and then saves it all to a QFU file,
-     * storing these QFU files in your quarantine directory.
-     *
-     * This isn't hardcore encryption, but it should be sufficient to prevent
-     * accidental execution of quarantined files and to allow safe handling of
-     * those files, which is the whole point of quarantining them in the first
-     * place. Improvements might be made in the future.
-     *
-     * @param string $In The input string (the file upload / source data).
-     * @param string $Key Your quarantine key.
-     * @param string $IP Data origin (usually, the IP address of the uploader).
-     * @param string $ID The QFU filename to use (calculated beforehand).
-     * @return bool True on success; False on failure.
-     */
-    public function quarantine(string $In, string $Key, string $IP, string $ID): bool
-    {
-        /** Fire event: "atStartOf_quarantine". */
-        $this->Loader->Events->fireEvent('atStartOf_quarantine');
-
-        /** Guard against missing or unwritable quarantine directory. */
-        if (!$this->Loader->QuarantinePath) {
-            return false;
-        }
-
-        if (!$In || !$Key || !$IP || !$ID || !function_exists('gzdeflate') || (
-            strlen($Key) < 128 &&
-            !$Key = $this->Loader->hexSafe(hash('sha512', $Key) . hash('whirlpool', $Key))
-        )) {
-            return false;
-        }
-        if ($this->Loader->Configuration['legal']['pseudonymise_ip_addresses']) {
-            $IP = $this->Loader->pseudonymiseIP($IP);
-        }
-        $k = strlen($Key);
-        $FileSize = strlen($In);
-        $Head = "\xa1phpMussel\x21" . $this->Loader->hexSafe(hash('md5', $In)) . pack('l*', $FileSize) . "\1";
-        $In = gzdeflate($In, 9);
-        $Out = '';
-        $i = 0;
-        while ($i < $FileSize) {
-            for ($j = 0; $j < $k; $j++, $i++) {
-                if (strlen($Out) >= $FileSize) {
-                    break 2;
-                }
-                $L = substr($In, $i, 1);
-                $R = substr($Key, $j, 1);
-                $Out .= ($L === false ? "\0" : $L) ^ ($R === false ? "\0" : $R);
-            }
-        }
-        $Out =
-            "\x2f\x3d\x3d phpMussel Quarantined File Upload \x3d\x3d\x5c\n\x7c Time\x2fDate Uploaded\x3a " .
-            str_pad($this->Loader->Time, 18, ' ') .
-            "\x7c\n\x7c Uploaded From\x3a " . str_pad($IP, 22, ' ') .
-            " \x7c\n\x5c" . str_repeat("\x3d", 39) . "\x2f\n\n\n" . $Head . $Out;
-        $UsedMemory = $this->memoryUse($this->Loader->QuarantinePath);
-        $UsedMemory['Size'] += strlen($Out);
-        $UsedMemory['Count']++;
-        if ($DeductBytes = $this->Loader->readBytes($this->Loader->Configuration['quarantine']['quarantine_max_usage'])) {
-            $DeductBytes = $UsedMemory['Size'] - $DeductBytes;
-            $DeductBytes = ($DeductBytes > 0) ? $DeductBytes : 0;
-        }
-        if ($DeductFiles = $this->Loader->Configuration['quarantine']['quarantine_max_files']) {
-            $DeductFiles = $UsedMemory['Count'] - $DeductFiles;
-            $DeductFiles = ($DeductFiles > 0) ? $DeductFiles : 0;
-        }
-        if ($DeductBytes > 0 || $DeductFiles > 0) {
-            $UsedMemory = $this->memoryUse($this->Loader->QuarantinePath, $DeductBytes, $DeductFiles);
-        }
-        $Trail = substr($this->Loader->QuarantinePath, -1);
-        if ($Trail !== '/' && $Trail !== '\\') {
-            $ID .= DIRECTORY_SEPARATOR;
-        }
-        $Handle = fopen($this->Loader->QuarantinePath . $ID . '.qfu', 'ab');
-        fwrite($Handle, $Out);
-        fclose($Handle);
-        if ($this->CalledFrom === 'Web') {
-            $this->statsIncrement('Web-Quarantined', 1);
-        }
-        return true;
     }
 
     /**
@@ -3149,21 +3292,6 @@ class Scanner
     }
 
     /**
-     * Returns the high and low nibbles corresponding to the first byte of the
-     * input string.
-     *
-     * @param string $Input The input string.
-     * @return array Contains two elements, both standard decimal integers; The
-     *      first is the high nibble of the input string, and the second is the low
-     *      nibble of the input string.
-     */
-    public function splitNibble(string $Input): array
-    {
-        $Input = bin2hex($Input);
-        return [hexdec(substr($Input, 0, 1)), hexdec(substr($Input, 1, 1))];
-    }
-
-    /**
      * Expands phpMussel detection shorthand to complete identifiers, makes some
      * determinations based on those identifiers against the package
      * configuration (e.g., whether specific signatures should be weighted or
@@ -3264,107 +3392,6 @@ class Scanner
 
         /** Return the signature name and exit the method. */
         return $Out . substr($VN, 4);
-    }
-
-    /**
-     * Checks if $Needle (string) matches (is equal or identical to) $Haystack
-     * (string), or a specific substring of $Haystack, to within a specific
-     * threshold of the levenshtein distance between the $Needle and the
-     * $Haystack or the $Haystack substring specified.
-     *
-     * @param string $Needle The needle (will be matched against the $Haystack,
-     *      or, if substring positions are specified, against the $Haystack
-     *      substring specified).
-     * @param string $Haystack The haystack (will be matched against the
-     *      $Needle). Note that for the purposes of calculating the levenshtein
-     *      distance, it doesn't matter which string is a $Needle and which is
-     *      a $Haystack (the value should be the same if the two were
-     *      reversed). However, when specifying substring positions, those
-     *      substring positions are applied to the $Haystack, and not the
-     *      $Needle. Note, too, that if the $Needle length is greater than the
-     *      $Haystack length (after having applied the substring positions to
-     *      the $Haystack), $Needle and $Haystack will be switched.
-     * @param int $pos_A The initial position of the $Haystack to use for the
-     *      substring, if using a substring (optional; defaults to `0`; `0` is
-     *      the beginning of the $Haystack).
-     * @param int $pos_Z The final position of the $Haystack to use for the
-     *      substring, if using a substring (optional; defaults to `0`; `0`
-     *      will instruct the method to continue to the end of the $Haystack,
-     *      and thus, if both $pos_A and $pos_Z are `0`, the entire $Haystack
-     *      will be used).
-     * @param int $min The threshold minimum (the minimum levenshtein distance
-     *      required in order for the two strings to be considered a match).
-     *      Optional; Defaults to `0`. If `0` or less is specified, there is no
-     *      minimum, and so, any and all strings should always match, as long
-     *      as the levenshtein distance doesn't surpass the threshold maximum.
-     * @param int $max The threshold maximum (the maximum levenshtein distance
-     *      allowed for the two strings to be considered a match). Optional;
-     *      Defaults to `-1`. If exactly `-1` is specified, there is no
-     *      maximum, and so, any and all strings should always match, as long
-     *      as the threshold minimum is met.
-     * @return bool True if the values are confined to the threshold; False
-     *      otherwise and on error.
-     */
-    public function lvMatch(string $Needle, string $Haystack, int $pos_A = 0, int $pos_Z = 0, int $min = 0, int $max = -1): bool
-    {
-        /** Guard. */
-        if (!function_exists('levenshtein') || is_array($Needle) || is_array($Haystack)) {
-            return false;
-        }
-
-        $nlen = strlen($Needle);
-        $pos_A = (int)$pos_A;
-        $pos_Z = (int)$pos_Z;
-        $min = (int)$min;
-        $max = (int)$max;
-        if ($pos_A !== 0 || $pos_Z !== 0) {
-            $Haystack = (
-                $pos_Z === 0
-            ) ? substr($Haystack, $pos_A) : substr($Haystack, $pos_A, $pos_Z);
-        }
-        $hlen = strlen($Haystack);
-        if ($nlen < 1 || $hlen < 1) {
-            return false;
-        }
-        if ($nlen > $hlen) {
-            [$Haystack, $hlen, $Needle, $nlen] = [$Needle, $nlen, $Haystack, $hlen];
-        }
-        $lv = levenshtein(strtolower($Haystack), strtolower($Needle));
-        return (($min === 0 || $lv >= $min) && ($max === -1 || $lv <= $max));
-    }
-
-    /**
-     * Returns a string representing the binary bits of its input, whereby each
-     * byte of the output is either one or zero.
-     * Output can be reversed with implodeBits.
-     *
-     * @param string $Input The input string (see method description above).
-     * @return string The output string (see method description above).
-     */
-    public function explodeBits(string $Input): string
-    {
-        $Out = '';
-        $Len = strlen($Input);
-        for ($Byte = 0; $Byte < $Len; $Byte++) {
-            $Out .= str_pad(decbin(ord($Input[$Byte])), 8, '0', STR_PAD_LEFT);
-        }
-        return $Out;
-    }
-
-    /**
-     * The reverse of explodeBits.
-     *
-     * @param string $Input The input string (see method description above).
-     * @return string The output string (see method description above).
-     */
-    public function implodeBits(string $Input): string
-    {
-        $Chunks = str_split($Input, 8);
-        $Count = count($Chunks);
-        for ($Out = '', $Chunk = 0; $Chunk < $Count; $Chunk++) {
-            $Out .= chr(bindec($Chunks[$Chunk]));
-        }
-        return $Out;
     }
 
     /**
@@ -3889,33 +3916,6 @@ class Scanner
             }
         }
         return false;
-    }
-
-    /**
-     * Assigns an array to use for dumping scan debug information (optional).
-     *
-     * @param array $Arr
-     * @return void
-     */
-    public function setScanDebugArray(&$Arr): void
-    {
-        unset($this->debugArr);
-        if (!is_array($Arr)) {
-            $Arr = [];
-        }
-        $this->debugArr = &$Arr;
-    }
-
-    /**
-     * Destroys the scan debug array (optional).
-     *
-     * @param array $Arr
-     * @return void
-     */
-    public function destroyScanDebugArray(&$Arr): void
-    {
-        unset($this->Loader->InstanceCache['DebugArrKey'], $this->debugArr);
-        $Arr = null;
     }
 
     /**

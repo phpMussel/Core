@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Configuration defaults file (last modified: 2021.05.07).
+# This file: Configuration defaults file (last modified: 2021.10.30).
 ##/
 
 core:
@@ -385,6 +385,9 @@ legal:
   type: "bool"
   default: true
 supplementary_cache_options:
+ prefix:
+  type: "string"
+  default: ""
  enable_apcu:
   type: "bool"
   default: true

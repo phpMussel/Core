@@ -1293,6 +1293,7 @@ class Loader
 
         /** Create new cache object. */
         $this->Cache = new \Maikuolan\Common\Cache();
+        $this->Cache->Prefix = $this->Configuration['supplementary_cache_options']['prefix'];
         $this->Cache->EnableAPCu = $this->Configuration['supplementary_cache_options']['enable_apcu'];
         $this->Cache->EnableMemcached = $this->Configuration['supplementary_cache_options']['enable_memcached'];
         $this->Cache->EnableRedis = $this->Configuration['supplementary_cache_options']['enable_redis'];

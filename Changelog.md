@@ -52,10 +52,12 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 
 [2021.05.28; Bug-fix; Maikuolan]: Wrong casing used for some variables would cause undefined variable errors to occur; Fixed (#3).
 
-### v3.2.2
+### v3.3.0
 
 [2021.06.10; Maikuolan]: Added a flag for successful hits against blacklisted filetypes (needed by the upload handler for a newly added configuration directive). Also did some very minor refactoring.
 
 [2021.09.05; Maikuolan]: Precaution against potential future undefined index added to fallback method.
 
 [2021.10.30; Maikuolan]: Code-style cleanup: Public before private properties, magic before public before private methods.
+
+[2021.10.31; New Feature; Maikuolan]: Added the ability to segregate cache data on the basis of prefixes specified by the instance. This could be useful for when different installations are utilising the same caching mechanisms at the same server.

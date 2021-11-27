@@ -61,3 +61,7 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 [2021.10.30; Maikuolan]: Code-style cleanup: Public before private properties, magic before public before private methods.
 
 [2021.10.31; New Feature; Maikuolan]: Added the ability to segregate cache data on the basis of prefixes specified by the instance. This could be useful for when different installations are utilising the same caching mechanisms at the same server.
+
+### v3.3.1
+
+[2021.11.27; Maikuolan]: At the front-end configuration page, configuration directives relying on specific extensions (specifically, at this time, the supplementary cache options) will now include a notice as to whether the extension relied upon is available.

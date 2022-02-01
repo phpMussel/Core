@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2021.10.31).
+ * This file: The loader (last modified: 2022.02.01).
  */
 
 namespace phpMussel\Core;
@@ -149,6 +149,11 @@ class Loader
     public $MostRecentHttpCode = 0;
 
     /**
+     * @var string The IP address the instance is working with.
+     */
+    public $IPAddr = '';
+
+    /**
      * @var string The path to the core asset files.
      */
     private $AssetsPath = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR;
@@ -171,7 +176,7 @@ class Loader
     /**
      * @var string Safety mechanism for logging events.
      */
-    public const SAFETY = "\x3c\x3fphp die; \x3f\x3e";
+    public const SAFETY = "\x3C\x3Fphp die; \x3F\x3E";
 
     /**
      * Construct the loader.
@@ -315,13 +320,19 @@ class Loader
             $this->$Path = $$Path;
         }
 
-        /** Failsafe for weird ipaddr configuration and occasional weird server IP handling. */
-        if (empty($this->Configuration['core']['ipaddr'])) {
-            $this->Configuration['core']['ipaddr'] = 'REMOTE_ADDR';
+        /** Failsafe for weird ipaddr configuration. */
+        $this->IPAddr = (
+            $this->Configuration['core']['ipaddr'] !== 'REMOTE_ADDR' && empty($_SERVER[$this->Configuration['core']['ipaddr']])
+        ) ? 'REMOTE_ADDR' : $this->Configuration['core']['ipaddr'];
+
+        /** Ensure we have an IP address available to work with. */
+        $this->IPAddr = $_SERVER[$this->IPAddr] ?? '';
+
+        /** Ensure the IP address we're working with is a string. */
+        if (is_array($this->IPAddr)) {
+            $this->IPAddr = array_shift($this->IPAddr);
         }
-        if (empty($_SERVER[$this->Configuration['core']['ipaddr']])) {
-            $_SERVER[$this->Configuration['core']['ipaddr']] = '';
-        }
+        $this->IPAddr = (string)$this->IPAddr;
 
         /** Set timezone. */
         if (!empty($this->Configuration['core']['timezone']) && $this->Configuration['core']['timezone'] !== 'SYSTEM') {
@@ -1222,7 +1233,7 @@ class Loader
         }
 
         /** Ensure that $Text doesn't break lines and clean it up. */
-        $Text = preg_replace('~[\x00-\x1f]~', '', $Text);
+        $Text = preg_replace('~[\x00-\x1F]~', '', $Text);
 
         /** Generate hash reference and key for various arrays to be populated. */
         $HashReference = sprintf('%s:%d:%s', $Hash, $Size, $Name);

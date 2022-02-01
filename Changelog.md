@@ -64,4 +64,6 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 
 ### v3.3.1
 
-[2021.11.27; Maikuolan]: At the front-end configuration page, configuration directives relying on specific extensions (specifically, at this time, the supplementary cache options) will now include a notice as to whether the extension relied upon is available.
+[2021.11.27; Maikuolan]: At the front-end configuration page, configuration directives relying on specific extensions (specifically, at this time, the supplementary cache options) will now include a notice as to whether the extensions relied upon are available.
+
+[2022.02.01; Bug-fix; Maikuolan]: Failed to correctly determine the client's IP address under certain circumstances (e.g., multiple choices available via HTTP_X_FORWARDED_FOR); Fixed.

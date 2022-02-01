@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2021.10.30).
+ * This file: The scanner (last modified: 2022.02.01).
  */
 
 namespace phpMussel\Core;
@@ -85,9 +85,9 @@ class Scanner
             if ($this->CalledFrom === 'CLI') {
                 $Origin = 'CLI';
             } elseif ($this->Loader->Configuration['legal']['pseudonymise_ip_addresses']) {
-                $Origin = $this->Loader->pseudonymiseIP($_SERVER[$this->Loader->Configuration['core']['ipaddr']]);
+                $Origin = $this->Loader->pseudonymiseIP($this->IPAddr);
             } else {
-                $Origin = $_SERVER[$this->Loader->Configuration['core']['ipaddr']];
+                $Origin = $this->IPAddr;
             }
 
             /** Get detections. */
@@ -424,7 +424,7 @@ class Scanner
         }
         $k = strlen($Key);
         $FileSize = strlen($In);
-        $Head = "\xa1phpMussel\x21" . $this->Loader->hexSafe(hash('md5', $In)) . pack('l*', $FileSize) . "\1";
+        $Head = "\xA1phpMussel\x21" . $this->Loader->hexSafe(hash('md5', $In)) . pack('l*', $FileSize) . "\1";
         $In = gzdeflate($In, 9);
         $Out = '';
         $i = 0;
@@ -439,10 +439,10 @@ class Scanner
             }
         }
         $Out =
-            "\x2f\x3d\x3d phpMussel Quarantined File Upload \x3d\x3d\x5c\n\x7c Time\x2fDate Uploaded\x3a " .
+            "\x2F\x3D\x3D phpMussel Quarantined File Upload \x3D\x3D\x5C\n\x7C Time\x2FDate Uploaded\x3A " .
             str_pad($this->Loader->Time, 18, ' ') .
-            "\x7c\n\x7c Uploaded From\x3a " . str_pad($IP, 22, ' ') .
-            " \x7c\n\x5c" . str_repeat("\x3d", 39) . "\x2f\n\n\n" . $Head . $Out;
+            "\x7C\n\x7C Uploaded From\x3A " . str_pad($IP, 22, ' ') .
+            " \x7C\n\x5C" . str_repeat("\x3D", 39) . "\x2F\n\n\n" . $Head . $Out;
         $UsedMemory = $this->memoryUse($this->Loader->QuarantinePath);
         $UsedMemory['Size'] += strlen($Out);
         $UsedMemory['Count']++;
@@ -688,7 +688,7 @@ class Scanner
         if (is_dir($Files)) {
             if (!is_readable($Files)) {
                 $this->Loader->InstanceCache['ScanErrors']++;
-                $this->Loader->atHit('', -1, preg_replace(['~[\x00-\x1f]~', '~^[\\\/]~'], '', $Files), sprintf(
+                $this->Loader->atHit('', -1, preg_replace(['~[\x00-\x1F]~', '~^[\\\/]~'], '', $Files), sprintf(
                     $this->Loader->L10N->getString('grammar_exclamation_mark'),
                     sprintf($this->Loader->L10N->getString('failed_to_access'), $OriginalFilename)
                 ), -5, $Depth);
@@ -715,7 +715,7 @@ class Scanner
         $this->resetHeuristics();
 
         /** Ensure that the original filename doesn't break lines and clean it up. */
-        $OriginalFilenameClean = preg_replace(['~[\x00-\x1f]~', '~^[\\\/]~'], '', $OriginalFilename);
+        $OriginalFilenameClean = preg_replace(['~[\x00-\x1F]~', '~^[\\\/]~'], '', $OriginalFilename);
 
         /** Indenting to apply for "checking" . */
         $Indent = str_pad('→ ', ($Depth < 1 ? 4 : ($Depth * 3) + 4), '─', STR_PAD_LEFT);
@@ -917,7 +917,7 @@ class Scanner
                 $this->quarantine(
                     $In,
                     $this->Loader->Configuration['quarantine']['quarantine_key'],
-                    $_SERVER[$this->Loader->Configuration['core']['ipaddr']],
+                    $this->IPAddr,
                     $qfu
                 );
                 $this->Loader->HashReference .= sprintf($this->Loader->L10N->getString('quarantined_as'), $qfu) . "\n";
@@ -989,7 +989,7 @@ class Scanner
                 $this->quarantine(
                     $In,
                     $this->Loader->Configuration['quarantine']['quarantine_key'],
-                    $_SERVER[$this->Loader->Configuration['core']['ipaddr']],
+                    $this->IPAddr,
                     $qfu
                 );
                 $this->Loader->HashReference .= sprintf($this->Loader->L10N->getString('quarantined_as'), $qfu);
@@ -1276,7 +1276,7 @@ class Scanner
             if (strpos($Switch, '=') === false) {
                 continue;
             }
-            $Switch = explode('=', preg_replace('/[^\x20-\xff]/', '', $Switch));
+            $Switch = explode('=', preg_replace('/[^\x20-\xFF]/', '', $Switch));
             if (empty($Switch[0])) {
                 continue;
             }
@@ -2233,7 +2233,7 @@ class Scanner
                             continue;
                         }
                         if ($ThisConf[3] === 2) {
-                            $ThisSig = preg_split('/[\x00-\x1f]+/', $VN[1], -1, PREG_SPLIT_NO_EMPTY);
+                            $ThisSig = preg_split('/[\x00-\x1F]+/', $VN[1], -1, PREG_SPLIT_NO_EMPTY);
                             $ThisSig = ($ThisSig === false) ? '' : implode('', $ThisSig);
                             $VN = $this->getShorthand($VN[0]);
                             if (
@@ -2247,7 +2247,7 @@ class Scanner
                             }
                         } elseif ($ThisConf[3] === 0 || $ThisConf[3] === 1) {
                             $ThisSig = preg_split((
-                                $ThisConf[3] === 0 ? '/[^\da-f>]+/i' : '/[\x00-\x1f]+/'
+                                $ThisConf[3] === 0 ? '/[^\da-f>]+/i' : '/[\x00-\x1F]+/'
                             ), $VN[1], -1, PREG_SPLIT_NO_EMPTY);
                             $ThisSig = ($ThisSig === false ? '' : implode('', $ThisSig));
                             $ThisSigLen = strlen($ThisSig);
@@ -2383,7 +2383,7 @@ class Scanner
         /** Chameleon attack bypasses for Mac OS X thumbnails and screenshots. */
         $ThumbnailBypass = (
             substr($OriginalFilename, 0, 2) === '._' &&
-            !preg_match('~[^\x00-\x1f]~', substr($str, 0, 8)) &&
+            !preg_match('~[^\x00-\x1F]~', substr($str, 0, 8)) &&
             substr($str, 8, 8) === 'Mac OS X'
         );
 
@@ -2502,7 +2502,7 @@ class Scanner
 
         /** Control character detection. */
         if ($this->Loader->Configuration['files']['block_control_characters']) {
-            if (preg_match('/[\x00-\x08\x0b\x0c\x0e\x1f\x7f]/i', $str)) {
+            if (preg_match('/[\x00-\x08\x0B\x0C\x0E\x1F\x7F]/i', $str)) {
                 $this->Loader->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
                     $this->Loader->L10N->getString('grammar_exclamation_mark'),
                     sprintf(
@@ -2921,7 +2921,7 @@ class Scanner
                     $Hash = hash('sha256', $Content);
                     $DataCRC32 = hash('crc32b', $Content);
                     $InternalCRC = $ArchiveObject->EntryCRC();
-                    $ThisItemRef = $ItemRef . '→' . preg_replace(['~[\x00-\x1f]~', '~^[\\\/]~'], '', $Filename);
+                    $ThisItemRef = $ItemRef . '→' . preg_replace(['~[\x00-\x1F]~', '~^[\\\/]~'], '', $Filename);
 
                     /** Verify filesize, integrity, etc. Exit early in case of problems. */
                     if ($Filesize !== strlen($Content) || (
@@ -3279,7 +3279,7 @@ class Scanner
                 break;
             }
         }
-        $str = preg_replace('/[^\x21-\x7e]/', '', strtolower($this->prescanDecode($str . $ostr)));
+        $str = preg_replace('/[^\x21-\x7E]/', '', strtolower($this->prescanDecode($str . $ostr)));
         if ($html) {
             $str = preg_replace([
                 '@<script[^>]*?>.*?</script>@si',
@@ -3319,7 +3319,7 @@ class Scanner
         $this->Loader->InstanceCache['ignoreme'] = false;
 
         /** Byte 0 confirms whether the signature name uses shorthand. */
-        if ($VN[0] !== "\x1a") {
+        if ($VN[0] !== "\x1A") {
             return $VN;
         }
 
@@ -3817,7 +3817,7 @@ class Scanner
         /** Determine whether the file being scanned is a macro. */
         $this->Loader->InstanceCache['file_is_macro'] = (
             strtolower(substr($Filename, -14)) === 'vbaproject.bin' ||
-            preg_match('~^\xd0\xcf|\x00Attribut|\x01CompObj|\x05Document~', $Data)
+            preg_match('~^\xD0\xCF|\x00Attribut|\x01CompObj|\x05Document~', $Data)
         );
 
         /** Handle macro detection and blocking. */

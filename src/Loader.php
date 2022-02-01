@@ -332,7 +332,11 @@ class Loader
         if (is_array($this->IPAddr)) {
             $this->IPAddr = array_shift($this->IPAddr);
         }
+        if (is_string($this->IPAddr) && ($Pos = strpos($this->IPAddr, ', ')) !== false) {
+            $this->IPAddr = substr($this->IPAddr, 0, $Pos);
+        }
         $this->IPAddr = (string)$this->IPAddr;
+        unset($Pos);
 
         /** Set timezone. */
         if (!empty($this->Configuration['core']['timezone']) && $this->Configuration['core']['timezone'] !== 'SYSTEM') {

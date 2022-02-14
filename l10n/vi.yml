@@ -7,15 +7,10 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Vietnamese language data (last modified: 2021.03.20).
+# This file: Vietnamese language data (last modified: 2022.02.13).
 ##/
 
-# Language settings.
-Local Name: "Tiếng Việt"
 Text Direction: "ltr"
-IntegerRule: "int1"
-FractionRule: "int1"
-
 SafeBrowseLookup_200: "URL đó là có khả năng có hại đã được phát hiện"
 SafeBrowseLookup_400: "Lỗi yêu cầu API"
 SafeBrowseLookup_401: "Lỗi ủy quyền API"

@@ -7,15 +7,10 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Spanish language data (last modified: 2021.03.20).
+# This file: Spanish language data (last modified: 2022.02.13).
 ##/
 
-# Language settings.
-Local Name: "Español"
 Text Direction: "ltr"
-IntegerRule: "int2Type4"
-FractionRule: "int1"
-
 SafeBrowseLookup_200: "URL potencialmente dañino detectado"
 SafeBrowseLookup_400: "Error de solicitud de la API"
 SafeBrowseLookup_401: "Error de autorización de la API"

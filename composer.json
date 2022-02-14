@@ -8,12 +8,11 @@
         "issues": "https://github.com/phpMussel/Core/issues",
         "source": "https://github.com/phpMussel/Core",
         "docs": "https://github.com/phpMussel/Docs",
-        "rss": "https://github.com/phpMussel/Core/releases.atom",
-        "chat": "https://gitter.im/phpMussel2/Lobby"
+        "rss": "https://github.com/phpMussel/Core/releases.atom"
     },
     "require": {
         "php": ">=7.2.0",
-        "maikuolan/common": "^2.7",
+        "maikuolan/common": "^2.8",
         "ext-pcre": "*"
     },
     "suggest": {

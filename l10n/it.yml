@@ -7,15 +7,10 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Italian language data (last modified: 2021.03.20).
+# This file: Italian language data (last modified: 2022.02.13).
 ##/
 
-# Language settings.
-Local Name: "Italiano"
 Text Direction: "ltr"
-IntegerRule: "int2Type4"
-FractionRule: "int1"
-
 SafeBrowseLookup_200: "URL potenzialmente dannosi rilevati"
 SafeBrowseLookup_400: "Errore di richiesta delle API"
 SafeBrowseLookup_401: "Errore di autorizzazione delle API"

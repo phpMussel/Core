@@ -7,15 +7,10 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Urdu language data (last modified: 2021.03.20).
+# This file: Urdu language data (last modified: 2022.02.13).
 ##/
 
-# Language settings.
-Local Name: "‏اردو‏"
 Text Direction: "rtl"
-IntegerRule: "int2Type4"
-FractionRule: "int1"
-
 SafeBrowseLookup_200: "ممکنہ طور پر نقصان دہ URL پتہ چلنے پر"
 SafeBrowseLookup_400: "API کی درخواست کی خرابی"
 SafeBrowseLookup_401: "API کیلئے اجازت کی خرابی"

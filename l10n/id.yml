@@ -7,15 +7,10 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Indonesian language data (last modified: 2021.03.20).
+# This file: Indonesian language data (last modified: 2022.02.13).
 ##/
 
-# Language settings.
-Local Name: "Bahasa Indonesia"
 Text Direction: "ltr"
-IntegerRule: "int1"
-FractionRule: "int1"
-
 SafeBrowseLookup_200: "Berpotensi URL berbahaya terdeteksi"
 SafeBrowseLookup_400: "Kesalahan permintaan API"
 SafeBrowseLookup_401: "Kesalahan otorisasi API"

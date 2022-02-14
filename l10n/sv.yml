@@ -7,15 +7,10 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Swedish language data (last modified: 2021.03.20).
+# This file: Swedish language data (last modified: 2022.02.13).
 ##/
 
-# Language settings.
-Local Name: "Svenska"
 Text Direction: "ltr"
-IntegerRule: "int2Type4"
-FractionRule: "int1"
-
 SafeBrowseLookup_200: "Potentiellt skadlig URL upptäckt"
 SafeBrowseLookup_400: "API-begäran fel"
 SafeBrowseLookup_401: "API-godkännande fel"

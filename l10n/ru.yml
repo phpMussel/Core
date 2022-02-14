@@ -7,15 +7,10 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Russian language data (last modified: 2021.03.20).
+# This file: Russian language data (last modified: 2022.02.13).
 ##/
 
-# Language settings.
-Local Name: "Русский"
 Text Direction: "ltr"
-IntegerRule: "int3Type4"
-FractionRule: "int1"
-
 SafeBrowseLookup_200: "Потенциально вредное URL обнаружено"
 SafeBrowseLookup_400: "Ошибка запроса API"
 SafeBrowseLookup_401: "Ошибка авторизации API"

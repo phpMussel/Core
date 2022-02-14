@@ -7,15 +7,10 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Chinese (traditional) language data (last modified: 2021.03.20).
+# This file: Chinese (traditional) language data (last modified: 2022.02.13).
 ##/
 
-# Language settings.
-Local Name: "中文（傳統）"
 Text Direction: "ltr"
-IntegerRule: "int1"
-FractionRule: "int1"
-
 SafeBrowseLookup_200: "可能有害的URL檢測"
 SafeBrowseLookup_400: "API請求錯誤"
 SafeBrowseLookup_401: "API授權錯誤"

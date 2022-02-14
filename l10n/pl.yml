@@ -7,15 +7,10 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Polish language data (last modified: 2021.03.20).
+# This file: Polish language data (last modified: 2022.02.13).
 ##/
 
-# Language settings.
-Local Name: "Polski"
 Text Direction: "ltr"
-IntegerRule: "int3Type5"
-FractionRule: "int1"
-
 SafeBrowseLookup_200: "Wykryto potencjalnie szkodliwy adres URL"
 SafeBrowseLookup_400: "Błąd żądania API"
 SafeBrowseLookup_401: "Błąd autoryzacji API"

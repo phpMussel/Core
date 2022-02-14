@@ -7,15 +7,10 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Turkish language data (last modified: 2021.03.20).
+# This file: Turkish language data (last modified: 2022.02.13).
 ##/
 
-# Language settings.
-Local Name: "Türkçe"
 Text Direction: "ltr"
-IntegerRule: "int2Type4"
-FractionRule: "int1"
-
 SafeBrowseLookup_200: "Potansiyel olarak zararlı URL tespit edildi"
 SafeBrowseLookup_400: "API istek hatası"
 SafeBrowseLookup_401: "API yetkilendirme hatası"

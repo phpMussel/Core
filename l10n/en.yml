@@ -7,15 +7,10 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: English language data (last modified: 2021.03.20).
+# This file: English language data (last modified: 2022.02.13).
 ##/
 
-# Language settings.
-Local Name: "English"
 Text Direction: "ltr"
-IntegerRule: "int2Type4"
-FractionRule: "int1"
-
 SafeBrowseLookup_200: "Potentially harmful URL detected"
 SafeBrowseLookup_400: "API request error"
 SafeBrowseLookup_401: "API authorisation error"

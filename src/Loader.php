@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2022.02.01).
+ * This file: The loader (last modified: 2022.02.14).
  */
 
 namespace phpMussel\Core;
@@ -88,7 +88,7 @@ class Loader
     /**
      * @var string phpMussel version number (SemVer).
      */
-    public $ScriptVersion = '3.3.0';
+    public $ScriptVersion = '3.3.1';
 
     /**
      * @var string phpMussel version identifier (complete notation).
@@ -613,6 +613,11 @@ class Loader
             }
         } else {
             $this->L10N = new \Maikuolan\Common\L10N($Primary, $Fallback);
+            if ($this->Configuration['core']['lang'] === 'en') {
+                $this->L10N->autoAssignRules('en');
+            } else {
+                $this->L10N->autoAssignRules($this->Configuration['core']['lang'], 'en');
+            }
         }
 
         /** Load client-specified L10N data if possible. */
@@ -649,11 +654,10 @@ class Loader
                 }
                 $this->YAML->process($Primary, $Arr);
                 if ($this->ClientL10N instanceof \Maikuolan\Common\L10N && is_array($this->ClientL10N->Data)) {
-                    if (!empty($Primary)) {
-                        $this->ClientL10N->Data = array_merge($this->ClientL10N->Data, $Arr);
-                    }
+                    $this->ClientL10N->Data = array_merge($this->ClientL10N->Data, $Arr);
                 } else {
                     $this->ClientL10N = new \Maikuolan\Common\L10N($Arr, $this->L10N);
+                    $this->ClientL10N->autoAssignRules($Accepted);
                 }
             } elseif (!($this->ClientL10N instanceof \Maikuolan\Common\L10N)) {
                 $this->ClientL10N = new \Maikuolan\Common\L10N([], $this->L10N);

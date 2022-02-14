@@ -7,15 +7,10 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Tamil language data (last modified: 2021.03.20).
+# This file: Tamil language data (last modified: 2022.02.13).
 ##/
 
-# Language settings.
-Local Name: "தமிழ்"
 Text Direction: "ltr"
-IntegerRule: "int2Type4"
-FractionRule: "int1"
-
 SafeBrowseLookup_200: "தீங்கு விளைவிக்கும் URL கண்டறியப்பட்டது"
 SafeBrowseLookup_400: "API கோரிக்கை பிழை"
 SafeBrowseLookup_401: "API அங்கீகார பிழை"

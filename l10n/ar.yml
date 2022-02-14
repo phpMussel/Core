@@ -7,15 +7,10 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Arabic language data (last modified: 2021.03.20).
+# This file: Arabic language data (last modified: 2022.02.13).
 ##/
 
-# Language settings.
-Local Name: "العربية"
 Text Direction: "rtl"
-IntegerRule: "int6Type1"
-FractionRule: "int1"
-
 SafeBrowseLookup_200: "يحتمل أن تكون ضارة URL الكشف"
 SafeBrowseLookup_400: "API خطأ طلب"
 SafeBrowseLookup_401: "API خطأ ترخيص"

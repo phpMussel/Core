@@ -26,4 +26,4 @@
 *.txt linguist-documentation
 
 .github/* -linguist-detectable
-tests/* -linguist-detectable
+.tests/* -linguist-detectable

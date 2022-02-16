@@ -6,9 +6,12 @@
  * PHPMUSSEL COPYRIGHT 2013 AND BEYOND BY THE PHPMUSSEL TEAM.
  */
 
-// Prevent running tests outside of Composer (if the package is deployed
-// somewhere live with this file still intact, useful to prevent hammering and
-// cycles being needlessly wasted).
+/**
+ * If this file remains intact after deploying the package to production,
+ * preventing it from running outside of Composer may be useful as a means of
+ * prevent potential attackers from hammering the file and needlessly wasting
+ * cycles at the server.
+ */
 if (!isset($_SERVER['COMPOSER_BINARY'])) {
     die;
 }
@@ -41,7 +44,7 @@ if (!is_readable($Autoloader)) {
 require $Autoloader;
 
 // Path to all tests data.
-$TestsPath = __DIR__ . DIRECTORY_SEPARATOR . 'tests' . DIRECTORY_SEPARATOR;
+$TestsPath = __DIR__ . DIRECTORY_SEPARATOR . '.tests' . DIRECTORY_SEPARATOR;
 
 // Fetch the signatures needed for testing the scanner.
 $ZipObj = new \ZipArchive();
@@ -88,7 +91,7 @@ $Expected = [
 // Test scanning against the standard phpMussel test samples.
 $Actual = $Scanner->scan($Samples, 3);
 ksort($Actual);
-if ($Actual !== $Expected) {
+if (serialize($Actual) !== serialize($Expected)) {
     echo 'Actual scan results does not match expected scan results.' . PHP_EOL;
     exit(5);
 }

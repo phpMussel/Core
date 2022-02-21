@@ -69,3 +69,7 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 [2022.02.01; Bug-fix; Maikuolan]: Failed to correctly determine the client's IP address under certain circumstances (e.g., multiple choices available via HTTP_X_FORWARDED_FOR); Fixed.
 
 [2022.02.14; Maikuolan]: Maintenance release.
+
+### v3.3.2
+
+[2022.02.21; Maikuolan]: Improved IP address resolution strategy.

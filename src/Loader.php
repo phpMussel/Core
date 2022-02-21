@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2022.02.14).
+ * This file: The loader (last modified: 2022.02.21).
  */
 
 namespace phpMussel\Core;
@@ -320,23 +320,8 @@ class Loader
             $this->$Path = $$Path;
         }
 
-        /** Failsafe for weird ipaddr configuration. */
-        $this->IPAddr = (
-            $this->Configuration['core']['ipaddr'] !== 'REMOTE_ADDR' && empty($_SERVER[$this->Configuration['core']['ipaddr']])
-        ) ? 'REMOTE_ADDR' : $this->Configuration['core']['ipaddr'];
-
-        /** Ensure we have an IP address available to work with. */
-        $this->IPAddr = $_SERVER[$this->IPAddr] ?? '';
-
-        /** Ensure the IP address we're working with is a string. */
-        if (is_array($this->IPAddr)) {
-            $this->IPAddr = array_shift($this->IPAddr);
-        }
-        if (is_string($this->IPAddr) && ($Pos = strpos($this->IPAddr, ', ')) !== false) {
-            $this->IPAddr = substr($this->IPAddr, 0, $Pos);
-        }
-        $this->IPAddr = (string)$this->IPAddr;
-        unset($Pos);
+        /** Fetch the IP address of the current request. */
+        $this->IPAddr = (new \Maikuolan\Common\IPHeader($this->Configuration['core']['ipaddr']))->Resolution;
 
         /** Set timezone. */
         if (!empty($this->Configuration['core']['timezone']) && $this->Configuration['core']['timezone'] !== 'SYSTEM') {

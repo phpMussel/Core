@@ -573,14 +573,14 @@ class Loader
             $Primary = $this->readFile($Path . $this->Configuration['core']['lang'] . '.yml');
             $Fallback = $this->readFile($Path . 'en.yml');
         }
-        if ($Primary) {
+        if (strlen($Primary)) {
             $Arr = [];
             $this->YAML->process($Primary, $Arr);
             $Primary = $Arr;
         } else {
             $Primary = [];
         }
-        if ($Fallback) {
+        if (strlen($Fallback)) {
             $Arr = [];
             $this->YAML->process($Fallback, $Arr);
             $Fallback = $Arr;

@@ -73,3 +73,5 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 ### v3.3.2
 
 [2022.02.21; Maikuolan]: Improved IP address resolution strategy.
+
+[2022.02.21; Maikuolan]: Added a default caching prefix.

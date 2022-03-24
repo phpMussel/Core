@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2022.02.01).
+ * This file: The scanner (last modified: 2022.03.24).
  */
 
 namespace phpMussel\Core;
@@ -839,10 +839,15 @@ class Scanner
         }
 
         /** Read in the file to be scanned. */
-        $In = $this->Loader->readFileBlocks($Files, (
-            $this->Loader->Configuration['files']['scannable_threshold'] > 0 &&
-            $fS > $this->Loader->readBytes($this->Loader->Configuration['files']['scannable_threshold'])
-        ) ? $this->Loader->readBytes($this->Loader->Configuration['files']['scannable_threshold']) : $fS, true);
+        $In = $this->Loader->readFileContent($Files);
+
+        /** Enforce scannable threshold. */
+        if (
+            ($ScannableThreshold = $this->Loader->readBytes($this->Loader->Configuration['files']['scannable_threshold'])) > 0 &&
+            strlen($In) > $ScannableThreshold
+        ) {
+            $In = substr($In, 0, $ScannableThreshold);
+        }
 
         /** Generate CRC for the file to be scanned. */
         $fdCRC = hash('crc32b', $In);
@@ -1146,11 +1151,12 @@ class Scanner
             $this->statsIncrement('API-Scanned', 1);
         }
 
+        /** Enforce scannable threshold. */
         if (
-            $this->Loader->Configuration['files']['scannable_threshold'] > 0 &&
-            $StringLength > $this->Loader->readBytes($this->Loader->Configuration['files']['scannable_threshold'])
+            ($ScannableThreshold = $this->Loader->readBytes($this->Loader->Configuration['files']['scannable_threshold'])) > 0 &&
+            $StringLength > $ScannableThreshold
         ) {
-            $StringLength = $this->Loader->readBytes($this->Loader->Configuration['files']['scannable_threshold']);
+            $StringLength = $ScannableThreshold;
             $str = substr($str, 0, $StringLength);
             $str_cut = 1;
         } else {
@@ -1740,7 +1746,7 @@ class Scanner
                     continue;
                 }
                 if (!isset($this->Loader->InstanceCache[$SigFile])) {
-                    $this->Loader->InstanceCache[$SigFile] = $this->Loader->readFileBlocks($this->Loader->SignaturesPath . $SigFile);
+                    $this->Loader->InstanceCache[$SigFile] = $this->Loader->readFileContent($this->Loader->SignaturesPath . $SigFile);
                 }
 
                 /** Fire event: "beforeSigFile". */

@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2022.02.21).
+ * This file: The loader (last modified: 2022.03.24).
  */
 
 namespace phpMussel\Core;
@@ -169,7 +169,7 @@ class Loader
     private $Channels = [];
 
     /**
-     * @var int The default blocksize for readFileBlocks and readFileBlocksGZ.
+     * @var int The default blocksize for readFileContent and readFileContentGZ.
      */
     private $Blocksize = 131072;
 
@@ -337,7 +337,7 @@ class Loader
         $this->Request = new \Maikuolan\Common\Request();
         $this->Request->DefaultTimeout = $this->Configuration['core']['default_timeout'];
         $ChannelsDataArray = [];
-        $this->YAML->process($this->readFileBlocks($this->AssetsPath . 'channels.yaml'), $ChannelsDataArray);
+        $this->YAML->process($this->readFileContent($this->AssetsPath . 'channels.yaml'), $ChannelsDataArray);
         $this->Request->Channels = $ChannelsDataArray ?: [];
         unset($ChannelsDataArray);
         if (!isset($this->Request->Channels['Triggers'])) {
@@ -850,58 +850,37 @@ class Loader
     }
 
     /**
-     * Returns the contents of files.
+     * Reads and returns the contents of files.
      *
-     * @param string $File The file to read.
-     * @param int $BlocksToRead The number of blocks to read from the file.
-     * @return string The file's contents (an empty string on failure).
+     * @param string $File The path and the name of the file to read.
+     * @return string The file's content, or an empty string on failure.
      */
-    public function readFileBlocks(string $File, int $BlocksToRead = 0): string
+    public function readFileContent(string $File): string
     {
         /** Guard. */
-        if (!is_file($File) || !is_readable($File) || !$Filesize = filesize($File)) {
+        if (!strlen($File) || !is_file($File) || !is_readable($File)) {
             return '';
         }
 
-        /** Calculate this file's blocks to read. */
-        if (!$BlocksToRead) {
-            $BlocksToRead = ($Filesize && $this->Blocksize) ? ceil($Filesize / $this->Blocksize) : 0;
-        }
-
-        $Data = '';
-        if ($BlocksToRead > 0) {
-            $Handle = fopen($File, 'rb');
-            if (!is_resource($Handle)) {
-                return '';
-            }
-            $Done = 0;
-            while ($Done < $BlocksToRead) {
-                $Data .= fread($Handle, $this->Blocksize);
-                $Done++;
-            }
-            fclose($Handle);
-        }
-        return $Data;
+        $Data = file_get_contents($File);
+        return is_string($Data) ? $Data : '';
     }
 
     /**
-     * Returns the contents of GZ-compressed files.
+     * Reads and returns the contents of GZ-compressed files.
      *
      * @param string $File The file to read.
-     * @param int $BlocksToRead The number of blocks to read from the file.
-     * @return string The file's contents (an empty string on failure).
+     * @return string The file's content, or an empty string on failure.
      */
-    public function readFileBlocksGZ(string $File, int $BlocksToRead = 0): string
+    public function readFileContentGZ(string $File): string
     {
         /** Guard. */
-        if (!is_file($File) || !is_readable($File) || !$Filesize = filesize($File)) {
+        if (!strlen($File) || !is_file($File) || !is_readable($File) || !$Filesize = filesize($File)) {
             return '';
         }
 
         /** Calculate this file's blocks to read. */
-        if (!$BlocksToRead) {
-            $BlocksToRead = ($Filesize && $this->Blocksize) ? ceil($Filesize / $this->Blocksize) : 0;
-        }
+        $BlocksToRead = ($Filesize && $this->Blocksize) ? ceil($Filesize / $this->Blocksize) : 0;
 
         $Data = '';
         if ($BlocksToRead > 0) {
@@ -982,7 +961,7 @@ class Loader
     public function gZCompressFile(string $File): bool
     {
         /** Guard. */
-        if (!is_file($File) || !is_readable($File)|| !$Filesize = filesize($File)) {
+        if (!strlen($File) || !is_file($File) || !is_readable($File)) {
             return false;
         }
 

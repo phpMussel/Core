@@ -808,7 +808,7 @@ class Loader
      * @param string $Needle The needle.
      * @return string The substring.
      */
-    public function substrBeforeFirst(string $h, string $n): string
+    public function substrBeforeFirst(string $Haystack, string $Needle): string
     {
         return !strlen($Needle) ? '' : substr($Haystack, 0, strpos($Haystack, $Needle));
     }
@@ -820,7 +820,7 @@ class Loader
      * @param string $Needle The needle.
      * @return string The substring.
      */
-    public function substrAfterFirst(string $h, string $n): string
+    public function substrAfterFirst(string $Haystack, string $Needle): string
     {
         return !($Length = strlen($Needle)) ? '' : substr($Haystack, strpos($Haystack, $Needle) + $Length);
     }
@@ -832,7 +832,7 @@ class Loader
      * @param string $Needle The needle.
      * @return string The substring.
      */
-    public function substrBeforeLast(string $h, string $n): string
+    public function substrBeforeLast(string $Haystack, string $Needle): string
     {
         return !strlen($Needle) ? '' : substr($Haystack, 0, strrpos($Haystack, $Needle));
     }

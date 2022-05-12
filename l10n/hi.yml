@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Hindi language data (last modified: 2022.02.13).
+# This file: Hindi language data (last modified: 2022.05.08).
 ##/
 
 Text Direction: "ltr"
@@ -58,7 +58,7 @@ scan_reading: "पढ़ना"
 scan_signature_file_missing: "हस्ताक्षर फाइल लापता है"
 scan_tampering: "संभावित खतरनाक फाइल छेड़छाड़ की गई"
 started: "शुरू कर दिया है"
-state_failed_missing: "कार्य विफल रहा क्योंकि एक आवश्यक घटक अनुपलब्ध है।"
+state_failed_missing: "कार्य विफल रहा क्योंकि एक आवश्यक कंपोनेंट अनुपलब्ध है।"
 too_many_files_in_archive: "पुरालेख में बहुत सारी फाइलें"
 too_many_urls: "बहुत सारे URL"
 x_does_not_exist: "%s मौजूद नहीं है"

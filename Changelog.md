@@ -79,3 +79,7 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 [2022.03.11; Bug-fix; Maikuolan]: Shorthand data was quoted, but needed to be defined as literals in order to avoid being unentitised prior to being parsed as regular expression partials, in order to avoid breaking those expressions and potentially triggering fatal errors; Fixed.
 
 [2022.03.24; Bug-fix; Maikuolan]: Fixed a bottleneck in the scan process caused by the readFileBlocks method (phpMussel/phpMussel#231).
+
+### v3.3.3
+
+[2022.06.16; Bug-fix; Maikuolan]: Warning generated since PHP 8.1 for parse functionality; Fixed.

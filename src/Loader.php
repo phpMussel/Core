@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2022.03.25).
+ * This file: The loader (last modified: 2022.06.16).
  */
 
 namespace phpMussel\Core;
@@ -707,7 +707,7 @@ class Loader
             return '';
         }
         foreach ($Needles as $Key => $Value) {
-            if (!is_array($Value)) {
+            if (!is_array($Value) && $Value !== null) {
                 $Haystack = str_replace('{' . $Key . '}', $Value, $Haystack);
             }
         }

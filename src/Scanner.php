@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2022.03.24).
+ * This file: The scanner (last modified: 2022.06.19).
  */
 
 namespace phpMussel\Core;
@@ -2235,7 +2235,7 @@ class Scanner
                     }
                     if (strpos($ThisSig, ':') !== false) {
                         $VN = $this->splitSigParts($ThisSig);
-                        if (!isset($VN[1]) || !strlen($VN[1])) {
+                        if (!isset($VN[1]) || $VN[1] === '') {
                             continue;
                         }
                         if ($ThisConf[3] === 2) {

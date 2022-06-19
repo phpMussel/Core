@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2022.06.16).
+ * This file: The loader (last modified: 2022.06.19).
  */
 
 namespace phpMussel\Core;
@@ -751,7 +751,7 @@ class Loader
     public function buildPath(string $Path, bool $PointsToFile = true): string
     {
         /** Input guard. */
-        if (!strlen($Path)) {
+        if ($Path === '') {
             return '';
         }
 
@@ -810,7 +810,7 @@ class Loader
      */
     public function substrBeforeFirst(string $Haystack, string $Needle): string
     {
-        return !strlen($Needle) ? '' : substr($Haystack, 0, strpos($Haystack, $Needle));
+        return $Needle === '' ? '' : substr($Haystack, 0, strpos($Haystack, $Needle));
     }
 
     /**
@@ -834,7 +834,7 @@ class Loader
      */
     public function substrBeforeLast(string $Haystack, string $Needle): string
     {
-        return !strlen($Needle) ? '' : substr($Haystack, 0, strrpos($Haystack, $Needle));
+        return $Needle === '' ? '' : substr($Haystack, 0, strrpos($Haystack, $Needle));
     }
 
     /**
@@ -858,7 +858,7 @@ class Loader
     public function readFileContent(string $File): string
     {
         /** Guard. */
-        if (!strlen($File) || !is_file($File) || !is_readable($File)) {
+        if ($File === '' || !is_file($File) || !is_readable($File)) {
             return '';
         }
 
@@ -875,7 +875,7 @@ class Loader
     public function readFileContentGZ(string $File): string
     {
         /** Guard. */
-        if (!strlen($File) || !is_file($File) || !is_readable($File) || !$Filesize = filesize($File)) {
+        if ($File === '' || !is_file($File) || !is_readable($File) || !$Filesize = filesize($File)) {
             return '';
         }
 
@@ -961,7 +961,7 @@ class Loader
     public function gZCompressFile(string $File): bool
     {
         /** Guard. */
-        if (!strlen($File) || !is_file($File) || !is_readable($File)) {
+        if ($File === '' || !is_file($File) || !is_readable($File)) {
             return false;
         }
 

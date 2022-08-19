@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2022.06.19).
+ * This file: The scanner (last modified: 2022.08.20).
  */
 
 namespace phpMussel\Core;
@@ -885,13 +885,11 @@ class Scanner
          * only bother doing this if the file hasn't already been flagged though.
          */
         if (!empty($this->Loader->InstanceCache['CheckWasLast'])) {
-
             /** Create a new compression object. */
             $CompressionObject = new CompressionHandler($In);
 
             /** Now we'll try to decompress the file. */
             if (!$CompressionResults = $CompressionObject->TryEverything()) {
-
                 /** Success! Now we'll send it to the data handler. */
                 $this->dataHandler($CompressionObject->Data, $Depth, $this->dropTrailingCompressionExtension($OriginalFilenameClean));
 
@@ -910,7 +908,6 @@ class Scanner
 
         /** Executed if any problems were detected. */
         if (empty($this->Loader->InstanceCache['CheckWasLast'])) {
-
             /** Quarantine if necessary. */
             if (
                 $this->Loader->Configuration['quarantine']['quarantine_key'] &&
@@ -1736,7 +1733,6 @@ class Scanner
             ['URL_Scanner', 4],
             ['Complex_Extended', 5]
         ] as $ThisConf) {
-
             /** Fire event: "beforeSigFiles". */
             $this->Loader->Events->fireEvent('beforeSigFiles');
 
@@ -2338,7 +2334,6 @@ class Scanner
                 ) ? array_chunk($URLScanner['URLParts'], 500) : [$URLScanner['URLParts']];
                 $URLScanner['URLChunks'] = count($URLScanner['URLsChunked']);
                 for ($i = 0; $i < $URLScanner['URLChunks']; $i++) {
-
                     /** Maximum API lookups reached; abort accordingly. */
                     if (
                         $this->Loader->Configuration['urlscanner']['maximum_api_lookups'] > 0 &&
@@ -3489,7 +3484,6 @@ class Scanner
 
         /** If this lookup has already been performed, return the results. */
         if (!empty($Response)) {
-
             /** Potentially harmful URL detected. */
             if ($Response === '200') {
                 return 200;
@@ -3537,13 +3531,11 @@ class Scanner
         if (strpos($Response, '"matches":') !== false) {
             $returnVal = 200;
         } else {
-
             /**
              * Other possible problem detected.
              * @link https://developers.google.com/safe-browsing/v4/status-codes
              */
             if (isset($this->Loader->MostRecentHttpCode) && $this->Loader->MostRecentHttpCode !== 200) {
-
                 /**
                  * Malformed request detected (e.g., invalid argument, invalid
                  * request payload, etc).
@@ -3586,7 +3578,6 @@ class Scanner
                  */
                 $newExpiry += 86400;
             } else {
-
                 /** Potentially harmful URL *NOT* detected, and no other problems detected. */
                 $returnVal = 204;
             }
@@ -3851,13 +3842,11 @@ class Scanner
          * only bother doing this if the file hasn't already been flagged though.
          */
         if (!empty($this->Loader->InstanceCache['CheckWasLast'])) {
-
             /** Create a new compression object. */
             $CompressionObject = new CompressionHandler($Data);
 
             /** Now we'll try to decompress the file. */
             if (!$CompressionResults = $CompressionObject->TryEverything()) {
-
                 /** Success! Now we'll send it to the data handler. */
                 $this->dataHandler($CompressionObject->Data, $Depth, $this->dropTrailingCompressionExtension($Filename));
 

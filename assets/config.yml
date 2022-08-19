@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Configuration defaults file (last modified: 2022.06.01).
+# This file: Configuration defaults file (last modified: 2022.08.11).
 ##/
 
 core:
@@ -154,6 +154,7 @@ core:
    ja: "日本語"
    ko: "한국어"
    lv: "Latviešu"
+   ms: "Bahasa Melayu"
    nl: "Nederlandse"
    no: "Norsk"
    pl: "Polski"

@@ -7,15 +7,29 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Russian language data (last modified: 2022.02.13).
+# This file: Russian language data (last modified: 2022.08.18).
+#
+# Regarding translations: My native language is English. Because this is a free
+# and open-source hobby project which generates zero income, and translatable
+# content is likely to change as the features and functionality supported by
+# the project changes, it doesn't make sense for me to spend money for
+# translations. Because I'm the sole author/developer/maintainer for the
+# project and I'm not a ployglot, any translations I produce are very likely to
+# contain errors. Sorry, but realistically, that won't ever change. If you find
+# any such errors/typos/mistakes/etc, your assistance to correct them would be
+# very much appreciated. Pull requests are invited and encouraged. Otherwise,
+# if you find these errors too much to handle, just stick with the original
+# English source. If a translation is irredeemably incomprehensible, let me
+# know which, and I can delete it. If you're not sure how to perform pull
+# requests, ask. I can help.
 ##/
 
 Text Direction: "ltr"
 SafeBrowseLookup_200: "Потенциально вредное URL обнаружено"
 SafeBrowseLookup_400: "Ошибка запроса API"
 SafeBrowseLookup_401: "Ошибка авторизации API"
-SafeBrowseLookup_503: "Сервис недоступен API"
-SafeBrowseLookup_999: "Неизвестная API ошибка"
+SafeBrowseLookup_503: "Служба API недоступна"
+SafeBrowseLookup_999: "Неизвестная ошибка API"
 corrupted: "Обнаружена поврежденная ПЭ"
 data_not_available: "Данные недоступны."
 detected: "Обнаружено %s"
@@ -28,7 +42,7 @@ field_header_hash_reconstruction: "Реконструкция хэш-сигна�
 field_header_pe_reconstruction: "Реконструкция секционных сигнатурей PE"
 field_header_scan_results_why_flagged: "Результаты сканирования (почему помечены)"
 field_ip_address: "IP-адрес"
-file: "файл"
+file: "Файл"
 filesize_limit_exceeded: "Размер файла превышает лимит"
 filetype_blacklisted: "Тип файла находится в черном списке"
 finished: "Готово"
@@ -40,7 +54,6 @@ grammar_spacer: " "
 image: "Изображение"
 invalid_data: "Неверные данные!"
 invalid_file: "Неверный файл!"
-invalid_url: "Неверный URL!"
 macros_not_permitted: "Макросы не разрешены"
 only_allow_images: "Разрешены только файлы изображений"
 quarantined_as: "Помещен на карантин в «%s.qfu»."

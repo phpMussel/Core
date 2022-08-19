@@ -1,0 +1,77 @@
+##\
+# This file is a part of the phpMussel\Core package.
+# Homepage: https://phpmussel.github.io/
+#
+# PHPMUSSEL COPYRIGHT 2013 AND BEYOND BY THE PHPMUSSEL TEAM.
+#
+# License: GNU/GPLv2
+# @see LICENSE.txt
+#
+# This file: Farsi language data (last modified: 2022.08.18).
+#
+# Regarding translations: My native language is English. Because this is a free
+# and open-source hobby project which generates zero income, and translatable
+# content is likely to change as the features and functionality supported by
+# the project changes, it doesn't make sense for me to spend money for
+# translations. Because I'm the sole author/developer/maintainer for the
+# project and I'm not a ployglot, any translations I produce are very likely to
+# contain errors. Sorry, but realistically, that won't ever change. If you find
+# any such errors/typos/mistakes/etc, your assistance to correct them would be
+# very much appreciated. Pull requests are invited and encouraged. Otherwise,
+# if you find these errors too much to handle, just stick with the original
+# English source. If a translation is irredeemably incomprehensible, let me
+# know which, and I can delete it. If you're not sure how to perform pull
+# requests, ask. I can help.
+##/
+
+Text Direction: "rtl"
+SafeBrowseLookup_200: "URL بالقوه مضر شناسایی شد"
+SafeBrowseLookup_400: "خطای درخواست API"
+SafeBrowseLookup_401: "خطای مجوز API"
+SafeBrowseLookup_503: "سرویس API در دسترس نیست"
+SafeBrowseLookup_999: "خطای ناشناخته API"
+corrupted: "PE خراب شناسایی شد"
+data_not_available: "داده در دسترس نیست."
+detected: "%s شناسایی شد"
+detected_control_characters: "کاراکترهای کنترلی شناسایی شده"
+encrypted_archive: "بایگانی رمزگذاری شده شناسایی شد. آرشیو های رمزگذاری شده مجاز نیستند"
+error_log_header: "اگر خطاها ادامه دارند، برای گزارش آنها یا جستجوی پشتیبانی، لطفاً یک issue جدید در صفحه issues phpMussel در GitHub ایجاد کنید. خطاها را به همراه هر اطلاعات مرتبط دیگری ضمیمه کنید. با تشکر."
+failed_to_access: "دسترسی به "%s" ناموفق بود!"
+field_date: "تاریخ"
+field_header_hash_reconstruction: "بازسازی هش امضاها"
+field_header_pe_reconstruction: "بازسازی امضاهای مقطعی PE"
+field_header_scan_results_why_flagged: "نتایج اسکن (چرا پرچم گذاری شده است)"
+field_ip_address: "آدرس IP"
+file: "فایل"
+filesize_limit_exceeded: "اندازه فایل از حد مجاز فراتر رفت"
+filetype_blacklisted: "نوع فایل در لیست سیاه قرار گرفت"
+finished: "تمام شده"
+generated_by: "تولید شده توسط %s"
+grammar_brackets: "%s (%s)"
+grammar_exclamation_mark: "%s!"
+grammar_fullstop: "%s."
+grammar_spacer: " "
+image: "تصویر"
+invalid_data: "داده های نامعتبر!"
+invalid_file: "فایل نامعتبر!"
+macros_not_permitted: "ماکروها مجاز نیستند"
+only_allow_images: "فقط فایل های تصویری مجاز هستند"
+quarantined_as: "به عنوان "%s.qfu" قرنطینه شده است."
+recursive: "از حد عمق بازگشت بیشتر شد"
+response_error: "خطا"
+scan_chameleon: "حمله آفتاب پرست %s شناسایی شد"
+scan_checking: "چک کردن "%s"."
+scan_command_injection: "تلاش برای تزریق فرمان شناسایی شد"
+scan_complete: "کامل است"
+scan_extensions_missing: "ناموفق (از دست رفته پسوند های مورد نیاز)!"
+scan_filename_manipulation_detected: "دستکاری نام فایل شناسایی شد"
+scan_missing_filename: "نام فایل موجود نیست"
+scan_no_problems_found: "مشکلات پیدا نشد."
+scan_reading: "خواندن"
+scan_signature_file_missing: "فایل امضا وجود ندارد"
+scan_tampering: "دستکاری فایل بالقوه خطرناک شناسایی شد"
+started: "آغاز شده"
+state_failed_missing: "کار انجام نشد زیرا یک جزء ضروری در دسترس نیست."
+too_many_files_in_archive: "تعداد زیادی فایل در بایگانی"
+too_many_urls: "URL بسیار زیاد"
+x_does_not_exist: "%s وجود ندارد"

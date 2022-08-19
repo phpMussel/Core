@@ -1,0 +1,77 @@
+##\
+# This file is a part of the phpMussel\Core package.
+# Homepage: https://phpmussel.github.io/
+#
+# PHPMUSSEL COPYRIGHT 2013 AND BEYOND BY THE PHPMUSSEL TEAM.
+#
+# License: GNU/GPLv2
+# @see LICENSE.txt
+#
+# This file: Ukrainian language data (last modified: 2022.08.18).
+#
+# Regarding translations: My native language is English. Because this is a free
+# and open-source hobby project which generates zero income, and translatable
+# content is likely to change as the features and functionality supported by
+# the project changes, it doesn't make sense for me to spend money for
+# translations. Because I'm the sole author/developer/maintainer for the
+# project and I'm not a ployglot, any translations I produce are very likely to
+# contain errors. Sorry, but realistically, that won't ever change. If you find
+# any such errors/typos/mistakes/etc, your assistance to correct them would be
+# very much appreciated. Pull requests are invited and encouraged. Otherwise,
+# if you find these errors too much to handle, just stick with the original
+# English source. If a translation is irredeemably incomprehensible, let me
+# know which, and I can delete it. If you're not sure how to perform pull
+# requests, ask. I can help.
+##/
+
+Text Direction: "ltr"
+SafeBrowseLookup_200: "Виявлено потенційно шкідливу URL-адресу"
+SafeBrowseLookup_400: "Помилка запиту API"
+SafeBrowseLookup_401: "Помилка авторизації API"
+SafeBrowseLookup_503: "Служба API недоступна"
+SafeBrowseLookup_999: "Невідома помилка API"
+corrupted: "Обнаружен поврежденный ПЕ"
+data_not_available: "Дані недоступні."
+detected: "Виявлено %s"
+detected_control_characters: "Виявлені контрольні символи"
+encrypted_archive: "Виявлено зашифрований архів; Зашифровані архіви заборонені"
+error_log_header: "Якщо будь-яка з наведених нижче помилок не зникає, щоб повідомити про них або звернутися за підтримкою, створіть нову issue на сторінці phpMussel issues на GitHub, коли у вас буде вільна хвилина, додавши помилки та будь-яку іншу відповідну інформацію. Спасибі."
+failed_to_access: "Не вдалося отримати доступ до «%s»!"
+field_date: "Дата"
+field_header_hash_reconstruction: "Реконструкція хеш-сигнатур"
+field_header_pe_reconstruction: "Реконструкція секційних сигнатурів ПЕ"
+field_header_scan_results_why_flagged: "Результати сканування (чому позначено)"
+field_ip_address: "IP-адреса"
+file: "Файл"
+filesize_limit_exceeded: "Перевищено ліміт розміру файлу"
+filetype_blacklisted: "Тип файлу в чорному списку"
+finished: "Готово"
+generated_by: "Згенеровано %s"
+grammar_brackets: "%s (%s)"
+grammar_exclamation_mark: "%s!"
+grammar_fullstop: "%s."
+grammar_spacer: " "
+image: "Зображення"
+invalid_data: "Недійсний дані!"
+invalid_file: "Недійсний файл!"
+macros_not_permitted: "Макроси заборонені"
+only_allow_images: "Дозволяються лише файли зображень"
+quarantined_as: "Поміщено на карантин як «%s.qfu»."
+recursive: "Перевищено обмеження глибини рекурсії"
+response_error: "Помилка"
+scan_chameleon: "Виявлено хамелеон-атаку %s"
+scan_checking: "Перевіряю «%s»."
+scan_command_injection: "Виявлено спробу командної ін'єкції"
+scan_complete: "Завершено"
+scan_extensions_missing: "Не пройшов (відсутні необхідні розширення)!"
+scan_filename_manipulation_detected: "Виявлено маніпулювання назвою файлу"
+scan_missing_filename: "Відсутня назва файлу"
+scan_no_problems_found: "Проблем не виявлено."
+scan_reading: "Читання"
+scan_signature_file_missing: "Відсутній файл сигнатуру"
+scan_tampering: "Виявлено потенційно небезпечні зміни файлів"
+started: "Початок роботи"
+state_failed_missing: "Завдання не виконано, оскільки необхідний компонент недоступний."
+too_many_files_in_archive: "Забагато файлів в архіві"
+too_many_urls: "Забагато URL"
+x_does_not_exist: "%s не існує"

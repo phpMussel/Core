@@ -1,0 +1,77 @@
+##\
+# This file is a part of the phpMussel\Core package.
+# Homepage: https://phpmussel.github.io/
+#
+# PHPMUSSEL COPYRIGHT 2013 AND BEYOND BY THE PHPMUSSEL TEAM.
+#
+# License: GNU/GPLv2
+# @see LICENSE.txt
+#
+# This file: Hebrew language data (last modified: 2022.08.18).
+#
+# Regarding translations: My native language is English. Because this is a free
+# and open-source hobby project which generates zero income, and translatable
+# content is likely to change as the features and functionality supported by
+# the project changes, it doesn't make sense for me to spend money for
+# translations. Because I'm the sole author/developer/maintainer for the
+# project and I'm not a ployglot, any translations I produce are very likely to
+# contain errors. Sorry, but realistically, that won't ever change. If you find
+# any such errors/typos/mistakes/etc, your assistance to correct them would be
+# very much appreciated. Pull requests are invited and encouraged. Otherwise,
+# if you find these errors too much to handle, just stick with the original
+# English source. If a translation is irredeemably incomprehensible, let me
+# know which, and I can delete it. If you're not sure how to perform pull
+# requests, ask. I can help.
+##/
+
+Text Direction: "rtl"
+SafeBrowseLookup_200: "זוהתה כתובת אתר שעלולה להזיק"
+SafeBrowseLookup_400: "שגיאה בבקשת API"
+SafeBrowseLookup_401: "שגיאת הרשאת API"
+SafeBrowseLookup_503: "שירות API אינו זמין"
+SafeBrowseLookup_999: "שגיאת API לא ידועה"
+corrupted: "זוהה PE פגום"
+data_not_available: "נתונים לא זמינים."
+detected: "זוהה %s"
+detected_control_characters: "תווי בקרה זוהו"
+encrypted_archive: "זוהה ארכיון מוצפן; ארכיונים מוצפנים אינם מותרים"
+error_log_header: "אם אחת מהשגיאות הבאות נמשכת, כדי לדווח עליהן או לבקש תמיכה, אנא צור issue חדשה בדף issues של phpMussel ב-GitHub כשיש לך רגע פנוי, עם השגיאות וכל מידע רלוונטי אחר מְצוֹרָף. תודה."
+failed_to_access: "הגישה ל-"%s" נכשלה!"
+field_date: "תאריך"
+field_header_hash_reconstruction: "שחזור חתימות hash"
+field_header_pe_reconstruction: "שחזור חתימה עבור קטעי PE"
+field_header_scan_results_why_flagged: "תוצאות סריקה (למה סומן)"
+field_ip_address: "כתובת IP"
+file: "קובץ"
+filesize_limit_exceeded: "חרגת ממגבלת גודל הקובץ"
+filetype_blacklisted: "סוג הקובץ ברשימה השחורה"
+finished: "גמור"
+generated_by: "נוצר על ידי %s"
+grammar_brackets: "%s (%s)"
+grammar_exclamation_mark: "%s!"
+grammar_fullstop: "%s."
+grammar_spacer: " "
+image: "תמונה"
+invalid_data: "לא נתונים חוקי!"
+invalid_file: "לא קובץ חוקי!"
+macros_not_permitted: "מאקרו אסור"
+only_allow_images: "רק קבצי תמונה מותרים"
+quarantined_as: "בהסגר כ"%s.qfu"."
+recursive: "חרג ממגבלת עומק הרקורסיה"
+response_error: "שגיאה"
+scan_chameleon: "זוהתה התקפת זיקית %s"
+scan_checking: "כרגע בודק "%s"."
+scan_command_injection: "זוהה ניסיון הזרקת פקודה"
+scan_complete: "הושלם"
+scan_extensions_missing: "נכשל (הרחבות נדרשות חסרות)!"
+scan_filename_manipulation_detected: "זוהתה מניפולציה של שם הקובץ"
+scan_missing_filename: "שם הקובץ חסר"
+scan_no_problems_found: "לא נמצאו בעיות."
+scan_reading: "קריאה"
+scan_signature_file_missing: "קובץ החתימה חסר"
+scan_tampering: "זוהה התעסקות בקבצים שעלולים להיות מסוכנים"
+started: "התחיל"
+state_failed_missing: "המשימה נכשלה מכיוון שרכיב הכרחי אינו זמין."
+too_many_files_in_archive: "יותר מדי קבצים בארכיון"
+too_many_urls: "יותר מדי URL"
+x_does_not_exist: "%s לא קיים"

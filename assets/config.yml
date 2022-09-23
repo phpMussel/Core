@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Configuration defaults file (last modified: 2022.08.11).
+# This file: Configuration defaults file (last modified: 2022.09.22).
 ##/
 
 core:
@@ -164,6 +164,7 @@ core:
    ta: "தமிழ்"
    th: "ภาษาไทย"
    tr: "Türkçe"
+   uk: "Українська"
    ur: "اردو"
    vi: "Tiếng Việt"
    zh: "中文（简体）"

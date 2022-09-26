@@ -85,3 +85,5 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 [2022.06.16; Bug-fix; Maikuolan]: Warning generated since PHP 8.1 for parse functionality; Fixed.
 
 [2022.08.18; Maikuolan]: Added L10N for Persian/Farsi, Hebrew, Malay, and Ukrainian.
+
+[2022.09.26; Maikuolan]: Configuration multiline support added (necessary in order to properly facilitate the custom headers/footers feature introduced earlier today).

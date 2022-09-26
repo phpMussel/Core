@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2022.09.22).
+ * This file: The loader (last modified: 2022.09.26).
  */
 
 namespace phpMussel\Core;
@@ -281,6 +281,25 @@ class Loader
         /** Read the phpMussel configuration file. */
         if (strtolower(substr($this->ConfigurationPath, -4)) === '.ini') {
             $this->Configuration = parse_ini_file($this->ConfigurationPath, true);
+
+            /** Multiline support. */
+            if (is_array($this->Configuration)) {
+                foreach ($this->Configuration as $CatKey => &$CatVal) {
+                    if (is_array($CatVal)) {
+                        foreach ($CatVal as $DirKey => &$DirVal) {
+                            if (!is_string($DirVal)) {
+                                continue;
+                            }
+                            $DirVal = str_replace(
+                                ["\\\\", '\0', '\a', '\b', '\t', '\n', '\v', '\f', '\r', '\e'],
+                                ["\\", "\0", "\7", "\8", "\t", "\n", "\x0B", "\x0C", "\r", "\x1B"],
+                                $DirVal
+                            );
+                        }
+                    }
+                }
+                unset($DirVal, $DirKey, $CatVal, $CatKey);
+            }
         } elseif (preg_match('~\.ya?ml$~i', $this->ConfigurationPath)) {
             if ($Configuration = $this->readFile($this->ConfigurationPath)) {
                 $this->YAML->process($Configuration, $this->Configuration);
@@ -1151,6 +1170,13 @@ class Loader
                     } elseif ($DirValue === false) {
                         $Reconstructed .= sprintf("%s=false\r\n", $DirKey);
                     } elseif (is_string($DirValue)) {
+                        /** Multiline support. */
+                        $DirValue = preg_replace('~[^\x00-\xFF]~', '', str_replace(
+                            ["\\", "\0", "\7", "\8", "\t", "\n", "\x0B", "\x0C", "\r", "\x1B"],
+                            ["\\\\", '\0', '\a', '\b', '\t', '\n', '\v', '\f', '\r', '\e'],
+                            $DirValue
+                        ));
+
                         $Reconstructed .= sprintf("%s='%s'\r\n", $DirKey, $DirValue);
                     } else {
                         $Reconstructed .= sprintf("%s=%s\r\n", $DirKey, $DirValue);

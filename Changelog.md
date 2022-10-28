@@ -91,3 +91,5 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 [2022.10.12; BaseMax]: Improved L10N for Persian/Farsi.
 
 [2022.10.25; Maikuolan]: Hardened some configuration constraints.
+
+[2022.10.28; Maikuolan]: Reworked how the configuration page deals with volume-based configuration.

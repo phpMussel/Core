@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Configuration defaults file (last modified: 2022.10.25).
+# This file: Configuration defaults file (last modified: 2022.10.28).
 ##/
 
 core:
@@ -23,7 +23,6 @@ core:
  truncate:
   type: "kb"
   default: "0KB"
-  preview: "kb"
  log_rotation_limit:
   type: "int"
   default: 0
@@ -241,9 +240,7 @@ signatures:
 files:
  filesize_limit:
   type: "kb"
-  step: "any"
   default: "64MB"
-  preview: "kb"
  filesize_response:
   type: "bool"
   default: true
@@ -319,14 +316,10 @@ files:
   default: true
  decode_threshold:
   type: "kb"
-  step: "any"
   default: "512KB"
-  preview: "kb"
  scannable_threshold:
   type: "kb"
-  step: "any"
   default: "32MB"
-  preview: "kb"
  allow_leading_trailing_dots:
   type: "bool"
   default: false
@@ -343,14 +336,10 @@ quarantine:
   default: ""
  quarantine_max_filesize:
   type: "kb"
-  step: "any"
   default: "2MB"
-  preview: "kb"
  quarantine_max_usage:
   type: "kb"
-  step: "any"
   default: "64MB"
-  preview: "kb"
  quarantine_max_files:
   type: "int"
   default: 100

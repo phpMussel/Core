@@ -101,3 +101,7 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 [2022.11.30; Maikuolan]: Adjusted minimum value for some port directives from 1 to 0.
 
 [2022.12.26; Bug-fix; Maikuolan]: PDF files were sometimes being flagged as images; Fixed.
+
+### v3.3.5
+
+[2023.01.21; Maikuolan]: Better value definitions for `vt_suspicion_level`.

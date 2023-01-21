@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Configuration defaults file (last modified: 2022.11.30).
+# This file: Configuration defaults file (last modified: 2023.01.19).
 ##/
 
 core:
@@ -353,6 +353,11 @@ virustotal:
  vt_suspicion_level:
   type: "int"
   default: 1
+  choices:
+   0: "field_vt_suspicion_level_heuristic_only"
+   1: "field_vt_suspicion_level_executable"
+   2: "field_vt_suspicion_level_all"
+  style: "radio"
  vt_weighting:
   type: "int"
   default: 0

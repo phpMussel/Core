@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2022.12.26).
+ * This file: The loader (last modified: 2023.02.14).
  */
 
 namespace phpMussel\Core;
@@ -638,19 +638,28 @@ class Loader
                 $this->ClientL10N = &$this->L10N;
             }
         } else {
-            $Accepted = preg_replace(['~^([^,]*).*$~', '~[^-A-Za-z]~'], ['\1', ''], $_SERVER['HTTP_ACCEPT_LANGUAGE']);
-            $Primary = '';
-            $IsSameAs = false;
-            if ($this->Configuration['core']['lang'] === $Accepted) {
-                $IsSameAs = true;
-            } elseif (is_readable($Path . $Accepted . '.yml')) {
-                $Primary = $this->readFile($Path . $Accepted . '.yml');
-            } else {
-                $Accepted = strtolower(preg_replace('~^([^-]*).*$~', '\1', $Accepted));
+            $Try = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
+            foreach ($Try as $Accepted) {
+                $Accepted = preg_replace(['~;.*$~', '~[^-A-Za-z]~'], '', $Accepted);
+                $ForAutoAssign = $Accepted;
+                $Primary = '';
+                $IsSameAs = false;
                 if ($this->Configuration['core']['lang'] === $Accepted) {
                     $IsSameAs = true;
-                } elseif (is_readable($Path . $Accepted . '.yml')) {
+                    break;
+                }
+                if (is_readable($Path . $Accepted . '.yml')) {
                     $Primary = $this->readFile($Path . $Accepted . '.yml');
+                    break;
+                }
+                $Accepted = strtolower(preg_replace('~-.*$~', '', $Accepted));
+                if ($this->Configuration['core']['lang'] === $Accepted) {
+                    $IsSameAs = true;
+                    break;
+                }
+                if (is_readable($Path . $Accepted . '.yml')) {
+                    $Primary = $this->readFile($Path . $Accepted . '.yml');
+                    break;
                 }
             }
 
@@ -659,9 +668,9 @@ class Loader
                 if (!($this->ClientL10N instanceof \Maikuolan\Common\L10N)) {
                     $this->ClientL10N = &$this->L10N;
                 }
-            } elseif ($Primary) {
+            } elseif ($Primary !== '') {
                 $Arr = [];
-                if (!$this->ClientL10NAccepted) {
+                if ($this->ClientL10NAccepted === '') {
                     $this->ClientL10NAccepted = $Accepted;
                 }
                 $this->YAML->process($Primary, $Arr);
@@ -669,7 +678,7 @@ class Loader
                     $this->ClientL10N->Data = array_merge($this->ClientL10N->Data, $Arr);
                 } else {
                     $this->ClientL10N = new \Maikuolan\Common\L10N($Arr, $this->L10N);
-                    $this->ClientL10N->autoAssignRules($Accepted);
+                    $this->ClientL10N->autoAssignRules($ForAutoAssign);
                 }
             } elseif (!($this->ClientL10N instanceof \Maikuolan\Common\L10N)) {
                 $this->ClientL10N = new \Maikuolan\Common\L10N([], $this->L10N);
@@ -677,7 +686,7 @@ class Loader
         }
 
         /** Fallback for missing accepted client L10N choice. */
-        if (!$this->ClientL10NAccepted) {
+        if (!$this->ClientL10NAccepted === '') {
             $this->ClientL10NAccepted = $this->Configuration['core']['lang'];
         }
     }

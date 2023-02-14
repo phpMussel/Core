@@ -105,3 +105,5 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 ### v3.3.5
 
 [2023.01.21; Maikuolan]: Better value definitions for `vt_suspicion_level`.
+
+[2023.02.14; Maikuolan]: Slightly improved client-specified language overrides.

@@ -355,6 +355,9 @@ class Loader
         /** Instantiate the request class. */
         $this->Request = new \Maikuolan\Common\Request();
         $this->Request->DefaultTimeout = $this->Configuration['core']['default_timeout'];
+        if ($this->Configuration['core']['outbound_request_log'] !== '') {
+            $this->Request->ObjLoggerFile = $this->buildPath($this->Configuration['core']['outbound_request_log']);
+        }
         $ChannelsDataArray = [];
         $this->YAML->process($this->readFileContent($this->AssetsPath . 'channels.yml'), $ChannelsDataArray);
         $this->Request->Channels = $ChannelsDataArray ?: [];

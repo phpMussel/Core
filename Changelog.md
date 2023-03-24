@@ -111,3 +111,5 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 ### v3.4.0
 
 [2023.03.24; Bug-fix; Maikuolan]: Typo in the readFileContent call for the channels data; Fixed.
+
+[2023.03.24; New Feature; Maikuolan]: Added the ability to log outbound requests.

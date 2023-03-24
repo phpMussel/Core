@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2023.02.14).
+ * This file: The loader (last modified: 2023.03.24).
  */
 
 namespace phpMussel\Core;
@@ -356,7 +356,7 @@ class Loader
         $this->Request = new \Maikuolan\Common\Request();
         $this->Request->DefaultTimeout = $this->Configuration['core']['default_timeout'];
         $ChannelsDataArray = [];
-        $this->YAML->process($this->readFileContent($this->AssetsPath . 'channels.yaml'), $ChannelsDataArray);
+        $this->YAML->process($this->readFileContent($this->AssetsPath . 'channels.yml'), $ChannelsDataArray);
         $this->Request->Channels = $ChannelsDataArray ?: [];
         unset($ChannelsDataArray);
         if (!isset($this->Request->Channels['Triggers'])) {

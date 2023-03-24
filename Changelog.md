@@ -107,3 +107,7 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 [2023.01.21; Maikuolan]: Better value definitions for `vt_suspicion_level`.
 
 [2023.02.14; Maikuolan]: Slightly improved client-specified language overrides.
+
+### v3.4.0
+
+[2023.03.24; Bug-fix; Maikuolan]: Typo in the readFileContent call for the channels data; Fixed.

@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: French language data (last modified: 2022.08.18).
+# This file: French language data (last modified: 2023.04.01).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -24,7 +24,6 @@
 # requests, ask. I can help.
 ##/
 
-Text Direction: "ltr"
 SafeBrowseLookup_200: "URL potentiellement nuisible détecté"
 SafeBrowseLookup_400: "Erreur de requête de l'API"
 SafeBrowseLookup_401: "Erreur d'autorisation de l'API"

@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2023.04.01).
+ * This file: The loader (last modified: 2023.04.03).
  */
 
 namespace phpMussel\Core;
@@ -760,16 +760,24 @@ class Loader
 
     /**
      * Replaces encapsulated substrings within a string using the values of the
-     * corresponding elements within the supplied array.
+     * corresponding elements within an array.
      *
      * @param array $Needles An array containing replacement values.
      * @param string $Haystack The string to work with.
+     * @param bool $L10N Whether to parse L10N placeholders found in the haystack.
      * @return string The string with its encapsulated substrings replaced.
      */
-    public function parse(array $Needles, string $Haystack): string
+    public function parse(array $Needles, string $Haystack = '', bool $L10N = false): string
     {
-        if (empty($Haystack)) {
+        if ($Haystack === '') {
             return '';
+        }
+        if ($L10N && preg_match_all('~\{([A-Za-z\d_ -]+)\}~', $Haystack, $Matches)) {
+            foreach ($Matches[1] as $Key) {
+                if (($Value = $this->L10N->getString($Key)) !== '') {
+                    $Haystack = str_replace('{' . $Key . '}', $Value, $Haystack);
+                }
+            }
         }
         foreach ($Needles as $Key => $Value) {
             if (!is_array($Value) && $Value !== null) {

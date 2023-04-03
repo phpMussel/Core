@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Configuration defaults file (last modified: 2023.04.01).
+# This file: Configuration defaults file (last modified: 2023.04.03).
 ##/
 
 core:
@@ -148,6 +148,7 @@ core:
    bn: "বাংলা"
    de: "Deutsch"
    en: "English"
+   en-US: "English (US)"
    es: "Español"
    fa: "فارسی"
    fr: "Français"

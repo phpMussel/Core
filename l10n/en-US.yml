@@ -1,0 +1,17 @@
+##\
+# This file is a part of the phpMussel\Core package.
+# Homepage: https://phpmussel.github.io/
+#
+# PHPMUSSEL COPYRIGHT 2013 AND BEYOND BY THE PHPMUSSEL TEAM.
+#
+# License: GNU/GPLv2
+# @see LICENSE.txt
+#
+# This file: US English language data (last modified: 2023.04.03).
+#
+# Note: Including data only where it differs from its AU/GB/NZ English
+# counterpart (doing otherwise isn't necessary due to the L10N handler's
+# fallback mechanism).
+##/
+
+SafeBrowseLookup_401: "API authorization error"

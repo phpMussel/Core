@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Portuguese (Brazil) language data (last modified: 2023.04.25).
+# This file: Portuguese (Europe) language data (last modified: 2023.04.25).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -66,7 +66,7 @@ scan_extensions_missing: "Fracassado (faltando extensões necessárias)!"
 scan_filename_manipulation_detected: "Arquivo nome manipulação detectado"
 scan_missing_filename: "Nome do arquivo está ausente"
 scan_no_problems_found: "Não problemas encontrados."
-scan_reading: "Lendo"
+scan_reading: "A ler"
 scan_signature_file_missing: "Assinatura arquivo faltando"
 scan_tampering: "Detectado potencialmente perigoso arquivo adulteração"
 started: "Começado"

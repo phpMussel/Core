@@ -117,3 +117,7 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 [2023.03.31; Maikuolan]: Eliminated a low-risk potential performance bottleneck at the loadL10N method.
 
 [2023.04.01; Maikuolan]: Reworked the loadL10N method, how it handles HTTP_ACCEPT_LANGUAGE, improved rule assignment, added some assumptions for supported L10N, and added the ability to defer non-supported L10N to supported L10N where sufficiently similar to be acceptable.
+
+[2023.04.25; Bug-fix; Maikuolan]: Explicitly defining the region for the configured L10N where deferment may be available but the region for the corresponding listed configuration choice not included could've caused the L10N loader to simply use fallbacks instead; Fixed.
+
+[2023.04.25; Maikuolan]: Split the existing L10N for Portuguese into two variants, Brazilian and European.

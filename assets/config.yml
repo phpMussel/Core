@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Configuration defaults file (last modified: 2023.04.03).
+# This file: Configuration defaults file (last modified: 2023.04.25).
 ##/
 
 core:
@@ -163,7 +163,8 @@ core:
    nl: "Nederlandse"
    no: "Norsk"
    pl: "Polski"
-   pt: "Português"
+   pt: "Português (Brasil)"
+   pt-PT: "Português (Europeu)"
    ru: "Русский"
    sv: "Svenska"
    ta: "தமிழ்"
@@ -180,7 +181,6 @@ core:
    en-NZ: "en-AU"
    en-SG: "en-AU"
    en-ZA: "en-AU"
-   pt-BR: "pt-PT"
    zh-HK: "zh-TW"
    zh-MO: "zh-TW"
    zh-SG: "zh-CN"
@@ -202,7 +202,7 @@ core:
    nl: "nl-NL"
    no: "no-NO"
    pl: "pl-PL"
-   pt: "pt-PT"
+   pt: "pt-BR"
    ru: "ru-RU"
    sv: "sv-SE"
    ta: "ta-IN"

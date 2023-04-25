@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2023.04.04).
+ * This file: The loader (last modified: 2023.04.25).
  */
 
 namespace phpMussel\Core;
@@ -93,7 +93,7 @@ class Loader
     /**
      * @var string phpMussel version number (SemVer).
      */
-    public $ScriptVersion = '3.3.4';
+    public $ScriptVersion = '3.4.0';
 
     /**
      * @var string phpMussel version identifier (complete notation).
@@ -605,7 +605,15 @@ class Loader
             $Primary = $this->readFile($Path . 'en.yml');
             $Fallback = '';
         } else {
-            $Primary = $this->readFile($Path . $this->Configuration['core']['lang'] . '.yml');
+            if (($Primary = $this->readFile($Path . $this->Configuration['core']['lang'] . '.yml')) === '') {
+                if (isset($this->ConfigurationDefaults['core']['lang']['defer'][$this->Configuration['core']['lang']])) {
+                    $Primary = $this->readFile($Path . $this->ConfigurationDefaults['core']['lang']['defer'][$this->Configuration['core']['lang']] . '.yml');
+                }
+                if ($Primary === '') {
+                    $Try = preg_replace('~-.*$~', '', $this->Configuration['core']['lang']);
+                    $Primary = $this->readFile($Path . $Try . '.yml');
+                }
+            }
             $Fallback = $this->readFile($Path . 'en.yml');
         }
         if ($Primary !== '') {

@@ -1,0 +1,76 @@
+##\
+# This file is a part of the phpMussel\Core package.
+# Homepage: https://phpmussel.github.io/
+#
+# PHPMUSSEL COPYRIGHT 2013 AND BEYOND BY THE PHPMUSSEL TEAM.
+#
+# License: GNU/GPLv2
+# @see LICENSE.txt
+#
+# This file: Czech language data (last modified: 2023.05.02).
+#
+# Regarding translations: My native language is English. Because this is a free
+# and open-source hobby project which generates zero income, and translatable
+# content is likely to change as the features and functionality supported by
+# the project changes, it doesn't make sense for me to spend money for
+# translations. Because I'm the sole author/developer/maintainer for the
+# project and I'm not a ployglot, any translations I produce are very likely to
+# contain errors. Sorry, but realistically, that won't ever change. If you find
+# any such errors/typos/mistakes/etc, your assistance to correct them would be
+# very much appreciated. Pull requests are invited and encouraged. Otherwise,
+# if you find these errors too much to handle, just stick with the original
+# English source. If a translation is irredeemably incomprehensible, let me
+# know which, and I can delete it. If you're not sure how to perform pull
+# requests, ask. I can help.
+##/
+
+SafeBrowseLookup_200: "Zjištěna potenciálně škodlivá adresa URL"
+SafeBrowseLookup_400: "Chyba požadavku API"
+SafeBrowseLookup_401: "Chyba autorizace API"
+SafeBrowseLookup_503: "Služba API není k dispozici"
+SafeBrowseLookup_999: "Neznámá chyba API"
+corrupted: "Zjištěno poškozené PE"
+data_not_available: "Údaje nejsou k dispozici."
+detected: "Zjištěno %s"
+detected_control_characters: "Zjištěno řídicí znaky"
+encrypted_archive: "Zjištěn šifrovaný archiv; Šifrované archivy nejsou povoleny"
+error_log_header: "Pokud některá z následujících chyb přetrvává, chcete-li ji nahlásit nebo požádat o podporu, vytvořte nový issue na stránce issues s phpMussel na GitHubu, až budete mít volnou chvíli, s příslušnými chybami a dalšími souvisejícími informacemi v příloze. Dík."
+failed_to_access: "Nepodařilo se získat přístup k „%s“!"
+field_date: "Datum"
+field_header_hash_reconstruction: "Rekonstrukce podpisů hash"
+field_header_pe_reconstruction: "Rekonstrukce podpisů oddílů PE"
+field_header_scan_results_why_flagged: "Výsledky skenování (proč označeno)"
+field_ip_address: "IP adresa"
+file: "Soubor"
+filesize_limit_exceeded: "Překročen limit velikosti souboru"
+filetype_blacklisted: "Typ souboru na černé listině"
+finished: "Hotovo"
+generated_by: "Vygeneroval %s"
+grammar_brackets: "%s (%s)"
+grammar_exclamation_mark: "%s!"
+grammar_fullstop: "%s."
+grammar_spacer: " "
+image: "Obraz"
+invalid_data: "Neplatná data!"
+invalid_file: "Neplatný soubor!"
+macros_not_permitted: "Makra nejsou povolena"
+only_allow_images: "Povoleny jsou pouze obrazové soubory"
+quarantined_as: "V karanténě jako „%s.qfu“."
+recursive: "Překročen limit hloubky rekurze"
+response_error: "Chyba"
+scan_chameleon: "Zjištěn útok chameleona %s"
+scan_checking: "Kontrolujete "%s"."
+scan_command_injection: "Zjištěn pokus o vložení příkazu"
+scan_complete: "Kompletní"
+scan_extensions_missing: "Selhání (chybí požadovaná rozšíření)!"
+scan_filename_manipulation_detected: "Zjištěna manipulace s názvem souboru"
+scan_missing_filename: "Chybí název souboru"
+scan_no_problems_found: "Nebyly nalezeny žádné problémy."
+scan_reading: "Čtu"
+scan_signature_file_missing: "Chybí soubor s podpisem"
+scan_tampering: "Zjištěna potenciálně nebezpečná manipulace se soubory"
+started: "Zahájeno"
+state_failed_missing: "Úkol se nezdařila, protože nezbytná součást není k dispozici."
+too_many_files_in_archive: "V archivu je příliš mnoho souborů"
+too_many_urls: "Příliš mnoho adres URL"
+x_does_not_exist: "%s neexistuje"

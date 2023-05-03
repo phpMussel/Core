@@ -1,0 +1,76 @@
+##\
+# This file is a part of the phpMussel\Core package.
+# Homepage: https://phpmussel.github.io/
+#
+# PHPMUSSEL COPYRIGHT 2013 AND BEYOND BY THE PHPMUSSEL TEAM.
+#
+# License: GNU/GPLv2
+# @see LICENSE.txt
+#
+# This file: Bulgarian language data (last modified: 2023.05.01).
+#
+# Regarding translations: My native language is English. Because this is a free
+# and open-source hobby project which generates zero income, and translatable
+# content is likely to change as the features and functionality supported by
+# the project changes, it doesn't make sense for me to spend money for
+# translations. Because I'm the sole author/developer/maintainer for the
+# project and I'm not a ployglot, any translations I produce are very likely to
+# contain errors. Sorry, but realistically, that won't ever change. If you find
+# any such errors/typos/mistakes/etc, your assistance to correct them would be
+# very much appreciated. Pull requests are invited and encouraged. Otherwise,
+# if you find these errors too much to handle, just stick with the original
+# English source. If a translation is irredeemably incomprehensible, let me
+# know which, and I can delete it. If you're not sure how to perform pull
+# requests, ask. I can help.
+##/
+
+SafeBrowseLookup_200: "Открит е потенциално опасен URL адрес"
+SafeBrowseLookup_400: "Грешка в заявката за API"
+SafeBrowseLookup_401: "Грешка при оторизация на API"
+SafeBrowseLookup_503: "API услугата не е налична"
+SafeBrowseLookup_999: "Неизвестна грешка в API"
+corrupted: "Открит е повреден PE"
+data_not_available: "Няма налични данни."
+detected: "Открит %s"
+detected_control_characters: "Открити контролни знаци"
+encrypted_archive: "Открит криптиран архив; Не са разрешени криптирани архиви"
+error_log_header: "Ако някоя от следните грешки продължава, за да ги докладвате или да потърсите поддръжка, моля, създайте нов issue на страницата за issues с phpMussel в GitHub, когато имате свободен момент. Включват въпросните грешки заедно с всякаква друга уместна информация. Благодаря."
+failed_to_access: "Неуспешен достъп до „%s“!"
+field_date: "Дата"
+field_header_hash_reconstruction: "Реконструкция на хеш сигнатури"
+field_header_pe_reconstruction: "Реконструкция на секционни сигнатури на PE"
+field_header_scan_results_why_flagged: "Резултати от сканиране (защо маркирани)"
+field_ip_address: "IP адрес"
+file: "Файл"
+filesize_limit_exceeded: "Ограничението за размер на файла е надвишено"
+filetype_blacklisted: "Тип файл в черен списък"
+finished: "Готово"
+generated_by: "Генерирано от %s"
+grammar_brackets: "%s (%s)"
+grammar_exclamation_mark: "%s!"
+grammar_fullstop: "%s."
+grammar_spacer: " "
+image: "Изображение"
+invalid_data: "Невалидни данни!"
+invalid_file: "Невалиден файл!"
+macros_not_permitted: "Макросите не са разрешени"
+only_allow_images: "Разрешени са само файлове с изображения"
+quarantined_as: "Под карантина като „%s.qfu“."
+recursive: "Ограничението за дълбочина на рекурсия е надвишено"
+response_error: "Грешка"
+scan_chameleon: "Открита е %s хамелеон атака"
+scan_checking: "Проверка на „%s“."
+scan_command_injection: "Открит е опит за инжектиране на команда"
+scan_complete: "Завършен"
+scan_extensions_missing: "Неуспешно (липсват необходимите разширения)!"
+scan_filename_manipulation_detected: "Открита е манипулация на името на файла"
+scan_missing_filename: "Липсва име на файл"
+scan_no_problems_found: "Няма намерени проблеми."
+scan_reading: "Чете"
+scan_signature_file_missing: "Липсва файл с сигнатур"
+scan_tampering: "Открито е потенциално опасно подправяне на файл"
+started: "Започна"
+state_failed_missing: "Задачата е неуспешна, защото необходимият компонент не е наличен."
+too_many_files_in_archive: "Твърде много файлове в архива"
+too_many_urls: "Твърде много URL адреси"
+x_does_not_exist: "%s не съществува"

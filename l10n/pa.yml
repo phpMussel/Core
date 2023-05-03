@@ -1,0 +1,76 @@
+##\
+# This file is a part of the phpMussel\Core package.
+# Homepage: https://phpmussel.github.io/
+#
+# PHPMUSSEL COPYRIGHT 2013 AND BEYOND BY THE PHPMUSSEL TEAM.
+#
+# License: GNU/GPLv2
+# @see LICENSE.txt
+#
+# This file: Punjabi language data (last modified: 2023.05.03).
+#
+# Regarding translations: My native language is English. Because this is a free
+# and open-source hobby project which generates zero income, and translatable
+# content is likely to change as the features and functionality supported by
+# the project changes, it doesn't make sense for me to spend money for
+# translations. Because I'm the sole author/developer/maintainer for the
+# project and I'm not a ployglot, any translations I produce are very likely to
+# contain errors. Sorry, but realistically, that won't ever change. If you find
+# any such errors/typos/mistakes/etc, your assistance to correct them would be
+# very much appreciated. Pull requests are invited and encouraged. Otherwise,
+# if you find these errors too much to handle, just stick with the original
+# English source. If a translation is irredeemably incomprehensible, let me
+# know which, and I can delete it. If you're not sure how to perform pull
+# requests, ask. I can help.
+##/
+
+SafeBrowseLookup_200: "ਸੰਭਾਵੀ ਤੌਰ 'ਤੇ ਨੁਕਸਾਨਦੇਹ URL ਦਾ ਪਤਾ ਲਗਾਇਆ ਗਿਆ"
+SafeBrowseLookup_400: "API ਬੇਨਤੀ ਗਲਤੀ"
+SafeBrowseLookup_401: "API ਪ੍ਰਮਾਣੀਕਰਨ ਗਲਤੀ"
+SafeBrowseLookup_503: "API ਸੇਵਾ ਉਪਲਬਧ ਨਹੀਂ ਹੈ"
+SafeBrowseLookup_999: "ਅਗਿਆਤ API ਗਲਤੀ"
+corrupted: "ਖਰਾਬ PE ਦਾ ਪਤਾ ਲਗਾਇਆ ਗਿਆ"
+data_not_available: "ਡਾਟਾ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।"
+detected: "%s ਦਾ ਪਤਾ ਲਗਾਇਆ ਗਿਆ ਸੀ"
+detected_control_characters: "ਖੋਜੇ ਗਏ ਕੰਟਰੋਲ ਅੱਖਰ"
+encrypted_archive: "ਇਨਕ੍ਰਿਪਟਡ ਪੁਰਾਲੇਖ ਖੋਜਿਆ ਗਿਆ; ਇਨਕ੍ਰਿਪਟਡ ਪੁਰਾਲੇਖਾਂ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ"
+error_log_header: "ਜੇਕਰ ਹੇਠ ਲਿਖੀਆਂ ਵਿੱਚੋਂ ਕੋਈ ਵੀ ਤਰੁੱਟੀ ਬਣੀ ਰਹਿੰਦੀ ਹੈ, ਉਹਨਾਂ ਦੀ ਰਿਪੋਰਟ ਕਰਨ ਲਈ, ਜਾਂ ਸਹਾਇਤਾ ਦੀ ਮੰਗ ਕਰਨ ਲਈ, ਕਿਰਪਾ ਕਰਕੇ GitHub 'ਤੇ phpMussel ਮੁੱਦੇ ਪੰਨੇ 'ਤੇ ਇੱਕ ਨਵਾਂ ਮੁੱਦਾ ਬਣਾਓ ਜਦੋਂ ਤੁਹਾਡੇ ਕੋਲ ਸਮਾਂ ਹੁੰਦਾ ਹੈ, ਪ੍ਰਸ਼ਨ ਵਿੱਚ ਗਲਤੀਆਂ ਦੇ ਨਾਲ ਨਾਲ ਜੁੜੀ ਕਿਸੇ ਵੀ ਹੋਰ ਢੁਕਵੀਂ ਜਾਣਕਾਰੀ ਦੇ ਨਾਲ। ਧੰਨਵਾਦ।"
+failed_to_access: ""%s" ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਵਿੱਚ ਅਸਫਲ!"
+field_date: "ਤਾਰੀਖ਼"
+field_header_hash_reconstruction: "ਹੈਸ਼ ਦਸਤਖਤਾਂ ਦਾ ਪੁਨਰ ਨਿਰਮਾਣ"
+field_header_pe_reconstruction: "PE ਸੈਕਸ਼ਨਲ ਦਸਤਖਤਾਂ ਦਾ ਪੁਨਰ ਨਿਰਮਾਣ"
+field_header_scan_results_why_flagged: "ਸਕੈਨ ਨਤੀਜੇ (ਕਿਉਂ ਫਲੈਗ ਕੀਤਾ ਗਿਆ)"
+field_ip_address: "IP ਪਤਾ"
+file: "ਫਾਈਲ"
+filesize_limit_exceeded: "ਫਾਈਲ ਆਕਾਰ ਸੀਮਾ ਤੋਂ ਵੱਧ ਗਈ"
+filetype_blacklisted: "ਫਾਈਲ ਟਾਈਪ ਬਲੈਕਲਿਸਟ ਕੀਤੀ ਗਈ"
+finished: "ਸਮਾਪਤ"
+generated_by: "%s ਦੁਆਰਾ ਤਿਆਰ ਕੀਤਾ ਗਿਆ"
+grammar_brackets: "%s (%s)"
+grammar_exclamation_mark: "%s!"
+grammar_fullstop: "%s।"
+grammar_spacer: " "
+image: "ਚਿੱਤਰ"
+invalid_data: "ਅਵੈਧ ਡੇਟਾ!"
+invalid_file: "ਅਵੈਧ ਫ਼ਾਈਲ!"
+macros_not_permitted: "ਮੈਕਰੋਜ਼ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ"
+only_allow_images: "ਸਿਰਫ਼ ਚਿੱਤਰ ਫ਼ਾਈਲਾਂ ਦੀ ਇਜਾਜ਼ਤ ਹੈ"
+quarantined_as: ""%s.qfu" ਵਜੋਂ ਕੁਆਰੰਟੀਨ ਕੀਤਾ ਗਿਆ।"
+recursive: "ਆਵਰਤੀ ਡੂੰਘਾਈ ਸੀਮਾ ਵੱਧ ਗਈ"
+response_error: "ਗਲਤੀ"
+scan_chameleon: "%s ਗਿਰਗਿਟ ਦੇ ਹਮਲੇ ਦਾ ਪਤਾ ਲੱਗਾ"
+scan_checking: ""%s" ਦੀ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ।"
+scan_command_injection: "ਕਮਾਂਡ ਟੀਕੇ ਲਗਾਉਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਦਾ ਪਤਾ ਲੱਗਾ"
+scan_complete: "ਸੰਪੂਰਨ"
+scan_extensions_missing: "ਅਸਫਲ (ਲੋੜੀਂਦੇ ਐਕਸਟੈਂਸ਼ਨਾਂ ਮੌਜੂਦ ਨਹੀਂ ਹਨ)!"
+scan_filename_manipulation_detected: "ਫਾਈਲ ਨਾਮ ਦੀ ਹੇਰਾਫੇਰੀ ਦਾ ਪਤਾ ਲੱਗਾ"
+scan_missing_filename: "ਗੁੰਮ ਫਾਈਲ ਨਾਮ"
+scan_no_problems_found: "ਕੋਈ ਸਮੱਸਿਆ ਨਹੀਂ ਮਿਲੀ।"
+scan_reading: "ਪੜ੍ਹਨਾ"
+scan_signature_file_missing: "ਦਸਤਖਤ ਫਾਈਲ ਗੁੰਮ ਹੈ"
+scan_tampering: "ਸੰਭਾਵੀ ਤੌਰ 'ਤੇ ਖਤਰਨਾਕ ਫਾਈਲ ਟੈਂਪਰਿੰਗ ਦਾ ਪਤਾ ਲਗਾਇਆ ਗਿਆ"
+started: "ਸ਼ੁਰੂ ਕੀਤਾ"
+state_failed_missing: "ਕਾਰਜ ਅਸਫਲ ਰਿਹਾ ਕਿਉਂਕਿ ਇੱਕ ਜ਼ਰੂਰੀ ਹਿੱਸਾ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।"
+too_many_files_in_archive: "ਪੁਰਾਲੇਖ ਵਿੱਚ ਫਾਈਲਾਂ ਦੀ ਬਹੁਤ ਜ਼ਿਆਦਾ ਸੰਖਿਆ"
+too_many_urls: "URL ਦੀ ਬਹੁਤ ਜ਼ਿਆਦਾ ਸੰਖਿਆ"
+x_does_not_exist: "%s ਮੌਜੂਦ ਨਹੀਂ ਹੈ"

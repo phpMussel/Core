@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Configuration defaults file (last modified: 2023.04.25).
+# This file: Configuration defaults file (last modified: 2023.05.03).
 ##/
 
 core:
@@ -145,7 +145,9 @@ core:
   default: "en"
   choices:
    ar: "العربية"
+   bg: "Български"
    bn: "বাংলা"
+   cs: "Čeština"
    de: "Deutsch"
    en: "English (AU/GB/NZ)"
    en-US: "English (US)"
@@ -162,6 +164,7 @@ core:
    ms: "Bahasa Melayu"
    nl: "Nederlandse"
    no: "Norsk"
+   pa: "ਪੰਜਾਬੀ"
    pl: "Polski"
    pt: "Português (Brasil)"
    pt-PT: "Português (Europeu)"
@@ -185,7 +188,9 @@ core:
    zh-MO: "zh-TW"
    zh-SG: "zh-CN"
   assume:
+   bg: "bg-BG"
    bn: "bn-BD"
+   cs: "cs-CZ"
    de: "de-DE"
    en: "en-AU"
    es: "es-ES"
@@ -201,6 +206,7 @@ core:
    ms: "ms-MY"
    nl: "nl-NL"
    no: "no-NO"
+   pa: "pa-IN"
    pl: "pl-PL"
    pt: "pt-BR"
    ru: "ru-RU"

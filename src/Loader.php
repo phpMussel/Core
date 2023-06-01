@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2023.04.25).
+ * This file: The loader (last modified: 2023.06.01).
  */
 
 namespace phpMussel\Core;
@@ -1094,7 +1094,7 @@ class Loader
     /**
      * Log rotation.
      *
-     * @param string $Pattern What to identify logfiles by (should be supplied via the relevant logging directive).
+     * @param string $Pattern What to identify log files by (should be supplied via the relevant logging directive).
      * @return bool False when log rotation is disabled or errors occur; True otherwise.
      */
     public function logRotation(string $Pattern): bool

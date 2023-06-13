@@ -37,3 +37,10 @@
 /.gitattributes export-ignore
 /.gitignore export-ignore
 /tests.php export-ignore
+
+# Going to be a bit more explicit about languages in order to ensure that files
+# are detected and identified *correctly*. Refer to:
+# https://github.com/github-linguist/linguist/blob/master/lib/linguist/languages.yml
+
+*.php linguist-language=PHP
+*.yml linguist-language=YAML

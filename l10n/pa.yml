@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Punjabi language data (last modified: 2023.05.07).
+# This file: Punjabi language data (last modified: 2023.07.31).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -54,7 +54,7 @@ image: "ਚਿੱਤਰ"
 invalid_data: "ਅਵੈਧ ਡੇਟਾ!"
 invalid_file: "ਅਵੈਧ ਫਾਈਲ!"
 macros_not_permitted: "ਮੈਕਰੋਜ਼ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ"
-only_allow_images: "ਸਿਰਫ਼ ਚਿੱਤਰ ਫਾਈਲਾਂ ਦੀ ਇਜਾਜ਼ਤ ਹੈ"
+only_allow_images: "ਸਿਰਫ ਚਿੱਤਰ ਫਾਈਲਾਂ ਦੀ ਇਜਾਜ਼ਤ ਹੈ"
 quarantined_as: ""%s.qfu" ਵਜੋਂ ਕੁਆਰੰਟੀਨ ਕੀਤਾ ਗਿਆ।"
 recursive: "ਆਵਰਤੀ ਡੂੰਘਾਈ ਸੀਮਾ ਵੱਧ ਗਈ"
 response_error: "ਗਲਤੀ"

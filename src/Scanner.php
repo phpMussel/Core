@@ -1336,13 +1336,13 @@ class Scanner
                                 strpos(substr($str_hex, $Fragment[2] * 2, $Fragment[3] * 2), $Fragment[1]) === false
                             ) || (
                                 $Fragment[0] === 'FD-RX' &&
-                                !preg_match('/(?:' . $Fragment[1] . ')/i', substr($str_hex, $Fragment[2] * 2, $Fragment[3]*2))
+                                !preg_match('/(?:' . $Fragment[1] . ')/i', substr($str_hex, $Fragment[2] * 2, $Fragment[3] * 2))
                             ) || (
                                 $Fragment[0] === 'FD-NORM' &&
                                 strpos(substr($str_hex_norm, $Fragment[2] * 2, $Fragment[3] * 2), $Fragment[1]) === false
                             ) || (
                                 $Fragment[0] === 'FD-NORM-RX' &&
-                                !preg_match('/(?:' . $Fragment[1] . ')/i', substr($str_hex_norm, $Fragment[2] * 2, $Fragment[3]*2))
+                                !preg_match('/(?:' . $Fragment[1] . ')/i', substr($str_hex_norm, $Fragment[2] * 2, $Fragment[3] * 2))
                             )
                         ) {
                             continue 2;

@@ -9,7 +9,7 @@
 /**
  * If this file remains intact after deploying the package to production,
  * preventing it from running outside of Composer may be useful as a means of
- * prevent potential attackers from hammering the file and needlessly wasting
+ * preventing potential attackers from hammering it and needlessly wasting
  * cycles at the server.
  */
 if (!isset($_SERVER['COMPOSER_BINARY'])) {
@@ -49,10 +49,10 @@ $TestsPath = __DIR__ . DIRECTORY_SEPARATOR . '.tests' . DIRECTORY_SEPARATOR;
 // Fetch the signatures needed for testing the scanner.
 $ZipObj = new \ZipArchive();
 if ($ZipObj->open($TestsPath . 'signatures.zip') === true) {
-    $ZipObj->extractTo($TestsPath . 'signatures' . DIRECTORY_SEPARATOR);
+    $SigPath = $TestsPath . 'signatures';
+    $ZipObj->extractTo($SigPath . DIRECTORY_SEPARATOR);
     $ZipObj->close();
     unset($ZipObj);
-    $SigPath = $TestsPath . 'signatures';
 } else {
     echo 'Problem encountered trying to open signatures.zip.' . PHP_EOL;
     exit(3);
@@ -92,7 +92,7 @@ $Expected = [
 $Actual = $Scanner->scan($Samples, 3);
 ksort($Actual);
 if (serialize($Actual) !== serialize($Expected)) {
-    echo 'Actual scan results does not match expected scan results.' . PHP_EOL;
+    echo 'Actual scan results don\'t match the expected scan results.' . PHP_EOL;
     exit(5);
 }
 

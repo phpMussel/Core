@@ -123,3 +123,7 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 [2023.04.25; Maikuolan]: Split the existing L10N for Portuguese into two variants, Brazilian and European.
 
 [2023.05.01~03; Maikuolan]: Added L10N for Bulgarian, Czech, and Punjabi.
+
+### v3.4.1
+
+[2023.09.03; Maikuolan]: Added L10N for Afrikaans and Romanian.

@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Bangla language data (last modified: 2023.04.01).
+# This file: Bangla language data (last modified: 2023.08.22).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -35,7 +35,7 @@ detected: "%s সনাক্ত হয়েছে"
 detected_control_characters: "নিয়ন্ত্রণ অক্ষর সনাক্ত হয়েছে"
 encrypted_archive: "এনক্রিপ্ট আর্কাইভ সনাক্ত হয়েছে; এনক্রিপ্ট আর্কাইভ অনুমতি নেই"
 error_log_header: "যদি নিম্নলিখিত ত্রুটিগুলির কোনওটি অব্যাহত থাকে, তাদের রিপোর্ট করতে, বা সহায়তা চাইতে, দয়া করে যখন একটি অতিরিক্ত মুহুর্ত পেলেন তখন GitHubএ phpMussel issues পৃষ্ঠাতে একটি নতুন issue তৈরি করুন, এবং অন্য কোনও প্রাসঙ্গিক তথ্যের সাথে প্রশ্নে ত্রুটিগুলি অন্তর্ভুক্ত করুন। ধন্যবাদ।"
-failed_to_access: ""%s" অ্যাক্সেস করতে ব্যর্থ!"
+failed_to_access: ""%s" অ্যাক্সেস করতে ব্যর্থ হয়েছে!"
 field_date: "তারিখ"
 field_header_hash_reconstruction: "হাশ স্বাক্ষর পুনর্গঠন"
 field_header_pe_reconstruction: "PE বিভাগীয় স্বাক্ষর পুনর্গঠন"

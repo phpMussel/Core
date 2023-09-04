@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Bulgarian language data (last modified: 2023.05.01).
+# This file: Bulgarian language data (last modified: 2023.09.04).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -41,7 +41,6 @@ field_header_hash_reconstruction: "Реконструкция на хеш сиг
 field_header_pe_reconstruction: "Реконструкция на секционни сигнатури на PE"
 field_header_scan_results_why_flagged: "Резултати от сканиране (защо маркирани)"
 field_ip_address: "IP адрес"
-file: "Файл"
 filesize_limit_exceeded: "Ограничението за размер на файла е надвишено"
 filetype_blacklisted: "Тип файл в черен списък"
 finished: "Готово"

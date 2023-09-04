@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Arabic language data (last modified: 2023.04.01).
+# This file: Arabic language data (last modified: 2023.09.04).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -41,7 +41,6 @@ field_header_hash_reconstruction: "إعادة بناء التواقيع التج
 field_header_pe_reconstruction: "إعادة بناء التوقيعات القطاعية PE"
 field_header_scan_results_why_flagged: "نتائج المسح (لماذا تم الإبلاغ عنها)"
 field_ip_address: "عنوان IP"
-file: "ملف"
 filesize_limit_exceeded: "تجاوز حد حجم ملف"
 filetype_blacklisted: "نوع الملف في القائمة السوداء"
 finished: "انتهى"

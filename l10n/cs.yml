@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Czech language data (last modified: 2023.05.02).
+# This file: Czech language data (last modified: 2023.09.04).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -41,7 +41,6 @@ field_header_hash_reconstruction: "Rekonstrukce podpisů hash"
 field_header_pe_reconstruction: "Rekonstrukce podpisů oddílů PE"
 field_header_scan_results_why_flagged: "Výsledky skenování (proč označeno)"
 field_ip_address: "IP adresa"
-file: "Soubor"
 filesize_limit_exceeded: "Překročen limit velikosti souboru"
 filetype_blacklisted: "Typ souboru na černé listině"
 finished: "Hotovo"

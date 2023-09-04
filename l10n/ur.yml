@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Urdu language data (last modified: 2023.04.01).
+# This file: Urdu language data (last modified: 2023.09.04).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -41,7 +41,6 @@ field_header_hash_reconstruction: "ہش کا دستخط دوبارہ تعمیر"
 field_header_pe_reconstruction: "PE سیکشن دستخط دوبارہ تعمیر"
 field_header_scan_results_why_flagged: "اسکین کے نتائج (پرچم کیوں)"
 field_ip_address: "IP پتہ"
-file: "فائل"
 filesize_limit_exceeded: "فائل کی حد سے تجاوز کر گئی"
 filetype_blacklisted: "قسم کی فائل کو بلیک لسٹ"
 finished: "ختم"

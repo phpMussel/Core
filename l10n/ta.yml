@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Tamil language data (last modified: 2023.04.01).
+# This file: Tamil language data (last modified: 2023.09.04).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -41,7 +41,6 @@ field_header_hash_reconstruction: "ஹாஷ் கையொப்பங்க�
 field_header_pe_reconstruction: "PE பிரிவு கையொப்பங்கள் புனரமைப்பு"
 field_header_scan_results_why_flagged: "ஸ்கேன் முடிவுகள் (ஏன் கொடியிடப்பட்டது)"
 field_ip_address: "ஐபி முகவரி"
-file: "கோப்பு"
 filesize_limit_exceeded: "கோப்பு அளவு வரம்பை மீறியது"
 filetype_blacklisted: "கோப்பு வகை கருப்புபட்டியலிடப்பட்டுள்ளது"
 finished: "முடிந்துவிட்டது"
@@ -52,7 +51,7 @@ grammar_fullstop: "%s."
 grammar_spacer: " "
 image: "படம்"
 invalid_data: "தவறான தரவு!"
-invalid_file: "தவறான கோப்பு!"
+invalid_file: "தவறான கோப்பு!"
 macros_not_permitted: "மேக்ரோக்கள் அனுமதிக்கப்படவில்லை"
 only_allow_images: "படக் கோப்புகள் மட்டுமே அனுமதிக்கப்படுகின்றன"
 quarantined_as: ""%s.qfu" என தனிமைப்படுத்தப்பட்டுள்ளது."

@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Portuguese (Europe) language data (last modified: 2023.04.25).
+# This file: Portuguese (Europe) language data (last modified: 2023.09.04).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -41,7 +41,6 @@ field_header_hash_reconstruction: "Reconstrução de assinaturas hash"
 field_header_pe_reconstruction: "Reconstrução de assinaturas PE seccionais"
 field_header_scan_results_why_flagged: "Resultados da verificação (por que indicado)"
 field_ip_address: "Endereço IP"
-file: "Arquivo"
 filesize_limit_exceeded: "Arquivo tamanho limite excedido"
 filetype_blacklisted: "Tipo de arquivo está na negra lista"
 finished: "Terminado"

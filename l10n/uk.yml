@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Ukrainian language data (last modified: 2023.04.01).
+# This file: Ukrainian language data (last modified: 2023.09.04).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -41,7 +41,6 @@ field_header_hash_reconstruction: "Реконструкція хеш-сигна�
 field_header_pe_reconstruction: "Реконструкція секційних сигнатурів ПЕ"
 field_header_scan_results_why_flagged: "Результати сканування (чому позначено)"
 field_ip_address: "IP-адреса"
-file: "Файл"
 filesize_limit_exceeded: "Перевищено ліміт розміру файлу"
 filetype_blacklisted: "Тип файлу в чорному списку"
 finished: "Готово"

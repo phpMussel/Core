@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Hebrew language data (last modified: 2023.04.01).
+# This file: Hebrew language data (last modified: 2023.09.04).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -41,7 +41,6 @@ field_header_hash_reconstruction: "שחזור חתימות hash"
 field_header_pe_reconstruction: "שחזור חתימה עבור קטעי PE"
 field_header_scan_results_why_flagged: "תוצאות סריקה (למה סומן)"
 field_ip_address: "כתובת IP"
-file: "קובץ"
 filesize_limit_exceeded: "חרגת ממגבלת גודל הקובץ"
 filetype_blacklisted: "סוג הקובץ ברשימה השחורה"
 finished: "גמור"

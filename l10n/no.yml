@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Norwegian language data (last modified: 2023.08.10).
+# This file: Norwegian language data (last modified: 2023.09.04).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -41,7 +41,6 @@ field_header_hash_reconstruction: "Hash signerer rekonstruksjon"
 field_header_pe_reconstruction: "PE-seksjoner signaturer rekonstruksjon"
 field_header_scan_results_why_flagged: "Skanningsresultater (hvorfor flagget)"
 field_ip_address: "IP adresse"
-file: "Fil"
 filesize_limit_exceeded: "Filstørrelsen overskredet"
 filetype_blacklisted: "Filtype svartelistet"
 finished: "Ferdig"

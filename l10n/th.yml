@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Thai language data (last modified: 2023.04.01).
+# This file: Thai language data (last modified: 2023.09.04).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -41,7 +41,6 @@ field_header_hash_reconstruction: "การก่อสร้างใหม่
 field_header_pe_reconstruction: "การก่อสร้างใหม่ PE ลายเซ็นที่เป็นส่วน"
 field_header_scan_results_why_flagged: "สแกนผลลัพธ์ (ทำไมถูกระบุ)"
 field_ip_address: "ที่อยู่ IP"
-file: "ไฟล์"
 filesize_limit_exceeded: "จำกัดขนาดไฟล์เกินแล้ว"
 filetype_blacklisted: "ประเภทไฟล์คือในรายการดำ"
 finished: "เสร็จแล้ว"

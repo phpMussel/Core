@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Bangla language data (last modified: 2023.08.22).
+# This file: Bangla language data (last modified: 2023.09.04).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -41,7 +41,6 @@ field_header_hash_reconstruction: "হাশ স্বাক্ষর পুন�
 field_header_pe_reconstruction: "PE বিভাগীয় স্বাক্ষর পুনর্গঠন"
 field_header_scan_results_why_flagged: "স্ক্যান ফলাফল (কেন পতাকাঙ্কিত)"
 field_ip_address: "আইপি ঠিকানা"
-file: "ফাইল"
 filesize_limit_exceeded: "ফাইলের আকার সীমা অতিক্রম করেছে"
 filetype_blacklisted: "ফাইলের ধরন কালো তালিকাতে রয়েছে।"
 finished: "শেষ হয়েছে"

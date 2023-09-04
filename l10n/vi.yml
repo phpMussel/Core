@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Vietnamese language data (last modified: 2023.04.01).
+# This file: Vietnamese language data (last modified: 2023.09.04).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -41,7 +41,6 @@ field_header_hash_reconstruction: "Tái thiết chữ ký băm"
 field_header_pe_reconstruction: "Tái thiết chữ ký phần PE"
 field_header_scan_results_why_flagged: "Kết quả quét (tại sao được gắn cờ)"
 field_ip_address: "Địa chỉ IP"
-file: "Tập tin"
 filesize_limit_exceeded: "Cở của tập tin đã bị quá giới hạn"
 filetype_blacklisted: "Loại tập tin đã vào danh sách đen"
 finished: "Hoàn thành"

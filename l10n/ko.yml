@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Korean language data (last modified: 2023.04.01).
+# This file: Korean language data (last modified: 2023.09.04).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -41,7 +41,6 @@ field_header_hash_reconstruction: "해시 서명 재구성"
 field_header_pe_reconstruction: "PE 단면 서명 재구성"
 field_header_scan_results_why_flagged: "스캔 결과 (신고 된 이유)"
 field_ip_address: "IP 주소 "
-file: "파일"
 filesize_limit_exceeded: "용 범위를 벗어난 파일 크기입니다"
 filetype_blacklisted: "파일 형식이 블랙리스트입니다"
 finished: "완료"

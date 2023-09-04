@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Farsi language data (last modified: 2023.04.01).
+# This file: Farsi language data (last modified: 2023.09.04).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -41,7 +41,6 @@ field_header_hash_reconstruction: "بازسازی هش امضاها"
 field_header_pe_reconstruction: "بازسازی امضاهای مقطعی PE"
 field_header_scan_results_why_flagged: "نتایج اسکن (چرا پرچم گذاری شده است)"
 field_ip_address: "آدرس IP"
-file: "فایل"
 filesize_limit_exceeded: "اندازه فایل از حد مجاز فراتر رفت"
 filetype_blacklisted: "نوع فایل در لیست سیاه قرار گرفت"
 finished: "تمام شده"

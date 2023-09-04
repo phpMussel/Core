@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Chinese (simplified) language data (last modified: 2023.04.01).
+# This file: Chinese (simplified) language data (last modified: 2023.09.04).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -41,7 +41,6 @@ field_header_hash_reconstruction: "哈希签名重建"
 field_header_pe_reconstruction: "PE部分签名重建"
 field_header_scan_results_why_flagged: "扫描结果（为什么标记）"
 field_ip_address: "IP地址"
-file: "文件"
 filesize_limit_exceeded: "文件大小超过限制"
 filetype_blacklisted: "文件类型列入黑名单"
 finished: "完了"

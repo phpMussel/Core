@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Romanian language data (last modified: 2023.09.03).
+# This file: Romanian language data (last modified: 2023.09.04).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -41,7 +41,6 @@ field_header_hash_reconstruction: "Reconstituirea semnăturilor hash"
 field_header_pe_reconstruction: "Reconstituirea semnăturilor secționale PE"
 field_header_scan_results_why_flagged: "Rezultatele scanării (de ce sunt semnalate)"
 field_ip_address: "Adresa IP"
-file: "Fişier"
 filesize_limit_exceeded: "Limita de dimensiune a fișierului a fost depășită"
 filetype_blacklisted: "Tip de fișier pe lista neagră"
 finished: "Terminat"

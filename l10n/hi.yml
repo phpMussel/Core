@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Hindi language data (last modified: 2023.04.01).
+# This file: Hindi language data (last modified: 2023.09.04).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -41,7 +41,6 @@ field_header_hash_reconstruction: "हैश हस्ताक्षर पु�
 field_header_pe_reconstruction: "PE अनुभागीय हस्ताक्षर पुनर्निर्माण"
 field_header_scan_results_why_flagged: "स्कैन परिणाम (ध्वजांकित क्यों)"
 field_ip_address: "IP पता"
-file: "फाइल"
 filesize_limit_exceeded: "फाइल आकार सीमा पार हो गई"
 filetype_blacklisted: "काली सूची पर फाइल प्रकार"
 finished: "ख़त्म होना"

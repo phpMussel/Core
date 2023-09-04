@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: French language data (last modified: 2023.04.01).
+# This file: French language data (last modified: 2023.09.04).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -41,7 +41,6 @@ field_header_hash_reconstruction: "Reconstruction de signatures hachage"
 field_header_pe_reconstruction: "Reconstruction de signatures sectionnelles PE"
 field_header_scan_results_why_flagged: "Résultats d'analyse (pourquoi marqué)"
 field_ip_address: "Adresse IP "
-file: "Fichier"
 filesize_limit_exceeded: "Taille limite fichier dépassée"
 filetype_blacklisted: "Type de fichier sur liste noire"
 finished: "Terminé"

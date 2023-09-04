@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2023.08.16).
+ * This file: The loader (last modified: 2023.09.04).
  */
 
 namespace phpMussel\Core;
@@ -93,7 +93,7 @@ class Loader
     /**
      * @var string phpMussel version number (SemVer).
      */
-    public $ScriptVersion = '3.4.0';
+    public $ScriptVersion = '3.4.1';
 
     /**
      * @var string phpMussel version identifier (complete notation).
@@ -1267,85 +1267,6 @@ class Loader
         $this->InstanceCache['shorthand.yml'] = [];
         $this->YAML->process($ShorthandData, $this->InstanceCache['shorthand.yml']);
         return true;
-    }
-
-    /**
-     * Writes to $HashReference, and performs any other needed hit-related actions.
-     *
-     * @param string $Hash The hash of the item which had a positive hit.
-     * @param int $Size The size of the item which had a positive hit.
-     * @param string $Name The name of the item which had a positive hit.
-     * @param string $Text A human-readable explanation of the hit.
-     * @param int $Code The integer results of the scan.
-     * @param int $Depth The current depth of the scan process.
-     * @return void
-     */
-    public function atHit(string $Hash, int $Size = -1, string $Name = '', string $Text = '', int $Code = 2, int $Depth = 0): void
-    {
-        /** Fallback for missing item hash. */
-        if ($Hash === '') {
-            $Hash = $this->L10N->getString('data_not_available');
-        }
-
-        /** Fallback for missing item name. */
-        if ($Name === '') {
-            $Name = $this->L10N->getString('data_not_available');
-        }
-
-        /** Ensure that $Text doesn't break lines and clean it up. */
-        $Text = preg_replace('~[\x00-\x1F]~', '', $Text);
-
-        /** Generate hash reference and key for various arrays to be populated. */
-        $HashReference = sprintf('%s:%d:%s', $Hash, $Size, $Name);
-        if (strpos($this->HashReference, $HashReference . "\n") === false) {
-            $this->HashReference .= $HashReference . "\n";
-        }
-
-        $TextLength = strlen($Text);
-
-        /** Scan results as text. */
-        if ($TextLength && isset($this->ScanResultsText[$HashReference]) && strlen($this->ScanResultsText[$HashReference])) {
-            $this->ScanResultsText[$HashReference] .= $this->L10N->getString('grammar_spacer') . $Text;
-        } else {
-            $this->ScanResultsText[$HashReference] = $Text;
-        }
-
-        /** Scan results as integers. */
-        if (empty($this->ScanResultsIntegers[$HashReference]) || $this->ScanResultsIntegers[$HashReference] !== 2) {
-            $this->ScanResultsIntegers[$HashReference] = $Code;
-        }
-
-        /** Increment detections count. */
-        if ($Code !== 0 && $Code !== 1) {
-            if (isset($this->InstanceCache['DetectionsCount'])) {
-                $this->InstanceCache['DetectionsCount']++;
-            } else {
-                $this->InstanceCache['DetectionsCount'] = 1;
-            }
-        }
-
-        /** Indenting to apply for the formatted scan results . */
-        $Indent = str_pad('→ ', ($Depth < 1 ? 4 : ($Depth * 3) + 4), '─', STR_PAD_LEFT);
-
-        /** Fallback for missing text for formatted text. */
-        if (!$TextLength) {
-            if ($Code === 0) {
-                $Text = sprintf(
-                    $this->L10N->getString('grammar_exclamation_mark'),
-                    sprintf($this->L10N->getString('x_does_not_exist'), $Name)
-                );
-            } elseif ($Code === 1) {
-                $Text = $this->L10N->getString('scan_no_problems_found');
-            } else {
-                $Text = $this->L10N->getString('data_not_available');
-            }
-        }
-
-        /** Scan results as formatted text. */
-        $this->ScanResultsFormatted .= $Indent . $Text . "\n";
-
-        /** Update flags. */
-        $this->InstanceCache['CheckWasLast'] = false;
     }
 
     /**

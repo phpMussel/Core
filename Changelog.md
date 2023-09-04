@@ -127,3 +127,5 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 ### v3.4.1
 
 [2023.09.03; Maikuolan]: Added L10N for Afrikaans and Romanian.
+
+[2023.09.04; Maikuolan]: Added colouration to phpMussel's CLI mode (some code has been added to the core to facilitate this). The atHit method has been migrated from the Loader class to the Scanner class.

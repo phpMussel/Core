@@ -221,7 +221,7 @@ class Loader
 
         /** The specified vendor directory doesn't exist or isn't readable. */
         if (!is_dir($VendorPath) || !is_readable($VendorPath)) {
-            if (! isset($_SERVER['DOCUMENT_ROOT'], $_SERVER['SCRIPT_NAME'])) {
+            if (!isset($_SERVER['DOCUMENT_ROOT'], $_SERVER['SCRIPT_NAME'])) {
                 /** Further safeguards not possible. Generate exception. */
                 throw new \Exception('Vendor directory is undefined or unreadable.');     
             }
@@ -289,7 +289,7 @@ class Loader
             $this->Configuration = parse_ini_file($this->ConfigurationPath, true);
 
             /** Multiline support. */
-    $this->sanitizeConfigurations();
+            $this->decodeConfigurations();
 
         } elseif (preg_match('~\.ya?ml$~i', $this->ConfigurationPath)) {
             if ($Configuration = $this->readFile($this->ConfigurationPath)) {
@@ -433,10 +433,10 @@ class Loader
     }
 
     /**
-     * Method to sanitize the configurations
+     * Method to decode the configurations
      * @return void
      */
-    private function sanitizeConfigurations() : void
+    private function decodeConfigurations() : void
     {
         if (is_array($this->Configuration)) {
             foreach ($this->Configuration as $CatKey => &$CatVal) {
@@ -454,8 +454,8 @@ class Loader
                 }
             }
         }
-        unset($DirVal, $DirKey, $CatVal, $CatKey);
     }
+
     /**
      * Destruct the loader.
      *

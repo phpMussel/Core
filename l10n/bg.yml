@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Bulgarian language data (last modified: 2023.09.04).
+# This file: Bulgarian language data (last modified: 2023.09.16).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -36,11 +36,12 @@ detected_control_characters: "Открити контролни знаци"
 encrypted_archive: "Открит криптиран архив; Не са разрешени криптирани архиви"
 error_log_header: "Ако някоя от следните грешки продължава, за да ги докладвате или да потърсите поддръжка, моля, създайте нов issue на страницата за issues с phpMussel в GitHub, когато имате свободен момент. Включват въпросните грешки заедно с всякаква друга уместна информация. Благодаря."
 failed_to_access: "Неуспешен достъп до „%s“!"
-field_date: "Дата"
-field_header_hash_reconstruction: "Реконструкция на хеш сигнатури"
-field_header_pe_reconstruction: "Реконструкция на секционни сигнатури на PE"
-field_header_scan_results_why_flagged: "Резултати от сканиране (защо маркирани)"
-field_ip_address: "IP адрес"
+field:
+ Date: "Дата"
+ Hash signatures reconstruction: "Реконструкция на хеш сигнатури"
+ IP address: "IP адрес"
+ PE sectional signatures reconstruction: "Реконструкция на секционни сигнатури на PE"
+ Scan results (why flagged): "Резултати от сканиране (защо маркирани)"
 filesize_limit_exceeded: "Ограничението за размер на файла е надвишено"
 filetype_blacklisted: "Тип файл в черен списък"
 finished: "Готово"

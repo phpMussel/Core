@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Italian language data (last modified: 2023.09.04).
+# This file: Italian language data (last modified: 2023.09.16).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -36,11 +36,12 @@ detected_control_characters: "Rilevati caratteri di controllo"
 encrypted_archive: "Rilevato archivio criptato; Archivi criptati non ammessi"
 error_log_header: "Se persiste uno dei seguenti errori, per riportarli o per chiedere supporto, crea un nuovo issue nella pagina dei issues per phpMussel su GitHub quando hai un momento libero, con gli errori in questione insieme a qualsiasi altra informazione pertinente allegata. Grazie."
 failed_to_access: "Impossibile accedere a "%s"!"
-field_date: "Data"
-field_header_hash_reconstruction: "Ricostruzione delle firme hash"
-field_header_pe_reconstruction: "Ricostruzione delle firme sezionali PE"
-field_header_scan_results_why_flagged: "Risultati della scansione (perché contrassegnati)"
-field_ip_address: "Indirizzo IP"
+field:
+ Date: "Data"
+ Hash signatures reconstruction: "Ricostruzione delle firme hash"
+ IP address: "Indirizzo IP"
+ PE sectional signatures reconstruction: "Ricostruzione delle firme sezionali PE"
+ Scan results (why flagged): "Risultati della scansione (perché contrassegnati)"
 filesize_limit_exceeded: "Dimensione massima del file superata"
 filetype_blacklisted: "Tipo di file nella lista nera"
 finished: "Finito"

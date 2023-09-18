@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Farsi language data (last modified: 2023.09.04).
+# This file: Farsi language data (last modified: 2023.09.16).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -36,11 +36,12 @@ detected_control_characters: "کاراکترهای کنترلی شناسایی �
 encrypted_archive: "بایگانی رمزگذاری شده شناسایی شد. آرشیو های رمزگذاری شده مجاز نیستند"
 error_log_header: "اگر خطاها ادامه دارند، برای گزارش آنها یا جستجوی پشتیبانی، لطفاً یک issue جدید در صفحه issues phpMussel در GitHub ایجاد کنید. خطاها را به همراه هر اطلاعات مرتبط دیگری ضمیمه کنید. با تشکر."
 failed_to_access: "دسترسی به "%s" ناموفق بود!"
-field_date: "تاریخ"
-field_header_hash_reconstruction: "بازسازی هش امضاها"
-field_header_pe_reconstruction: "بازسازی امضاهای مقطعی PE"
-field_header_scan_results_why_flagged: "نتایج اسکن (چرا پرچم گذاری شده است)"
-field_ip_address: "آدرس IP"
+field:
+ Date: "تاریخ"
+ Hash signatures reconstruction: "بازسازی هش امضاها"
+ IP address: "آدرس IP"
+ PE sectional signatures reconstruction: "بازسازی امضاهای مقطعی PE"
+ Scan results (why flagged): "نتایج اسکن (چرا پرچم گذاری شده است)"
 filesize_limit_exceeded: "اندازه فایل از حد مجاز فراتر رفت"
 filetype_blacklisted: "نوع فایل در لیست سیاه قرار گرفت"
 finished: "تمام شده"

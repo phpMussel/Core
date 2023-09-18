@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Malay language data (last modified: 2023.09.04).
+# This file: Malay language data (last modified: 2023.09.16).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -36,11 +36,12 @@ detected_control_characters: "Watak kawalan dikesan"
 encrypted_archive: "Arkib yang disulitkan dikesan; Arkib yang disulitkan tidak dibenarkan"
 error_log_header: "Jika mana-mana ralat berikut berterusan, untuk laporkan atau dapatkan sokongan, sila buat isu baharu di halaman isu untuk phpMussel di GitHub apabila anda mempunyai masa lapang, dengan ralat tersebut bersama-sama dengan sebarang maklumat berkaitan dilampirkan. Terima kasih."
 failed_to_access: "Gagal mengakses "%s"!"
-field_date: "Tarikh"
-field_header_hash_reconstruction: "Pembinaan semula tandatangan hash"
-field_header_pe_reconstruction: "Pembinaan semula tandatangan keratan PE"
-field_header_scan_results_why_flagged: "Hasil imbasan (kenapa dibenderakan)"
-field_ip_address: "Alamat IP"
+field:
+ Date: "Tarikh"
+ Hash signatures reconstruction: "Pembinaan semula tandatangan hash"
+ IP address: "Alamat IP"
+ PE sectional signatures reconstruction: "Pembinaan semula tandatangan keratan PE"
+ Scan results (why flagged): "Hasil imbasan (kenapa dibenderakan)"
 filesize_limit_exceeded: "Had saiz fail telah melebihi"
 filetype_blacklisted: "Jenis fail disenaraihitamkan"
 finished: "Selesai"

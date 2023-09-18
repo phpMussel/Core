@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Russian language data (last modified: 2023.09.04).
+# This file: Russian language data (last modified: 2023.09.16).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -36,11 +36,12 @@ detected_control_characters: "Обнаружены символы управле
 encrypted_archive: "Обнаружен зашифрованный архив; Зашифрованные архивы не допускаются"
 error_log_header: "Если какая-либо из следующих ошибок сохраняется, чтобы сообщить о них или получить помощь, пожалуйста, создайте новую issue на странице phpMussel issues на GitHub, когда у вас будет свободное время, и включите рассматриваемые ошибки вместе с любой другой соответствующей информацией. Спасибо."
 failed_to_access: "Не удалось получить доступ к «%s»!"
-field_date: "Дата"
-field_header_hash_reconstruction: "Реконструкция хэш-сигнатур"
-field_header_pe_reconstruction: "Реконструкция секционных сигнатурей PE"
-field_header_scan_results_why_flagged: "Результаты сканирования (почему помечены)"
-field_ip_address: "IP-адрес"
+field:
+ Date: "Дата"
+ Hash signatures reconstruction: "Реконструкция хэш-сигнатур"
+ IP address: "IP-адрес"
+ PE sectional signatures reconstruction: "Реконструкция секционных сигнатурей PE"
+ Scan results (why flagged): "Результаты сканирования (почему помечены)"
 filesize_limit_exceeded: "Размер файла превышает лимит"
 filetype_blacklisted: "Тип файла находится в черном списке"
 finished: "Готово"

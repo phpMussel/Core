@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Arabic language data (last modified: 2023.09.04).
+# This file: Arabic language data (last modified: 2023.09.16).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -36,11 +36,12 @@ detected_control_characters: "الكشف أحرف التحكم"
 encrypted_archive: "كشف أرشيف المشفرة؛ أرشيف المشفرة غير مسموح"
 error_log_header: "إذا استمرت أي من الأخطاء التالية، من أجل الإبلاغ عنها، أو لطلب الدعم, قم بالاتصال في صفحة قضايا phpMussel في GitHub. قم بتضمين الأخطاء المعنية بالإضافة إلى أي معلومات أخرى ذات صلة. شكر."
 failed_to_access: "فشل في الوصول إلى "%s"!"
-field_date: "التاريخ"
-field_header_hash_reconstruction: "إعادة بناء التواقيع التجزئة"
-field_header_pe_reconstruction: "إعادة بناء التوقيعات القطاعية PE"
-field_header_scan_results_why_flagged: "نتائج المسح (لماذا تم الإبلاغ عنها)"
-field_ip_address: "عنوان IP"
+field:
+ Date: "التاريخ"
+ Hash signatures reconstruction: "إعادة بناء التواقيع التجزئة"
+ IP address: "عنوان IP"
+ PE sectional signatures reconstruction: "إعادة بناء التوقيعات القطاعية PE"
+ Scan results (why flagged): "نتائج المسح (لماذا تم الإبلاغ عنها)"
 filesize_limit_exceeded: "تجاوز حد حجم ملف"
 filetype_blacklisted: "نوع الملف في القائمة السوداء"
 finished: "انتهى"

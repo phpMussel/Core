@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Configuration defaults file (last modified: 2023.09.05).
+# This file: Configuration defaults file (last modified: 2023.09.18).
 ##/
 
 core:
@@ -33,8 +33,8 @@ core:
   type: "string"
   default: "Delete"
   choices:
-   Delete: "field_log_rotation_delete"
-   Archive: "field_log_rotation_archive"
+   Delete: "field.log_rotation_delete"
+   Archive: "field.log_rotation_archive"
   style: "radio"
  timezone:
   type: "timezone"
@@ -120,7 +120,7 @@ core:
    "{yy}년 {m}월 {d}일": "{yy}년 {m}월 {d}일"
    "{yyyy}-{mm}-{dd}T{hh}:{ii}:{ss}{t:z}": "{yyyy}-{mm}-{dd}T{hh}:{ii}:{ss}{t:z}"
    "{d}. {m}. {yyyy}": "{d}. {m}. {yyyy}"
- ipaddr:
+ IP address:
   type: "string"
   default: "REMOTE_ADDR"
   preview: "allow_other"
@@ -132,7 +132,7 @@ core:
    HTTP_X_FORWARDED_FOR: "HTTP_X_FORWARDED_FOR (Cloudbric)"
    X-Forwarded-For: "X-Forwarded-For (Squid)"
    Forwarded: "Forwarded"
-   REMOTE_ADDR: "REMOTE_ADDR ({label_default})"
+   REMOTE_ADDR: "REMOTE_ADDR ({label.Default})"
   See also:
    "NGINX Reverse Proxy": "https://docs.nginx.com/nginx/admin-guide/web-server/reverse-proxy/"
    "Squid configuration directive forwarded_for": "http://www.squid-cache.org/Doc/config/forwarded_for/"
@@ -404,9 +404,9 @@ virustotal:
   type: "int"
   default: 1
   choices:
-   0: "field_vt_suspicion_level_heuristic_only"
-   1: "field_vt_suspicion_level_executable"
-   2: "field_vt_suspicion_level_all"
+   0: "field.vt_suspicion_level_heuristic_only"
+   1: "field.vt_suspicion_level_executable"
+   2: "field.vt_suspicion_level_all"
   style: "radio"
  vt_weighting:
   type: "int"

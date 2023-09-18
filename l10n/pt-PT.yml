@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Portuguese (Europe) language data (last modified: 2023.09.04).
+# This file: Portuguese (Europe) language data (last modified: 2023.09.16).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -36,11 +36,12 @@ detected_control_characters: "Caracteres de controle detectado"
 encrypted_archive: "Detectado compactado arquivo criptografado; Compactado arquivos criptografados não permitido"
 error_log_header: "Se algum dos seguintes erros persistir, para reportá-los ou buscar apoio, crie um novo issue na página de issues do phpMussel no GitHub quando tiver um momento livre, com os erros em questão, juntamente com outras informações pertinentes anexadas. Obrigado."
 failed_to_access: "Falha ao acessar "%s"!"
-field_date: "Data"
-field_header_hash_reconstruction: "Reconstrução de assinaturas hash"
-field_header_pe_reconstruction: "Reconstrução de assinaturas PE seccionais"
-field_header_scan_results_why_flagged: "Resultados da verificação (por que indicado)"
-field_ip_address: "Endereço IP"
+field:
+ Date: "Data"
+ Hash signatures reconstruction: "Reconstrução de assinaturas hash"
+ IP address: "Endereço IP"
+ PE sectional signatures reconstruction: "Reconstrução de assinaturas PE seccionais"
+ Scan results (why flagged): "Resultados da verificação (por que indicado)"
 filesize_limit_exceeded: "Arquivo tamanho limite excedido"
 filetype_blacklisted: "Tipo de arquivo está na negra lista"
 finished: "Terminado"

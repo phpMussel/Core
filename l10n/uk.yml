@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Ukrainian language data (last modified: 2023.09.04).
+# This file: Ukrainian language data (last modified: 2023.09.16).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -36,11 +36,12 @@ detected_control_characters: "Виявлені контрольні символ
 encrypted_archive: "Виявлено зашифрований архів; Зашифровані архіви заборонені"
 error_log_header: "Якщо будь-яка з наведених нижче помилок не зникає, щоб повідомити про них або звернутися за підтримкою, створіть нову issue на сторінці phpMussel issues на GitHub, коли у вас буде вільна хвилина, додавши помилки та будь-яку іншу відповідну інформацію. Спасибі."
 failed_to_access: "Не вдалося отримати доступ до «%s»!"
-field_date: "Дата"
-field_header_hash_reconstruction: "Реконструкція хеш-сигнатур"
-field_header_pe_reconstruction: "Реконструкція секційних сигнатурів ПЕ"
-field_header_scan_results_why_flagged: "Результати сканування (чому позначено)"
-field_ip_address: "IP-адреса"
+field:
+ Date: "Дата"
+ Hash signatures reconstruction: "Реконструкція хеш-сигнатур"
+ IP address: "IP-адреса"
+ PE sectional signatures reconstruction: "Реконструкція секційних сигнатурів ПЕ"
+ Scan results (why flagged): "Результати сканування (чому позначено)"
 filesize_limit_exceeded: "Перевищено ліміт розміру файлу"
 filetype_blacklisted: "Тип файлу в чорному списку"
 finished: "Готово"

@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Turkish language data (last modified: 2023.09.04).
+# This file: Turkish language data (last modified: 2023.09.16).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -36,11 +36,12 @@ detected_control_characters: "Algılanan kontrol karakterleri"
 encrypted_archive: "Algılanan şifreli arşiv; Şifrelenmiş arşivlere izin verilmiyor"
 error_log_header: "Aşağıdaki hatalardan herhangi biri devam ederse, bildirmek veya destek almak için, lütfen boş zamanınız olduğunda GitHub'daki phpMussel issue-ları sayfasında yeni bir issue yaratın ve ilgili hataları, ilgili diğer bilgilerle birlikte ekleyin. Thanks."
 failed_to_access: ""%s" erişilemedi!"
-field_date: "Tarih"
-field_header_hash_reconstruction: "Karma imzaları rekonstrüksiyonu"
-field_header_pe_reconstruction: "PE kesit imzaları rekonstrüksiyonu"
-field_header_scan_results_why_flagged: "Tarama sonuçları (neden işaretlendi)"
-field_ip_address: "IP adresi"
+field:
+ Date: "Tarih"
+ Hash signatures reconstruction: "Karma imzaları rekonstrüksiyonu"
+ IP address: "IP adresi"
+ PE sectional signatures reconstruction: "PE kesit imzaları rekonstrüksiyonu"
+ Scan results (why flagged): "Tarama sonuçları (neden işaretlendi)"
 filesize_limit_exceeded: "Dosya boyutu sınırı aşıldı"
 filetype_blacklisted: "Filetype kara listeye alındı"
 finished: "Bitirdi"

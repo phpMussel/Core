@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Romanian language data (last modified: 2023.09.04).
+# This file: Romanian language data (last modified: 2023.09.16).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -36,11 +36,12 @@ detected_control_characters: "Caractere de control detectate"
 encrypted_archive: "Arhivă criptată detectată; Arhivele criptate nu sunt permise"
 error_log_header: "Dacă oricare dintre următoarele erori persistă, pentru a le raporta sau pentru a solicita asistență, creați o nouă issue pe pagina de issues phpMussel din GitHub când aveți un moment liber, cu erorile în cauză împreună cu orice alte informații relevante atașate. Mulțumiri."
 failed_to_access: "Nu s-a putut accesa „%s”!"
-field_date: "Data"
-field_header_hash_reconstruction: "Reconstituirea semnăturilor hash"
-field_header_pe_reconstruction: "Reconstituirea semnăturilor secționale PE"
-field_header_scan_results_why_flagged: "Rezultatele scanării (de ce sunt semnalate)"
-field_ip_address: "Adresa IP"
+field:
+ Date: "Data"
+ Hash signatures reconstruction: "Reconstituirea semnăturilor hash"
+ IP address: "Adresa IP"
+ PE sectional signatures reconstruction: "Reconstituirea semnăturilor secționale PE"
+ Scan results (why flagged): "Rezultatele scanării (de ce sunt semnalate)"
 filesize_limit_exceeded: "Limita de dimensiune a fișierului a fost depășită"
 filetype_blacklisted: "Tip de fișier pe lista neagră"
 finished: "Terminat"

@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Chinese (traditional) language data (last modified: 2023.09.04).
+# This file: Chinese (traditional) language data (last modified: 2023.09.16).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -36,11 +36,12 @@ detected_control_characters: "檢測控製字符"
 encrypted_archive: "檢測加密檔案文件; 加密檔案文件不允許"
 error_log_header: "如果以下任何錯誤繼續發生，為了報告他們或尋求支持，有空的時候，請在GitHub的phpMussel issues頁面上創建新issue。​包括有問題的錯誤以及任何其他相關信息。​謝謝。"
 failed_to_access: "無法訪問『%s』！"
-field_date: "日期"
-field_header_hash_reconstruction: "哈希簽名重建"
-field_header_pe_reconstruction: "PE部分簽名重建"
-field_header_scan_results_why_flagged: "掃描結果（為什麼標記）"
-field_ip_address: "IP地址"
+field:
+ Date: "日期"
+ Hash signatures reconstruction: "哈希簽名重建"
+ IP address: "IP地址"
+ PE sectional signatures reconstruction: "PE部分簽名重建"
+ Scan results (why flagged): "掃描結果（為什麼標記）"
 filesize_limit_exceeded: "文件大小超過限制"
 filetype_blacklisted: "文件類型列入黑名單"
 finished: "完了"

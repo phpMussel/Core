@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Indonesian language data (last modified: 2023.09.04).
+# This file: Indonesian language data (last modified: 2023.09.16).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -36,11 +36,12 @@ detected_control_characters: "Terdeteksi kontrol karakter"
 encrypted_archive: "Terdeteksi arsip dienkripsi; Arsip dienkripsi tidak diizinkan"
 error_log_header: "Jika kesalahan berikut terus terjadi, untuk melaporkannya atau mencari dukungan, tolong buat issue baru di halaman issue untuk phpMussel di GitHub ketika Anda punya waktu luang, dengan kesalahan tersebut bersama dengan semua informasi terkait terlampir. Terima kasih."
 failed_to_access: "Gagal mengakses "%s"!"
-field_date: "Tanggal"
-field_header_hash_reconstruction: "Rekonstruksi tanda tangan hash"
-field_header_pe_reconstruction: "Rekonstruksi tanda tangan PE sectional"
-field_header_scan_results_why_flagged: "Hasil pindai (mengapa ditandai)"
-field_ip_address: "Alamat IP"
+field:
+ Date: "Tanggal"
+ Hash signatures reconstruction: "Rekonstruksi tanda tangan hash"
+ IP address: "Alamat IP"
+ PE sectional signatures reconstruction: "Rekonstruksi tanda tangan PE sectional"
+ Scan results (why flagged): "Hasil pindai (mengapa ditandai)"
 filesize_limit_exceeded: "File ukuran batas melebihi"
 filetype_blacklisted: "File jenis pada hitam daftar"
 finished: "Selesai"

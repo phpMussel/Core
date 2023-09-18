@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2023.09.04).
+ * This file: The scanner (last modified: 2023.09.18).
  */
 
 namespace phpMussel\Core;
@@ -108,7 +108,10 @@ class Scanner
             ]) . "\n";
             $Truncate = $this->Loader->readBytes($this->Loader->Configuration['core']['truncate']);
             $WriteMode = (!file_exists($File) || ($Truncate > 0 && filesize($File) >= $Truncate)) ? 'wb' : 'ab';
-            $Stream = fopen($File, $WriteMode);
+            if (!is_resource($Stream = fopen($File, $WriteMode))) {
+                trigger_error('The "writeToSerialLog" event failed to open "' . $File . '" for writing.');
+                return false;
+            }
             fwrite($Stream, $Data);
             fclose($Stream);
             $this->Loader->logRotation($this->Loader->Configuration['core']['scan_log_serialized']);
@@ -146,7 +149,10 @@ class Scanner
                 $Truncate = $this->Loader->readBytes($this->Loader->Configuration['core']['truncate']);
                 $WriteMode = ($Truncate > 0 && filesize($File) >= $Truncate) ? 'wb' : 'ab';
             }
-            $Handle = fopen($File, 'ab');
+            if (!is_resource($Handle = fopen($File, 'ab'))) {
+                trigger_error('The "writeToScanLog" event failed to open "' . $File . '" for writing.');
+                return false;
+            }
             fwrite($Handle, $Results);
             fclose($Handle);
             $this->Loader->logRotation($this->Loader->Configuration['core']['scan_log']);

@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2023.09.17).
+ * This file: The loader (last modified: 2023.09.18).
  */
 
 namespace phpMussel\Core;
@@ -410,12 +410,12 @@ class Loader
                 $WriteMode = 'ab';
                 $Data = $this->InstanceCache['PendingErrorLogData'];
             }
-            $Handle = fopen($File, $WriteMode);
-            if (is_resource($Handle)) {
-                fwrite($Handle, $Data);
-                fclose($Handle);
-                $this->logRotation($this->Configuration['core']['error_log']);
+            if (!is_resource($Handle = fopen($File, $WriteMode))) {
+                return false;
             }
+            fwrite($Handle, $Data);
+            fclose($Handle);
+            $this->logRotation($this->Configuration['core']['error_log']);
             return true;
         });
 
@@ -476,8 +476,7 @@ class Loader
             return '';
         }
 
-        $Handle = fopen($File, 'rb');
-        if (!is_resource($Handle)) {
+        if (!is_resource($Handle = fopen($File, 'rb'))) {
             return '';
         }
         $Data = fread($Handle, $Filesize);
@@ -960,8 +959,7 @@ class Loader
 
         $Data = '';
         if ($BlocksToRead > 0) {
-            $Handle = gzopen($File, 'rb');
-            if (!is_resource($Handle)) {
+            if (!is_resource($Handle = gzopen($File, 'rb'))) {
                 return '';
             }
             $Done = 0;
@@ -1041,12 +1039,7 @@ class Loader
             return false;
         }
 
-        $Handle = fopen($File, 'rb');
-        if (!is_resource($Handle)) {
-            return false;
-        }
-        $HandleGZ = gzopen($File . '.gz', 'wb');
-        if (!is_resource($HandleGZ)) {
+        if (!is_resource($Handle = fopen($File, 'rb')) || !is_resource($HandleGZ = gzopen($File . '.gz', 'wb'))) {
             return false;
         }
         while (!feof($Handle)) {
@@ -1237,8 +1230,7 @@ class Loader
         } else {
             return false;
         }
-        $Handle = fopen($this->ConfigurationPath, 'wb');
-        if (!is_resource($Handle)) {
+        if (!is_resource($Handle = fopen($this->ConfigurationPath, 'wb'))) {
             return false;
         }
         $Err = fwrite($Handle, $Reconstructed);

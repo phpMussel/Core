@@ -131,3 +131,5 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 [2023.09.04; Maikuolan]: Added colouration to phpMussel's CLI mode (some code has been added to the core to facilitate this). The atHit method has been migrated from the Loader class to the Scanner class.
 
 [2023.09.16~18; Maikuolan]: Significantly refactored all L10N data.
+
+[2023.09.18; Maikuolan]: Better resource guarding.

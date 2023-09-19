@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2023.09.18).
+ * This file: The scanner (last modified: 2023.09.19).
  */
 
 namespace phpMussel\Core;
@@ -94,7 +94,7 @@ class Scanner
             if (count($this->Loader->ScanResultsText)) {
                 $Detections = implode($this->Loader->L10N->getString('grammar_spacer'), $this->Loader->ScanResultsText);
             } else {
-                $Detections = $this->Loader->L10N->getString('data_not_available');
+                $Detections = $this->Loader->L10N->getString('Data not available');
             }
 
             $Data = serialize([
@@ -696,7 +696,7 @@ class Scanner
                 $this->Loader->InstanceCache['ScanErrors']++;
                 $this->atHit('', -1, preg_replace(['~[\x00-\x1F]~', '~^[\\\/]~'], '', $Files), sprintf(
                     $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                    sprintf($this->Loader->L10N->getString('failed_to_access'), $OriginalFilename)
+                    sprintf($this->Loader->L10N->getString('Failed to access %s'), $OriginalFilename)
                 ), -5, $Depth);
             }
             $Dir = $this->directoryRecursiveList($Files);
@@ -2348,7 +2348,7 @@ class Scanner
                         if ($this->Loader->Configuration['urlscanner']['maximum_api_lookups_response']) {
                             $this->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
                                 $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                                $this->Loader->L10N->getString('too_many_urls')
+                                $this->Loader->L10N->getString('Too many URLs')
                             ), 2, $Depth);
                         }
                         break;
@@ -2514,7 +2514,7 @@ class Scanner
                     $this->Loader->L10N->getString('grammar_exclamation_mark'),
                     sprintf(
                         $this->Loader->L10N->getString('grammar_brackets'),
-                        $this->Loader->L10N->getString('detected_control_characters'),
+                        $this->Loader->L10N->getString('Detected control characters'),
                         $OriginalFilename
                     )
                 ), 2, $Depth);
@@ -2571,11 +2571,11 @@ class Scanner
                         $this->Loader->InstanceCache['vt_quota'] = str_ireplace(';;', ';', $this->Loader->InstanceCache['vt_quota']);
                     }
                     $this->Loader->Cache->setEntry('vt_quota', $this->Loader->InstanceCache['vt_quota'], $VTCacheTime + 60);
-                    if (isset($VTJSON['response_code'])) {
-                        $VTJSON['response_code'] = (int)$VTJSON['response_code'];
+                    if (isset($VTJSON['response.code'])) {
+                        $VTJSON['response.code'] = (int)$VTJSON['response.code'];
                         if (
                             isset($VTJSON['scans']) &&
-                            $VTJSON['response_code'] === 1 &&
+                            $VTJSON['response.code'] === 1 &&
                             is_array($VTJSON['scans'])
                         ) {
                             foreach ($VTJSON['scans'] as $VTKey => $VTValue) {
@@ -2775,7 +2775,7 @@ class Scanner
                         $this->Loader->L10N->getString('grammar_exclamation_mark'),
                         sprintf(
                             $this->Loader->L10N->getString('grammar_brackets'),
-                            $this->Loader->L10N->getString('encrypted_archive'),
+                            $this->Loader->L10N->getString('Detected encrypted archive'),
                             $ItemRef
                         )
                     ), -4, $ScanDepth);
@@ -2856,7 +2856,7 @@ class Scanner
                         $this->Loader->L10N->getString('grammar_exclamation_mark'),
                         sprintf(
                             $this->Loader->L10N->getString('grammar_brackets'),
-                            $this->Loader->L10N->getString('encrypted_archive'),
+                            $this->Loader->L10N->getString('Detected encrypted archive'),
                             $ItemRef
                         )
                     ), -4, $ScanDepth);
@@ -2891,7 +2891,7 @@ class Scanner
                             $this->Loader->L10N->getString('grammar_exclamation_mark'),
                             sprintf(
                                 $this->Loader->L10N->getString('grammar_brackets'),
-                                $this->Loader->L10N->getString('too_many_files_in_archive'),
+                                $this->Loader->L10N->getString('Too many files in the archive'),
                                 $ItemRef
                             )
                         ), 2, $ScanDepth);
@@ -2905,7 +2905,7 @@ class Scanner
                     if ($this->Loader->Configuration['files']['block_encrypted_archives'] && $ArchiveObject->EntryIsEncrypted()) {
                         $this->atHit($DataHash, $DataLen, $ItemRef, sprintf(
                             $this->Loader->L10N->getString('grammar_brackets'),
-                            $this->Loader->L10N->getString('encrypted_archive'),
+                            $this->Loader->L10N->getString('Detected encrypted archive'),
                             $ItemRef
                         ), -4, $ScanDepth);
                         unset($ArchiveObject, $Pointer, $PointerObject);
@@ -3947,12 +3947,12 @@ class Scanner
     {
         /** Fallback for missing item hash. */
         if ($Hash === '') {
-            $Hash = $this->Loader->L10N->getString('data_not_available');
+            $Hash = $this->Loader->L10N->getString('Data not available');
         }
 
         /** Fallback for missing item name. */
         if ($Name === '') {
-            $Name = $this->Loader->L10N->getString('data_not_available');
+            $Name = $this->Loader->L10N->getString('Data not available');
         }
 
         /** Ensure that $Text doesn't break lines and clean it up. */
@@ -3995,12 +3995,12 @@ class Scanner
             if ($Code === 0) {
                 $Text = sprintf(
                     $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                    sprintf($this->Loader->L10N->getString('x_does_not_exist'), $Name)
+                    sprintf($this->Loader->L10N->getString('%s does not exist'), $Name)
                 );
             } elseif ($Code === 1) {
                 $Text = $this->Loader->L10N->getString('scan_no_problems_found');
             } else {
-                $Text = $this->Loader->L10N->getString('data_not_available');
+                $Text = $this->Loader->L10N->getString('Data not available');
             }
         }
 

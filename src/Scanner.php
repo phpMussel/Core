@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2023.09.19).
+ * This file: The scanner (last modified: 2023.09.23).
  */
 
 namespace phpMussel\Core;
@@ -94,7 +94,7 @@ class Scanner
             if (count($this->Loader->ScanResultsText)) {
                 $Detections = implode($this->Loader->L10N->getString('grammar_spacer'), $this->Loader->ScanResultsText);
             } else {
-                $Detections = $this->Loader->L10N->getString('Data not available');
+                $Detections = $this->Loader->L10N->getString('response.Data not available');
             }
 
             $Data = serialize([
@@ -760,7 +760,7 @@ class Scanner
         if (!$Files || !is_file($Files)) {
             $this->Loader->InstanceCache['ThisScanDone']++;
             $this->Loader->Events->fireEvent('countersChanged');
-            $this->atHit('', -1, $OriginalFilenameClean, $this->Loader->L10N->getString('invalid_file'), 0, $Depth + 1);
+            $this->atHit('', -1, $OriginalFilenameClean, $this->Loader->L10N->getString('response.Invalid file'), 0, $Depth + 1);
             return;
         }
 
@@ -796,7 +796,7 @@ class Scanner
                 $this->Loader->L10N->getString('grammar_exclamation_mark'),
                 sprintf(
                     $this->Loader->L10N->getString('grammar_brackets'),
-                    $this->Loader->L10N->getString('scan_filename_manipulation_detected'),
+                    $this->Loader->L10N->getString('response.Filename manipulation detected'),
                     $OriginalFilenameClean
                 )
             ), 2, $Depth + 1);
@@ -928,7 +928,7 @@ class Scanner
                     $this->IPAddr,
                     $qfu
                 );
-                $this->Loader->HashReference .= sprintf($this->Loader->L10N->getString('quarantined_as'), $qfu) . "\n";
+                $this->Loader->HashReference .= sprintf($this->Loader->L10N->getString('response.Quarantined as'), $qfu) . "\n";
             }
 
             /** Delete if necessary. */
@@ -1000,7 +1000,7 @@ class Scanner
                     $this->IPAddr,
                     $qfu
                 );
-                $this->Loader->HashReference .= sprintf($this->Loader->L10N->getString('quarantined_as'), $qfu);
+                $this->Loader->HashReference .= sprintf($this->Loader->L10N->getString('response.Quarantined as'), $qfu);
             }
         }
 
@@ -1106,7 +1106,7 @@ class Scanner
             if (($HashCacheEntry = json_decode($HashCacheEntry, true, 2)) === false) {
                 $this->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
                     $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                    $this->Loader->L10N->getString('invalid_data')
+                    $this->Loader->L10N->getString('Invalid data')
                 ), -2, $Depth);
                 return;
             }
@@ -1761,7 +1761,7 @@ class Scanner
                             $this->Loader->L10N->getString('grammar_exclamation_mark'),
                             sprintf(
                                 $this->Loader->L10N->getString('grammar_brackets'),
-                                $this->Loader->L10N->getString('scan_signature_file_missing'),
+                                $this->Loader->L10N->getString('response.Signature file missing'),
                                 $SigFile
                             )
                         ), -3, $Depth);
@@ -1776,7 +1776,7 @@ class Scanner
                         if (strpos($str_hex_norm, $ItemCSV) !== false) {
                             $this->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
                                 $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                                $this->Loader->L10N->getString('scan_command_injection')
+                                $this->Loader->L10N->getString('response.Command injection attempt detected')
                             ), 2, $Depth);
                         }
                     }
@@ -2146,7 +2146,7 @@ class Scanner
                             $this->Loader->L10N->getString('grammar_exclamation_mark'),
                             sprintf(
                                 $this->Loader->L10N->getString('grammar_brackets'),
-                                $this->Loader->L10N->getString('scan_signature_file_missing'),
+                                $this->Loader->L10N->getString('response.Signature file missing'),
                                 $SigFile
                             )
                         ), -3, $Depth);
@@ -2348,7 +2348,7 @@ class Scanner
                         if ($this->Loader->Configuration['urlscanner']['maximum_api_lookups_response']) {
                             $this->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
                                 $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                                $this->Loader->L10N->getString('Too many URLs')
+                                $this->Loader->L10N->getString('response.Too many URLs')
                             ), 2, $Depth);
                         }
                         break;
@@ -2402,7 +2402,7 @@ class Scanner
             ], [$xts, $gzxts, $xt, $gzxt]) && strpos($str_hex_norm, '3c3f706870') !== false) {
                 $this->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
                     $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                    sprintf($this->Loader->L10N->getString('scan_chameleon'), 'PHP')
+                    sprintf($this->Loader->L10N->getString('response.%s chameleon attack detected'), 'PHP')
                 ), 2, $Depth);
             }
         }
@@ -2437,7 +2437,7 @@ class Scanner
             if ($Chameleon) {
                 $this->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
                     $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                    sprintf($this->Loader->L10N->getString('scan_chameleon'), $Chameleon)
+                    sprintf($this->Loader->L10N->getString('response.%s chameleon attack detected'), $Chameleon)
                 ), 2, $Depth);
             }
         }
@@ -2457,7 +2457,7 @@ class Scanner
             if ($Chameleon) {
                 $this->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
                     $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                    sprintf($this->Loader->L10N->getString('scan_chameleon'), $Chameleon)
+                    sprintf($this->Loader->L10N->getString('response.%s chameleon attack detected'), $Chameleon)
                 ), 2, $Depth);
             }
         }
@@ -2468,7 +2468,7 @@ class Scanner
                 if ($fourcc !== 'd0cf11e0') {
                     $this->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
                         $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                        sprintf($this->Loader->L10N->getString('scan_chameleon'), 'Office')
+                        sprintf($this->Loader->L10N->getString('response.%s chameleon attack detected'), 'Office')
                     ), 2, $Depth);
                 }
             }
@@ -2489,7 +2489,7 @@ class Scanner
             ) {
                 $this->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
                     $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                    sprintf($this->Loader->L10N->getString('scan_chameleon'), $this->Loader->L10N->getString('image'))
+                    sprintf($this->Loader->L10N->getString('response.%s chameleon attack detected'), $this->Loader->L10N->getString('image'))
                 ), 2, $Depth);
             }
         }
@@ -2499,7 +2499,7 @@ class Scanner
             if ($xt === 'pdf' && !$pdf_magic) {
                 $this->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
                     $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                    sprintf($this->Loader->L10N->getString('scan_chameleon'), 'PDF')
+                    sprintf($this->Loader->L10N->getString('response.%s chameleon attack detected'), 'PDF')
                 ), 2, $Depth);
             }
         }
@@ -2786,7 +2786,7 @@ class Scanner
             /** Guard. */
             if (!class_exists('\ZipArchive')) {
                 if (!$this->Loader->Configuration['signatures']['fail_extensions_silently']) {
-                    $this->atHit($DataHash, $DataLen, $ItemRef, $this->Loader->L10N->getString('scan_extensions_missing'), -1, $ScanDepth);
+                    $this->atHit($DataHash, $DataLen, $ItemRef, $this->Loader->L10N->getString('response.Failed (missing required extensions)'), -1, $ScanDepth);
                     return;
                 }
             }
@@ -2822,7 +2822,7 @@ class Scanner
             /** Guard. */
             if (!class_exists('\RarArchive') || !class_exists('\RarEntry')) {
                 if (!$this->Loader->Configuration['signatures']['fail_extensions_silently']) {
-                    $this->atHit($DataHash, $DataLen, $ItemRef, $this->Loader->L10N->getString('scan_extensions_missing'), -1, $ScanDepth);
+                    $this->atHit($DataHash, $DataLen, $ItemRef, $this->Loader->L10N->getString('response.Failed (missing required extensions)'), -1, $ScanDepth);
                     return;
                 }
             }
@@ -2891,7 +2891,7 @@ class Scanner
                             $this->Loader->L10N->getString('grammar_exclamation_mark'),
                             sprintf(
                                 $this->Loader->L10N->getString('grammar_brackets'),
-                                $this->Loader->L10N->getString('Too many files in the archive'),
+                                $this->Loader->L10N->getString('response.Too many files in the archive'),
                                 $ItemRef
                             )
                         ), 2, $ScanDepth);
@@ -2953,7 +2953,7 @@ class Scanner
                             $this->Loader->L10N->getString('grammar_exclamation_mark'),
                             sprintf(
                                 $this->Loader->L10N->getString('grammar_brackets'),
-                                $this->Loader->L10N->getString('recursive'),
+                                $this->Loader->L10N->getString('response.Recursion depth limit exceeded'),
                                 $ThisItemRef
                             )
                         ), 2, $ScanDepth + 1);
@@ -3947,12 +3947,12 @@ class Scanner
     {
         /** Fallback for missing item hash. */
         if ($Hash === '') {
-            $Hash = $this->Loader->L10N->getString('Data not available');
+            $Hash = $this->Loader->L10N->getString('response.Data not available');
         }
 
         /** Fallback for missing item name. */
         if ($Name === '') {
-            $Name = $this->Loader->L10N->getString('Data not available');
+            $Name = $this->Loader->L10N->getString('response.Data not available');
         }
 
         /** Ensure that $Text doesn't break lines and clean it up. */
@@ -3995,12 +3995,12 @@ class Scanner
             if ($Code === 0) {
                 $Text = sprintf(
                     $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                    sprintf($this->Loader->L10N->getString('%s does not exist'), $Name)
+                    sprintf($this->Loader->L10N->getString('response.%s does not exist'), $Name)
                 );
             } elseif ($Code === 1) {
-                $Text = $this->Loader->L10N->getString('scan_no_problems_found');
+                $Text = $this->Loader->L10N->getString('response.No problems found');
             } else {
-                $Text = $this->Loader->L10N->getString('Data not available');
+                $Text = $this->Loader->L10N->getString('response.Data not available');
             }
         }
 

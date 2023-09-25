@@ -314,7 +314,7 @@ class Loader
 
         /** Calculate and build various paths. */
         foreach (['CachePath', 'QuarantinePath', 'SignaturesPath'] as $Path) {
-            if (!${$Path}) {
+            if (!$$Path) {
                 if (!$VendorPath) {
                     continue;
                 }

@@ -934,7 +934,7 @@ class Scanner
         }
 
         /** Read in the file to be scanned. */
-        $In = $this->Loader->readFileContent($Files);
+        $In = $this->Loader->readFile($Files);
 
         /** Enforce scannable threshold. */
         if (
@@ -1837,7 +1837,7 @@ class Scanner
                     continue;
                 }
                 if (!isset($this->Loader->InstanceCache[$SigFile])) {
-                    $this->Loader->InstanceCache[$SigFile] = $this->Loader->readFileContent($this->Loader->SignaturesPath . $SigFile);
+                    $this->Loader->InstanceCache[$SigFile] = $this->Loader->readFile($this->Loader->SignaturesPath . $SigFile);
                 }
 
                 /** Fire event: "beforeSigFile". */

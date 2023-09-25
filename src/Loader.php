@@ -174,7 +174,7 @@ class Loader
     private $Channels = [];
 
     /**
-     * @var int The default blocksize for readFileContent and readFileContentGZ.
+     * @var int The default blocksize for readFileGZ.
      */
     private $Blocksize = 131072;
 
@@ -349,7 +349,7 @@ class Loader
             $this->Request->ObjLoggerFile = $this->buildPath($this->Configuration['core']['outbound_request_log']);
         }
         $ChannelsDataArray = [];
-        $this->YAML->process($this->readFileContent($this->AssetsPath . 'channels.yml'), $ChannelsDataArray);
+        $this->YAML->process($this->readFile($this->AssetsPath . 'channels.yml'), $ChannelsDataArray);
         $this->Request->Channels = $ChannelsDataArray ?: [];
         unset($ChannelsDataArray);
         if (!isset($this->Request->Channels['Triggers'])) {
@@ -445,28 +445,6 @@ class Loader
 
         /** Restore default error handler. */
         restore_error_handler();
-    }
-
-    /**
-     * Returns the content of the specified file (should only use for
-     * reasonably small files).
-     *
-     * @param string $File The file to read.
-     * @return string The file's content or an empty string on failure.
-     */
-    public function readFile(string $File): string
-    {
-        /** Guard. */
-        if (!is_file($File) || !is_readable($File) || !$Filesize = filesize($File)) {
-            return '';
-        }
-
-        if (!is_resource($Handle = fopen($File, 'rb'))) {
-            return '';
-        }
-        $Data = fread($Handle, $Filesize);
-        fclose($Handle);
-        return $Data;
     }
 
     /**
@@ -915,7 +893,7 @@ class Loader
      * @param string $File The path and the name of the file to read.
      * @return string The file's content, or an empty string on failure.
      */
-    public function readFileContent(string $File): string
+    public function readFile(string $File): string
     {
         /** Guard. */
         if ($File === '' || !is_file($File) || !is_readable($File)) {
@@ -932,7 +910,7 @@ class Loader
      * @param string $File The file to read.
      * @return string The file's content, or an empty string on failure.
      */
-    public function readFileContentGZ(string $File): string
+    public function readFileGZ(string $File): string
     {
         /** Guard. */
         if ($File === '' || !is_file($File) || !is_readable($File) || !$Filesize = filesize($File)) {

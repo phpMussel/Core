@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2023.09.18).
+ * This file: The loader (last modified: 2023.09.25).
  */
 
 namespace phpMussel\Core;
@@ -223,7 +223,7 @@ class Loader
         if (!is_dir($VendorPath) || !is_readable($VendorPath)) {
             if (!isset($_SERVER['DOCUMENT_ROOT'], $_SERVER['SCRIPT_NAME'])) {
                 /** Further safeguards not possible. Generate exception. */
-                throw new \Exception('Vendor directory is undefined or unreadable.');     
+                throw new \Exception('Vendor directory is undefined or unreadable.');
             }
 
 
@@ -289,8 +289,7 @@ class Loader
             $this->Configuration = parse_ini_file($this->ConfigurationPath, true);
 
             /** Multiline support. */
-            $this->decodeConfigurations();
-
+            $this->decodeForMultilineSupport();
         } elseif (preg_match('~\.ya?ml$~i', $this->ConfigurationPath)) {
             if ($Configuration = $this->readFile($this->ConfigurationPath)) {
                 $this->YAML->process($Configuration, $this->Configuration);
@@ -430,30 +429,6 @@ class Loader
             $this->InstanceCache['PendingErrorLogData'] .= $Message . "\n";
             return true;
         });
-    }
-
-    /**
-     * Method to decode the configurations
-     * @return void
-     */
-    private function decodeConfigurations() : void
-    {
-        if (is_array($this->Configuration)) {
-            foreach ($this->Configuration as $CatKey => &$CatVal) {
-                if (is_array($CatVal)) {
-                    foreach ($CatVal as $DirKey => &$DirVal) {
-                        if (!is_string($DirVal)) {
-                            continue;
-                        }
-                        $DirVal = str_replace(
-                            ["\\\\", '\0', '\a', '\b', '\t', '\n', '\v', '\f', '\r', '\e'],
-                            ["\\", "\0", "\7", "\8", "\t", "\n", "\x0B", "\x0C", "\r", "\x1B"],
-                            $DirVal
-                        );
-                    }
-                }
-            }
-        }
     }
 
     /**
@@ -1264,6 +1239,33 @@ class Loader
         $this->InstanceCache['shorthand.yml'] = [];
         $this->YAML->process($ShorthandData, $this->InstanceCache['shorthand.yml']);
         return true;
+    }
+
+    /**
+     * Decodes for multiline support (needed when using INI configuration files).
+     *
+     * @return void
+     */
+    private function decodeForMultilineSupport(): void
+    {
+        if (!is_array($this->Configuration)) {
+            return;
+        }
+        foreach ($this->Configuration as $CatKey => &$CatVal) {
+            if (!is_array($CatVal)) {
+                continue;
+            }
+            foreach ($CatVal as $DirKey => &$DirVal) {
+                if (!is_string($DirVal)) {
+                    continue;
+                }
+                $DirVal = str_replace(
+                    ["\\\\", '\0', '\a', '\b', '\t', '\n', '\v', '\f', '\r', '\e'],
+                    ["\\", "\0", "\7", "\8", "\t", "\n", "\x0B", "\x0C", "\r", "\x1B"],
+                    $DirVal
+                );
+            }
+        }
     }
 
     /**

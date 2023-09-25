@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: Compression handler (last modified: 2021.07.10).
+ * This file: Compression handler (last modified: 2023.09.25).
  */
 
 namespace phpMussel\Core;
@@ -29,32 +29,6 @@ class CompressionHandler
     public function __construct(string $Data)
     {
         $this->Data = $Data;
-    }
-
-    /**
-     * The basis for the other try methods.
-     *
-     * @param string $Using What the try methods uses.
-     * @return int 0 = Success. 1 = Missing prerequisite. 2 = Failure.
-     */
-    private function TryX(string $Using): int
-    {
-        /** Guard. */
-        if (!function_exists($Using)) {
-            return 1;
-        }
-
-        /** Try to decompress. */
-        $Try = $Using($this->Data);
-
-        /** Success. */
-        if ($Try !== false && is_string($Try)) {
-            $this->Data = $Try;
-            return 0;
-        }
-
-        /** Failure. */
-        return 2;
     }
 
     /**
@@ -142,5 +116,31 @@ class CompressionHandler
          * probably wasn't compressed to begin with.
          */
         return ($Original === $this->Data);
+    }
+
+    /**
+     * The basis for the other try methods.
+     *
+     * @param string $Using What the try methods uses.
+     * @return int 0 = Success. 1 = Missing prerequisite. 2 = Failure.
+     */
+    private function TryX(string $Using): int
+    {
+        /** Guard. */
+        if (!function_exists($Using)) {
+            return 1;
+        }
+
+        /** Try to decompress. */
+        $Try = $Using($this->Data);
+
+        /** Success. */
+        if ($Try !== false && is_string($Try)) {
+            $this->Data = $Try;
+            return 0;
+        }
+
+        /** Failure. */
+        return 2;
     }
 }

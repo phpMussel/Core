@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2023.09.23).
+ * This file: The scanner (last modified: 2023.09.25).
  */
 
 namespace phpMussel\Core;
@@ -617,6 +617,95 @@ class Scanner
     {
         unset($this->Loader->InstanceCache['DebugArrKey'], $this->debugArr);
         $Arr = null;
+    }
+
+    /**
+     * Writes to $HashReference, and performs any other needed hit-related actions.
+     *
+     * @param string $Hash The hash of the item which had a positive hit.
+     * @param int $Size The size of the item which had a positive hit.
+     * @param string $Name The name of the item which had a positive hit.
+     * @param string $Text A human-readable explanation of the hit.
+     * @param int $Code The integer results of the scan.
+     * @param int $Depth The current depth of the scan process.
+     * @return void
+     */
+    public function atHit(string $Hash, int $Size = -1, string $Name = '', string $Text = '', int $Code = 2, int $Depth = 0): void
+    {
+        /** Fallback for missing item hash. */
+        if ($Hash === '') {
+            $Hash = $this->Loader->L10N->getString('response.Data not available');
+        }
+
+        /** Fallback for missing item name. */
+        if ($Name === '') {
+            $Name = $this->Loader->L10N->getString('response.Data not available');
+        }
+
+        /** Ensure that $Text doesn't break lines and clean it up. */
+        $Text = preg_replace('~[\x00-\x1F]~', '', $Text);
+
+        /** Generate hash reference and key for various arrays to be populated. */
+        $HashReference = sprintf('%s:%d:%s', $Hash, $Size, $Name);
+        if (strpos($this->Loader->HashReference, $HashReference . "\n") === false) {
+            $this->Loader->HashReference .= $HashReference . "\n";
+        }
+
+        $TextLength = strlen($Text);
+
+        /** Scan results as text. */
+        if ($TextLength && isset($this->Loader->ScanResultsText[$HashReference]) && strlen($this->Loader->ScanResultsText[$HashReference])) {
+            $this->Loader->ScanResultsText[$HashReference] .= $this->Loader->L10N->getString('grammar_spacer') . $Text;
+        } else {
+            $this->Loader->ScanResultsText[$HashReference] = $Text;
+        }
+
+        /** Scan results as integers. */
+        if (empty($this->Loader->ScanResultsIntegers[$HashReference]) || $this->Loader->ScanResultsIntegers[$HashReference] !== 2) {
+            $this->Loader->ScanResultsIntegers[$HashReference] = $Code;
+        }
+
+        /** Increment detections count. */
+        if ($Code !== 0 && $Code !== 1) {
+            if (isset($this->Loader->InstanceCache['DetectionsCount'])) {
+                $this->Loader->InstanceCache['DetectionsCount']++;
+            } else {
+                $this->Loader->InstanceCache['DetectionsCount'] = 1;
+            }
+        }
+
+        /** Indenting to apply for the formatted scan results . */
+        $Indent = str_pad('→ ', ($Depth < 1 ? 4 : ($Depth * 3) + 4), '─', STR_PAD_LEFT);
+
+        /** Fallback for missing text for formatted text. */
+        if ($TextLength === 0) {
+            if ($Code === 0) {
+                $Text = sprintf(
+                    $this->Loader->L10N->getString('grammar_exclamation_mark'),
+                    sprintf($this->Loader->L10N->getString('response.%s does not exist'), $Name)
+                );
+            } elseif ($Code === 1) {
+                $Text = $this->Loader->L10N->getString('response.No problems found');
+            } else {
+                $Text = $this->Loader->L10N->getString('response.Data not available');
+            }
+        }
+
+        if ($this->CalledFrom === 'CLI') {
+            if ($Code === 1) {
+                $Text = "\033[0;92m" . $Text . "\033[0;33m";
+            } elseif ($Code === 2 || $Code < 0) {
+                $Text = "\033[0;91m" . $Text . "\033[0;33m";
+            } else {
+                $Text = "\033[0;90m" . $Text . "\033[0;33m";
+            }
+        }
+
+        /** Scan results as formatted text. */
+        $this->Loader->ScanResultsFormatted .= $Indent . $Text . "\n";
+
+        /** Update flags. */
+        $this->Loader->InstanceCache['CheckWasLast'] = false;
     }
 
     /**
@@ -3930,94 +4019,5 @@ class Scanner
         $this->HeuristicText = [];
         $this->HeuristicCount = 0;
         $this->HeuristicMode = false;
-    }
-
-    /**
-     * Writes to $HashReference, and performs any other needed hit-related actions.
-     *
-     * @param string $Hash The hash of the item which had a positive hit.
-     * @param int $Size The size of the item which had a positive hit.
-     * @param string $Name The name of the item which had a positive hit.
-     * @param string $Text A human-readable explanation of the hit.
-     * @param int $Code The integer results of the scan.
-     * @param int $Depth The current depth of the scan process.
-     * @return void
-     */
-    public function atHit(string $Hash, int $Size = -1, string $Name = '', string $Text = '', int $Code = 2, int $Depth = 0): void
-    {
-        /** Fallback for missing item hash. */
-        if ($Hash === '') {
-            $Hash = $this->Loader->L10N->getString('response.Data not available');
-        }
-
-        /** Fallback for missing item name. */
-        if ($Name === '') {
-            $Name = $this->Loader->L10N->getString('response.Data not available');
-        }
-
-        /** Ensure that $Text doesn't break lines and clean it up. */
-        $Text = preg_replace('~[\x00-\x1F]~', '', $Text);
-
-        /** Generate hash reference and key for various arrays to be populated. */
-        $HashReference = sprintf('%s:%d:%s', $Hash, $Size, $Name);
-        if (strpos($this->Loader->HashReference, $HashReference . "\n") === false) {
-            $this->Loader->HashReference .= $HashReference . "\n";
-        }
-
-        $TextLength = strlen($Text);
-
-        /** Scan results as text. */
-        if ($TextLength && isset($this->Loader->ScanResultsText[$HashReference]) && strlen($this->Loader->ScanResultsText[$HashReference])) {
-            $this->Loader->ScanResultsText[$HashReference] .= $this->Loader->L10N->getString('grammar_spacer') . $Text;
-        } else {
-            $this->Loader->ScanResultsText[$HashReference] = $Text;
-        }
-
-        /** Scan results as integers. */
-        if (empty($this->Loader->ScanResultsIntegers[$HashReference]) || $this->Loader->ScanResultsIntegers[$HashReference] !== 2) {
-            $this->Loader->ScanResultsIntegers[$HashReference] = $Code;
-        }
-
-        /** Increment detections count. */
-        if ($Code !== 0 && $Code !== 1) {
-            if (isset($this->Loader->InstanceCache['DetectionsCount'])) {
-                $this->Loader->InstanceCache['DetectionsCount']++;
-            } else {
-                $this->Loader->InstanceCache['DetectionsCount'] = 1;
-            }
-        }
-
-        /** Indenting to apply for the formatted scan results . */
-        $Indent = str_pad('→ ', ($Depth < 1 ? 4 : ($Depth * 3) + 4), '─', STR_PAD_LEFT);
-
-        /** Fallback for missing text for formatted text. */
-        if ($TextLength === 0) {
-            if ($Code === 0) {
-                $Text = sprintf(
-                    $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                    sprintf($this->Loader->L10N->getString('response.%s does not exist'), $Name)
-                );
-            } elseif ($Code === 1) {
-                $Text = $this->Loader->L10N->getString('response.No problems found');
-            } else {
-                $Text = $this->Loader->L10N->getString('response.Data not available');
-            }
-        }
-
-        if ($this->CalledFrom === 'CLI') {
-            if ($Code === 1) {
-                $Text = "\033[0;92m" . $Text . "\033[0;33m";
-            } elseif ($Code === 2 || $Code < 0) {
-                $Text = "\033[0;91m" . $Text . "\033[0;33m";
-            } else {
-                $Text = "\033[0;90m" . $Text . "\033[0;33m";
-            }
-        }
-
-        /** Scan results as formatted text. */
-        $this->Loader->ScanResultsFormatted .= $Indent . $Text . "\n";
-
-        /** Update flags. */
-        $this->Loader->InstanceCache['CheckWasLast'] = false;
     }
 }

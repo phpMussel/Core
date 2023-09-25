@@ -136,10 +136,10 @@ class Scanner
             $Results = sprintf(
                 "%s %s\n%s%s %s\n\n",
                 $this->Loader->InstanceCache['StartTime2822'],
-                sprintf($this->Loader->L10N->getString('grammar_fullstop'), $this->Loader->L10N->getString('started')),
+                sprintf($this->Loader->L10N->getString('grammar_fullstop'), $this->Loader->L10N->getString('response.Started')),
                 $this->Loader->ScanResultsFormatted,
                 $this->Loader->InstanceCache['EndTime2822'],
-                sprintf($this->Loader->L10N->getString('grammar_fullstop'), $this->Loader->L10N->getString('finished'))
+                sprintf($this->Loader->L10N->getString('grammar_fullstop'), $this->Loader->L10N->getString('response.Finished'))
             );
 
             if (!file_exists($File)) {
@@ -289,10 +289,10 @@ class Scanner
         return sprintf(
             "%s %s\n%s%s %s\n\n",
             $this->Loader->InstanceCache['StartTime2822'],
-            sprintf($this->Loader->L10N->getString('grammar_fullstop'), $this->Loader->L10N->getString('started')),
+            sprintf($this->Loader->L10N->getString('grammar_fullstop'), $this->Loader->L10N->getString('response.Started')),
             $this->Loader->ScanResultsFormatted,
             $this->Loader->InstanceCache['EndTime2822'],
-            sprintf($this->Loader->L10N->getString('grammar_fullstop'), $this->Loader->L10N->getString('finished'))
+            sprintf($this->Loader->L10N->getString('grammar_fullstop'), $this->Loader->L10N->getString('response.Finished'))
         );
     }
 
@@ -785,7 +785,7 @@ class Scanner
                 $this->Loader->InstanceCache['ScanErrors']++;
                 $this->atHit('', -1, preg_replace(['~[\x00-\x1F]~', '~^[\\\/]~'], '', $Files), sprintf(
                     $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                    sprintf($this->Loader->L10N->getString('Failed to access %s'), $OriginalFilename)
+                    sprintf($this->Loader->L10N->getString('response.Failed to access %s'), $OriginalFilename)
                 ), -5, $Depth);
             }
             $Dir = $this->directoryRecursiveList($Files);
@@ -816,7 +816,7 @@ class Scanner
         $Indent = str_pad('→ ', ($Depth < 1 ? 4 : ($Depth * 3) + 4), '─', STR_PAD_LEFT);
 
         /** Notify that we've began checking a scan target to the formatted text. */
-        $this->Loader->ScanResultsFormatted .= $Indent . sprintf($this->Loader->L10N->getString('scan_checking'), $OriginalFilenameClean) . "\n";
+        $this->Loader->ScanResultsFormatted .= $Indent . sprintf($this->Loader->L10N->getString('response.Checking %s'), $OriginalFilenameClean) . "\n";
         $this->Loader->InstanceCache['CheckWasLast'] = true;
 
         /** Define file phase. */
@@ -866,7 +866,7 @@ class Scanner
                     $this->Loader->L10N->getString('grammar_exclamation_mark'),
                     sprintf(
                         $this->Loader->L10N->getString('grammar_brackets'),
-                        $this->Loader->L10N->getString('filesize_limit_exceeded'),
+                        $this->Loader->L10N->getString('response.Filesize limit exceeded'),
                         $OriginalFilenameClean
                     )
                 ), 2, $Depth + 1);
@@ -923,7 +923,7 @@ class Scanner
                 $this->Loader->L10N->getString('grammar_exclamation_mark'),
                 sprintf(
                     $this->Loader->L10N->getString('grammar_brackets'),
-                    $this->Loader->L10N->getString('filetype_blacklisted'),
+                    $this->Loader->L10N->getString('response.Filetype blacklisted'),
                     $OriginalFilenameClean
                 )
             ), 2, $Depth + 1);
@@ -958,7 +958,7 @@ class Scanner
                 $this->Loader->L10N->getString('grammar_exclamation_mark'),
                 sprintf(
                     $this->Loader->L10N->getString('grammar_brackets'),
-                    $this->Loader->L10N->getString('only_allow_images'),
+                    $this->Loader->L10N->getString('response.Only image files are permitted'),
                     $OriginalFilenameClean
                 )
             ), 2, $Depth + 1);
@@ -1155,7 +1155,7 @@ class Scanner
         if (!$OriginalFilename) {
             $this->atHit($sha256, $StringLength, '', sprintf(
                 $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                $this->Loader->L10N->getString('scan_missing_filename')
+                $this->Loader->L10N->getString('response.Missing filename')
             ), 2, $Depth);
             return;
         }
@@ -1580,7 +1580,7 @@ class Scanner
                     if ($this->Loader->Configuration['files']['corrupted_exe']) {
                         $this->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
                             $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                            $this->Loader->L10N->getString('corrupted')
+                            $this->Loader->L10N->getString('response.Detected corrupted PE')
                         ), 2, $Depth);
                     }
                 } else {
@@ -2454,8 +2454,8 @@ class Scanner
                     if ($URLScanner['SafeBrowseLookup'] !== 204) {
                         $this->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
                             $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                            $this->Loader->L10N->getString('SafeBrowseLookup_' . $URLScanner['SafeBrowseLookup']) ?:
-                                $this->Loader->L10N->getString('SafeBrowseLookup_999')
+                            $this->Loader->L10N->getString('SafeBrowseLookup.' . $URLScanner['SafeBrowseLookup']) ?:
+                                $this->Loader->L10N->getString('SafeBrowseLookup.999')
                         ), 2, $Depth);
 
                         /** Prevent further lookups in case of wrong API key used, malformed query, etc. */
@@ -2578,7 +2578,7 @@ class Scanner
             ) {
                 $this->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
                     $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                    sprintf($this->Loader->L10N->getString('response.%s chameleon attack detected'), $this->Loader->L10N->getString('image'))
+                    sprintf($this->Loader->L10N->getString('response.%s chameleon attack detected'), $this->Loader->L10N->getString('response.Image'))
                 ), 2, $Depth);
             }
         }
@@ -2603,7 +2603,7 @@ class Scanner
                     $this->Loader->L10N->getString('grammar_exclamation_mark'),
                     sprintf(
                         $this->Loader->L10N->getString('grammar_brackets'),
-                        $this->Loader->L10N->getString('Detected control characters'),
+                        $this->Loader->L10N->getString('response.Detected control characters'),
                         $OriginalFilename
                     )
                 ), 2, $Depth);
@@ -2684,7 +2684,7 @@ class Scanner
                                                         $this->Loader->L10N->getString('grammar_exclamation_mark'),
                                                         sprintf(
                                                             $this->Loader->L10N->getString('grammar_brackets'),
-                                                            sprintf($this->Loader->L10N->getString('detected'), $VTVN),
+                                                            sprintf($this->Loader->L10N->getString('response.Detected %s'), $VTVN),
                                                             $OriginalFilename
                                                         )
                                                     ), 2, $Depth);
@@ -2703,7 +2703,7 @@ class Scanner
                                             $this->Loader->L10N->getString('grammar_exclamation_mark'),
                                             sprintf(
                                                 $this->Loader->L10N->getString('grammar_brackets'),
-                                                sprintf($this->Loader->L10N->getString('detected'), $VN),
+                                                sprintf($this->Loader->L10N->getString('response.Detected %s'), $VN),
                                                 $OriginalFilename
                                             )
                                         ), 2, $Depth);
@@ -2864,7 +2864,7 @@ class Scanner
                         $this->Loader->L10N->getString('grammar_exclamation_mark'),
                         sprintf(
                             $this->Loader->L10N->getString('grammar_brackets'),
-                            $this->Loader->L10N->getString('Detected encrypted archive'),
+                            $this->Loader->L10N->getString('response.Detected encrypted archive'),
                             $ItemRef
                         )
                     ), -4, $ScanDepth);
@@ -2945,7 +2945,7 @@ class Scanner
                         $this->Loader->L10N->getString('grammar_exclamation_mark'),
                         sprintf(
                             $this->Loader->L10N->getString('grammar_brackets'),
-                            $this->Loader->L10N->getString('Detected encrypted archive'),
+                            $this->Loader->L10N->getString('response.Detected encrypted archive'),
                             $ItemRef
                         )
                     ), -4, $ScanDepth);
@@ -2994,7 +2994,7 @@ class Scanner
                     if ($this->Loader->Configuration['files']['block_encrypted_archives'] && $ArchiveObject->EntryIsEncrypted()) {
                         $this->atHit($DataHash, $DataLen, $ItemRef, sprintf(
                             $this->Loader->L10N->getString('grammar_brackets'),
-                            $this->Loader->L10N->getString('Detected encrypted archive'),
+                            $this->Loader->L10N->getString('response.Detected encrypted archive'),
                             $ItemRef
                         ), -4, $ScanDepth);
                         unset($ArchiveObject, $Pointer, $PointerObject);
@@ -3028,7 +3028,7 @@ class Scanner
                             $this->Loader->L10N->getString('grammar_exclamation_mark'),
                             sprintf(
                                 $this->Loader->L10N->getString('grammar_brackets'),
-                                $this->Loader->L10N->getString('scan_tampering'),
+                                $this->Loader->L10N->getString('response.Detected potentially dangerous file tampering'),
                                 $ThisItemRef
                             )
                         ), 2, $ScanDepth + 1);
@@ -3056,7 +3056,7 @@ class Scanner
                             $this->Loader->L10N->getString('grammar_exclamation_mark'),
                             sprintf(
                                 $this->Loader->L10N->getString('grammar_brackets'),
-                                sprintf($this->Loader->L10N->getString('detected'), 'Quine'),
+                                sprintf($this->Loader->L10N->getString('response.Detected %s'), 'Quine'),
                                 $ThisItemRef
                             )
                         ), 2, $ScanDepth + 1);
@@ -3712,7 +3712,7 @@ class Scanner
         /** Prepare detection text. */
         $Text = sprintf($this->Loader->L10N->getString('grammar_exclamation_mark'), sprintf(
             $this->Loader->L10N->getString('grammar_brackets'),
-            sprintf($this->Loader->L10N->getString('detected'), $VN),
+            sprintf($this->Loader->L10N->getString('response.Detected %s'), $VN),
             $OriginalFilename
         ));
 
@@ -3876,7 +3876,7 @@ class Scanner
                 $this->Loader->L10N->getString('grammar_exclamation_mark'),
                 sprintf(
                     $this->Loader->L10N->getString('grammar_brackets'),
-                    $this->Loader->L10N->getString('filesize_limit_exceeded'),
+                    $this->Loader->L10N->getString('response.Filesize limit exceeded'),
                     $ItemRef
                 )
             ), 2, $Depth);
@@ -3899,7 +3899,7 @@ class Scanner
                     $this->Loader->L10N->getString('grammar_exclamation_mark'),
                     sprintf(
                         $this->Loader->L10N->getString('grammar_brackets'),
-                        $this->Loader->L10N->getString('filetype_blacklisted'),
+                        $this->Loader->L10N->getString('response.Filetype blacklisted'),
                         $ItemRef
                     )
                 ), 2, $Depth);
@@ -3919,7 +3919,7 @@ class Scanner
                 $this->Loader->L10N->getString('grammar_exclamation_mark'),
                 sprintf(
                     $this->Loader->L10N->getString('grammar_brackets'),
-                    $this->Loader->L10N->getString('macros_not_permitted'),
+                    $this->Loader->L10N->getString('response.Macros aren_t permitted'),
                     $ItemRef
                 )
             ), 2, $Depth);

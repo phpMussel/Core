@@ -7,11 +7,12 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: US English language data (last modified: 2023.04.03).
+# This file: US English language data (last modified: 2023.09.25).
 #
 # Note: Including data only where it differs from its AU/GB/NZ English
 # counterpart (doing otherwise isn't necessary due to the L10N handler's
 # fallback mechanism).
 ##/
 
-SafeBrowseLookup_401: "API authorization error"
+SafeBrowseLookup:
+ 401: "API authorization error"

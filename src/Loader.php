@@ -221,16 +221,17 @@ class Loader
 
         /** The specified vendor directory doesn't exist or isn't readable. */
         if (!is_dir($VendorPath) || !is_readable($VendorPath)) {
-            if (isset($_SERVER['DOCUMENT_ROOT'], $_SERVER['SCRIPT_NAME'])) {
-                /** Safeguard for symlinked installations. */
-                $VendorPath = $this->buildPath(dirname($_SERVER['DOCUMENT_ROOT'] . $_SERVER['SCRIPT_NAME']) . DIRECTORY_SEPARATOR . 'vendor', false);
-
-                /** Eep.. Still not working. Generate exception. */
-                if ($VendorPath === '' || !is_dir($VendorPath) || !is_readable($VendorPath)) {
-                    throw new \Exception('Vendor directory is undefined or unreadable.');
-                }
-            } else {
+            if (!isset($_SERVER['DOCUMENT_ROOT'], $_SERVER['SCRIPT_NAME'])) {
                 /** Further safeguards not possible. Generate exception. */
+                throw new \Exception('Vendor directory is undefined or unreadable.');     
+            }
+
+
+            /** Safeguard for symlinked installations. */
+            $VendorPath = $this->buildPath(dirname($_SERVER['DOCUMENT_ROOT'] . $_SERVER['SCRIPT_NAME']) . DIRECTORY_SEPARATOR . 'vendor', false);
+
+            /** Eep.. Still not working. Generate exception. */
+            if ($VendorPath === '' || !is_dir($VendorPath) || !is_readable($VendorPath)) {
                 throw new \Exception('Vendor directory is undefined or unreadable.');
             }
         }
@@ -288,23 +289,8 @@ class Loader
             $this->Configuration = parse_ini_file($this->ConfigurationPath, true);
 
             /** Multiline support. */
-            if (is_array($this->Configuration)) {
-                foreach ($this->Configuration as $CatKey => &$CatVal) {
-                    if (is_array($CatVal)) {
-                        foreach ($CatVal as $DirKey => &$DirVal) {
-                            if (!is_string($DirVal)) {
-                                continue;
-                            }
-                            $DirVal = str_replace(
-                                ["\\\\", '\0', '\a', '\b', '\t', '\n', '\v', '\f', '\r', '\e'],
-                                ["\\", "\0", "\7", "\8", "\t", "\n", "\x0B", "\x0C", "\r", "\x1B"],
-                                $DirVal
-                            );
-                        }
-                    }
-                }
-                unset($DirVal, $DirKey, $CatVal, $CatKey);
-            }
+            $this->decodeConfigurations();
+
         } elseif (preg_match('~\.ya?ml$~i', $this->ConfigurationPath)) {
             if ($Configuration = $this->readFile($this->ConfigurationPath)) {
                 $this->YAML->process($Configuration, $this->Configuration);
@@ -329,7 +315,7 @@ class Loader
 
         /** Calculate and build various paths. */
         foreach (['CachePath', 'QuarantinePath', 'SignaturesPath'] as $Path) {
-            if (!$$Path) {
+            if (!${$Path}) {
                 if (!$VendorPath) {
                     continue;
                 }
@@ -444,6 +430,30 @@ class Loader
             $this->InstanceCache['PendingErrorLogData'] .= $Message . "\n";
             return true;
         });
+    }
+
+    /**
+     * Method to decode the configurations
+     * @return void
+     */
+    private function decodeConfigurations() : void
+    {
+        if (is_array($this->Configuration)) {
+            foreach ($this->Configuration as $CatKey => &$CatVal) {
+                if (is_array($CatVal)) {
+                    foreach ($CatVal as $DirKey => &$DirVal) {
+                        if (!is_string($DirVal)) {
+                            continue;
+                        }
+                        $DirVal = str_replace(
+                            ["\\\\", '\0', '\a', '\b', '\t', '\n', '\v', '\f', '\r', '\e'],
+                            ["\\", "\0", "\7", "\8", "\t", "\n", "\x0B", "\x0C", "\r", "\x1B"],
+                            $DirVal
+                        );
+                    }
+                }
+            }
+        }
     }
 
     /**

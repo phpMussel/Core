@@ -7,13 +7,13 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: English language data (last modified: 2023.09.25).
+# This file: English language data (last modified: 2023.10.12).
 ##/
 
 SafeBrowseLookup:
  200: "Potentially harmful URL detected"
  400: "API request error"
- 401: "API authorisation error"
+ 401: {"en-AU": "API authorisation error", "en-CA": "API authorization error", "en-US": "API authorization error"}
  503: "API service unavailable"
  999: "Unknown API error"
 error_log_header: "If any of the following errors persist, to report them, or to seek support, please create a new issue at the phpMussel issues page at GitHub when you've got a spare moment, with the errors in question along with any other pertinent information attached. Thanks."

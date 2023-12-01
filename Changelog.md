@@ -142,4 +142,4 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 
 ### v3.5.0
 
-[2023.12.01; Maikuolan]: Improve escaping.
+[2023.12.01; Maikuolan]: Improved escaping. Added support for specifying a Redis database number to the supplementary cache options.

@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2023.09.25).
+ * This file: The scanner (last modified: 2023.12.01).
  */
 
 namespace phpMussel\Core;
@@ -380,7 +380,7 @@ class Scanner
         $Offset = strlen($Base);
         $List = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($Base), \RecursiveIteratorIterator::SELF_FIRST);
         foreach ($List as $Item => $List) {
-            if (preg_match('~^(?:/\.\.|./\.|\.{3})$~', str_replace("\\", '/', substr($Item, -3))) || !is_readable($Item)) {
+            if (preg_match('~^(?:/\.\.|./\.|\.{3})$~', str_replace('\\', '/', substr($Item, -3))) || !is_readable($Item)) {
                 continue;
             }
             if (is_dir($Item) && !$Directories) {
@@ -783,7 +783,7 @@ class Scanner
         if (is_dir($Files)) {
             if (!is_readable($Files)) {
                 $this->Loader->InstanceCache['ScanErrors']++;
-                $this->atHit('', -1, preg_replace(['~[\x00-\x1F]~', '~^[\\\/]~'], '', $Files), sprintf(
+                $this->atHit('', -1, preg_replace(['~[\x00-\x1F]~', '~^[\\\\/]~'], '', $Files), sprintf(
                     $this->Loader->L10N->getString('grammar_exclamation_mark'),
                     sprintf($this->Loader->L10N->getString('response.Failed to access %s'), $OriginalFilename)
                 ), -5, $Depth);
@@ -810,7 +810,7 @@ class Scanner
         $this->resetHeuristics();
 
         /** Ensure that the original filename doesn't break lines and clean it up. */
-        $OriginalFilenameClean = preg_replace(['~[\x00-\x1F]~', '~^[\\\/]~'], '', $OriginalFilename);
+        $OriginalFilenameClean = preg_replace(['~[\x00-\x1F]~', '~^[\\\\/]~'], '', $OriginalFilename);
 
         /** Indenting to apply for "checking" . */
         $Indent = str_pad('→ ', ($Depth < 1 ? 4 : ($Depth * 3) + 4), '─', STR_PAD_LEFT);
@@ -1728,7 +1728,7 @@ class Scanner
         ) {
             $this->Loader->InstanceCache['LookupCount'] = 0;
             $URLScanner = [
-                'FixedSource' => preg_replace('~(data|f(ile|tps?)|https?|sftp):~i', "\x01\\1:", str_replace("\\", '/', $str_norm)) . "\1",
+                'FixedSource' => preg_replace('~(data|f(ile|tps?)|https?|sftp):~i', "\x01\\1:", str_replace('\\', '/', $str_norm)) . "\1",
                 'DomainsNoLookup' => [],
                 'DomainsCount' => 0,
                 'Domains' => [],
@@ -3003,8 +3003,8 @@ class Scanner
 
                     /** Fetch and prepare filename. */
                     if ($Filename = $ArchiveObject->EntryName()) {
-                        while (strpos($Filename, "\\") !== false || strpos($Filename, '/') !== false) {
-                            $Filename = $this->Loader->substrAfterLast($Filename, "\\");
+                        while (strpos($Filename, '\\') !== false || strpos($Filename, '/') !== false) {
+                            $Filename = $this->Loader->substrAfterLast($Filename, '\\');
                             $Filename = $this->Loader->substrAfterLast($Filename, '/');
                         }
                     }
@@ -3017,7 +3017,7 @@ class Scanner
                     $Hash = hash('sha256', $Content);
                     $DataCRC32 = hash('crc32b', $Content);
                     $InternalCRC = $ArchiveObject->EntryCRC();
-                    $ThisItemRef = $ItemRef . '→' . preg_replace(['~[\x00-\x1F]~', '~^[\\\/]~'], '', $Filename);
+                    $ThisItemRef = $ItemRef . '→' . preg_replace(['~[\x00-\x1F]~', '~^[\\\\/]~'], '', $Filename);
 
                     /** Verify filesize, integrity, etc. Exit early in case of problems. */
                     if ($Filesize !== strlen($Content) || (
@@ -3264,7 +3264,7 @@ class Scanner
         $Files = [];
         $List = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($Path), \RecursiveIteratorIterator::SELF_FIRST);
         foreach ($List as $Item => $List) {
-            $File = str_replace("\\", '/', substr($Item, $Offset));
+            $File = str_replace('\\', '/', substr($Item, $Offset));
             if ($File && strtolower(substr($Item, -4)) === '.qfu' && is_file($Item) && !is_link($Item) && is_readable($Item)) {
                 $Files[$File] = filemtime($Item);
             }
@@ -3308,7 +3308,7 @@ class Scanner
             while (true) {
                 if (
                     function_exists('gzinflate') &&
-                    $c = preg_match_all('/(gzinflate\s*\(\s*["\'])(.{1,4096})(,\d)?(["\']\s*\))/i', $str, $matches)
+                    $c = preg_match_all('/(gzinflate\s*\\(\s*["\'])(.{1,4096})(,\d)?(["\']\s*\\))/i', $str, $matches)
                 ) {
                     for ($i = 0; $c > $i; $i++) {
                         $str = str_ireplace(
@@ -3321,8 +3321,8 @@ class Scanner
                 }
                 if ($c = preg_match_all(
                     '/(base64_decode|decode_base64|base64\.b64decode|atob|Base64\.decode64)(\s*' .
-                    '\(\s*["\'\`])([\da-z+\/]{4})*([\da-z+\/]{4}|[\da-z+\/]{3}=|[\da-z+\/]{2}==)(["\'\`]' .
-                    '\s*\))/i',
+                    '\\(\s*["\'\`])([\da-z+\/]{4})*([\da-z+\/]{4}|[\da-z+\/]{3}=|[\da-z+\/]{2}==)(["\'\`]' .
+                    '\s*\\))/i',
                     $str,
                     $matches
                 )) {
@@ -3336,7 +3336,7 @@ class Scanner
                     continue;
                 }
                 if ($c = preg_match_all(
-                    '/(str_rot13\s*\(\s*["\'])([^\'"\(\)]{1,4096})(["\']\s*\))/i',
+                    '/(str_rot13\s*\\(\s*["\'])([^\'"\\(\\)]{1,4096})(["\']\s*\\))/i',
                     $str,
                     $matches
                 )) {
@@ -3350,7 +3350,7 @@ class Scanner
                     continue;
                 }
                 if ($c = preg_match_all(
-                    '/(hex2bin\s*\(\s*["\'])([\da-f]{1,4096})(["\']\s*\))/i',
+                    '/(hex2bin\s*\\(\s*["\'])([\da-f]{1,4096})(["\']\s*\\))/i',
                     $str,
                     $matches
                 )) {
@@ -3364,7 +3364,7 @@ class Scanner
                     continue;
                 }
                 if ($c = preg_match_all(
-                    '/([Uu][Nn][Pp][Aa][Cc][Kk]\s*\(\s*["\']\s*H\*\s*["\']\s*,\s*["\'])([\da-fA-F]{1,4096})(["\']\s*\))/',
+                    '/([Uu][Nn][Pp][Aa][Cc][Kk]\s*\\(\s*["\']\s*H\*\s*["\']\s*,\s*["\'])([\da-fA-F]{1,4096})(["\']\s*\\))/',
                     $str,
                     $matches
                 )) {
@@ -3833,7 +3833,7 @@ class Scanner
      */
     private function splitSigParts(string $Sig, int $Max = -1): array
     {
-        return preg_split('~(?<!\?|\<)\:~', $Sig, $Max, PREG_SPLIT_NO_EMPTY);
+        return preg_split('~(?<!\?|\<):~', $Sig, $Max, PREG_SPLIT_NO_EMPTY);
     }
 
     /**

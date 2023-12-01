@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2023.10.12).
+ * This file: The loader (last modified: 2023.12.01).
  */
 
 namespace phpMussel\Core;
@@ -802,7 +802,7 @@ class Loader
         $Restrictions = strlen(ini_get('open_basedir')) > 0;
 
         /** Split path into steps. */
-        $Steps = preg_split('~[\\\/]~', $Path, -1, PREG_SPLIT_NO_EMPTY);
+        $Steps = preg_split('~[\\\\/]~', $Path, -1, PREG_SPLIT_NO_EMPTY);
 
         /** Separate file from path. */
         $File = $PointsToFile ? array_pop($Steps) : '';
@@ -810,7 +810,7 @@ class Loader
         /** Build directories. */
         foreach ($Steps as $Step) {
             if (!isset($Rebuilt)) {
-                $Rebuilt = preg_match('~^[\\\/]~', $Path) ? DIRECTORY_SEPARATOR . $Step : $Step;
+                $Rebuilt = preg_match('~^[\\\\/]~', $Path) ? DIRECTORY_SEPARATOR . $Step : $Step;
             } else {
                 $Rebuilt .= DIRECTORY_SEPARATOR . $Step;
             }
@@ -1102,7 +1102,7 @@ class Loader
      */
     public function resolvePaths(string $Base, bool $LastIsFile = true, bool $GZ = true): \Generator
     {
-        $Steps = preg_split('~[\\\/]~', $Base, -1, PREG_SPLIT_NO_EMPTY);
+        $Steps = preg_split('~[\\\\/]~', $Base, -1, PREG_SPLIT_NO_EMPTY);
         $LastStep = $LastIsFile ? array_pop($Steps) : '';
         $BaseFrom = '';
         $Remainder = '';
@@ -1120,8 +1120,8 @@ class Loader
             $LastStep = DIRECTORY_SEPARATOR . $LastStep;
         }
         $Steps = preg_replace(
-            ['~\\\{(?:dd|mm|yy|hh|ii|ss)\\\}~i', '~\\\{yyyy\\\}~i', '~\\\{(?:Day|Mon)\\\}~i', '~\\\{tz\\\}~i', '~\\\{t\\\:z\\\}~i'],
-            ['\d{2}', '\d{4}', '\w{3}', '.{1,2}\d{4}', '.{1,2}\d{2}\:\d{2}'],
+            ['~\\{(?:dd|mm|yy|hh|ii|ss)\\}~i', '~\\{yyyy\\}~i', '~\\{(?:Day|Mon)\\}~i', '~\\{tz\\}~i', '~\\{t:z\\}~i'],
+            ['\d{2}', '\d{4}', '\w{3}', '.{1,2}\d{4}', '.{1,2}\d{2}:\d{2}'],
             preg_quote($Remainder) . ($LastStep ? preg_quote($LastStep) . ($GZ ? '(?:\.gz)?' : '') . '$' : '')
         );
         $Pattern = '~^' . preg_quote($BaseFrom) . $Steps . '~i';
@@ -1179,7 +1179,7 @@ class Loader
                     } elseif (is_string($DirValue)) {
                         /** Multiline support. */
                         $DirValue = preg_replace('~[^\x00-\xFF]~', '', str_replace(
-                            ["\\", "\0", "\7", "\8", "\t", "\n", "\x0B", "\x0C", "\r", "\x1B"],
+                            ['\\', "\0", "\7", "\8", "\t", "\n", "\x0B", "\x0C", "\r", "\x1B"],
                             ["\\\\", '\0', '\a', '\b', '\t', '\n', '\v', '\f', '\r', '\e'],
                             $DirValue
                         ));
@@ -1241,7 +1241,7 @@ class Loader
                 }
                 $DirVal = str_replace(
                     ["\\\\", '\0', '\a', '\b', '\t', '\n', '\v', '\f', '\r', '\e'],
-                    ["\\", "\0", "\7", "\8", "\t", "\n", "\x0B", "\x0C", "\r", "\x1B"],
+                    ['\\', "\0", "\7", "\8", "\t", "\n", "\x0B", "\x0C", "\r", "\x1B"],
                     $DirVal
                 );
             }

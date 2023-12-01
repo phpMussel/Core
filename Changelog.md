@@ -139,3 +139,7 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 ### 3.4.2
 
 [2022.11.22; Maikuolan]: Maintenance release.
+
+### v3.5.0
+
+[2023.12.01; Maikuolan]: Improve escaping.

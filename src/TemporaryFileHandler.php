@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: Temporary file handler (last modified: 2021.07.10).
+ * This file: Temporary file handler (last modified: 2023.12.01).
  */
 
 namespace phpMussel\Core;
@@ -30,7 +30,7 @@ class TemporaryFileHandler
     public function __construct(string $Content, string $Location)
     {
         /** Pad the location if necessary. */
-        if (($Pad = substr($Location, -1)) && ($Pad !== '/') && ($Pad !== "\\") && ($Pad !== DIRECTORY_SEPARATOR)) {
+        if (($Pad = substr($Location, -1)) && ($Pad !== '/') && ($Pad !== '\\') && ($Pad !== DIRECTORY_SEPARATOR)) {
             $Location .= DIRECTORY_SEPARATOR;
         }
 

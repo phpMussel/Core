@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2023.12.01).
+ * This file: The scanner (last modified: 2023.12.12).
  */
 
 namespace phpMussel\Core;
@@ -1833,7 +1833,7 @@ class Scanner
 
             $SigFiles = isset($this->Loader->InstanceCache[$ThisConf[0]]) ? explode(',', $this->Loader->InstanceCache[$ThisConf[0]]) : [];
             foreach ($SigFiles as $SigFile) {
-                if (!$SigFile) {
+                if ($SigFile === '' || $this->Loader->isReserved($SigFile)) {
                     continue;
                 }
                 if (!isset($this->Loader->InstanceCache[$SigFile])) {

@@ -143,3 +143,5 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 ### v3.5.0
 
 [2023.12.01; Maikuolan]: Improved escaping. Added support for specifying a Redis database number to the supplementary cache options.
+
+[2023.12.12; Security; Maikuolan]: Added a method to check whether a name is reserved, and applied it as a guard at the point where signature files are read in. Attempting to perform file operations on reserved names under Windows and some other operating systems could cause the underlying file system to attempt to communicate with a serial port instead of the intended file. PHP is likely to then wait indefinitely for a response it's unlikely to ever receive, thus locking up the process and preventing further requests unless the process is restarted. Although it's infinitesimally unlikely that a user would actually want to use a reserved name for one of their signature files, as the solution is exceedingly simple, with no particular performance impact, I've implemented it accordingly.

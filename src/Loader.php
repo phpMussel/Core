@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2023.12.01).
+ * This file: The loader (last modified: 2023.12.12).
  */
 
 namespace phpMussel\Core;
@@ -1180,7 +1180,7 @@ class Loader
                         /** Multiline support. */
                         $DirValue = preg_replace('~[^\x00-\xFF]~', '', str_replace(
                             ['\\', "\0", "\7", "\8", "\t", "\n", "\x0B", "\x0C", "\r", "\x1B"],
-                            ["\\\\", '\0', '\a', '\b', '\t', '\n', '\v', '\f', '\r', '\e'],
+                            ['\\\\', '\0', '\a', '\b', '\t', '\n', '\v', '\f', '\r', '\e'],
                             $DirValue
                         ));
 
@@ -1222,6 +1222,19 @@ class Loader
     }
 
     /**
+     * Check whether a name is reserved. Important, because attempting to read
+     * from, write to, or otherwise work with names reserved at the file system
+     * can result in unexpected behaviour and potential security risks.
+     *
+     * @param string $Name The name to check.
+     * @return bool True if reserved; False if not.
+     */
+    public function isReserved(string $Name): bool
+    {
+        return preg_match('~(?:^|\\\\|/)(?:\.{1,3}|aux|com(?:\d+|¹|²|³)|con|lpt(?:\d+|¹|²|³)|nul|prn)(?:(?:\..*)?$|\\\\|/)|[ .]$~i', $Name);
+    }
+
+    /**
      * Decodes for multiline support (needed when using INI configuration files).
      *
      * @return void
@@ -1240,7 +1253,7 @@ class Loader
                     continue;
                 }
                 $DirVal = str_replace(
-                    ["\\\\", '\0', '\a', '\b', '\t', '\n', '\v', '\f', '\r', '\e'],
+                    ['\\\\', '\0', '\a', '\b', '\t', '\n', '\v', '\f', '\r', '\e'],
                     ['\\', "\0", "\7", "\8", "\t", "\n", "\x0B", "\x0C", "\r", "\x1B"],
                     $DirVal
                 );

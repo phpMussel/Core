@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Italian language data (last modified: 2023.09.25).
+# This file: Italian language data (last modified: 2023.12.22).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -30,7 +30,7 @@ SafeBrowseLookup:
  401: "Errore di autorizzazione delle API"
  503: "Servizio delle API è non disponibile"
  999: "Errore di API è sconosciuto"
-error_log_header: "Se persiste uno dei seguenti errori, per riportarli o per chiedere supporto, crea un nuovo issue nella pagina dei issues per phpMussel su GitHub quando hai un momento libero, con gli errori in questione insieme a qualsiasi altra informazione pertinente allegata. Grazie."
+error_log_header: "Se persiste uno dei seguenti errori, per rapportarli o per chiedere supporto, crea un nuovo issue nella pagina dei issues per phpMussel su GitHub quando hai un momento libero, con gli errori in questione insieme a qualsiasi altra informazione pertinente allegata. Grazie."
 field:
  Date: "Data"
  Hash signatures reconstruction: "Ricostruzione delle firme hash"

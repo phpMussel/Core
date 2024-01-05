@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2023.12.12).
+ * This file: The loader (last modified: 2024.01.05).
  */
 
 namespace phpMussel\Core;
@@ -93,7 +93,7 @@ class Loader
     /**
      * @var string phpMussel version number (SemVer).
      */
-    public $ScriptVersion = '3.4.2';
+    public $ScriptVersion = '3.5.0';
 
     /**
      * @var string phpMussel version identifier (complete notation).

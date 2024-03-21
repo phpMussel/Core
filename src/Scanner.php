@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2023.12.12).
+ * This file: The scanner (last modified: 2024.03.21).
  */
 
 namespace phpMussel\Core;

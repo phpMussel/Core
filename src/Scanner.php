@@ -85,9 +85,9 @@ class Scanner
             if ($this->CalledFrom === 'CLI') {
                 $Origin = 'CLI';
             } elseif ($this->Loader->Configuration['legal']['pseudonymise_ip_addresses']) {
-                $Origin = $this->Loader->pseudonymiseIP($this->IPAddr);
+                $Origin = $this->Loader->pseudonymiseIP($this->Loader->IPAddr);
             } else {
-                $Origin = $this->IPAddr;
+                $Origin = $this->Loader->IPAddr;
             }
 
             /** Get detections. */
@@ -1014,7 +1014,7 @@ class Scanner
                 $this->quarantine(
                     $In,
                     $this->Loader->Configuration['quarantine']['quarantine_key'],
-                    $this->IPAddr,
+                    $this->Loader->IPAddr,
                     $qfu
                 );
                 $this->Loader->HashReference .= sprintf($this->Loader->L10N->getString('response.Quarantined as'), $qfu) . "\n";
@@ -1086,7 +1086,7 @@ class Scanner
                 $this->quarantine(
                     $In,
                     $this->Loader->Configuration['quarantine']['quarantine_key'],
-                    $this->IPAddr,
+                    $this->Loader->IPAddr,
                     $qfu
                 );
                 $this->Loader->HashReference .= sprintf($this->Loader->L10N->getString('response.Quarantined as'), $qfu);

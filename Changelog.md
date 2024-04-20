@@ -150,4 +150,4 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 
 ### v3.5.1
 
-[2024.03.21; Bug-fix; jedso]: Change `$this->IPAddr` to `$this->Loader->IPAddr` in `Scanner.php`.
+[2024.03.21; Bug-fix; jedso]: Changed `$this->IPAddr` to `$this->Loader->IPAddr` in `Scanner.php`.

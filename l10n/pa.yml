@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Punjabi language data (last modified: 2023.09.25).
+# This file: Punjabi language data (last modified: 2024.05.04).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -29,7 +29,7 @@ SafeBrowseLookup:
  400: "API ਬੇਨਤੀ ਗਲਤੀ"
  401: "API ਪ੍ਰਮਾਣੀਕਰਨ ਗਲਤੀ"
  503: "API ਸੇਵਾ ਉਪਲਬਧ ਨਹੀਂ ਹੈ"
- 999: "ਅਗਿਆਤ API ਗਲਤੀ"
+ 999: "ਅਣਜਾਣ API ਗਲਤੀ"
 error_log_header: "ਜੇਕਰ ਹੇਠ ਲਿਖੀਆਂ ਵਿੱਚੋਂ ਕੋਈ ਵੀ ਤਰੁੱਟੀ ਬਣੀ ਰਹਿੰਦੀ ਹੈ, ਉਹਨਾਂ ਦੀ ਰਿਪੋਰਟ ਕਰਨ ਲਈ, ਜਾਂ ਸਹਾਇਤਾ ਦੀ ਮੰਗ ਕਰਨ ਲਈ, ਕਿਰਪਾ ਕਰਕੇ GitHub 'ਤੇ phpMussel ਮੁੱਦੇ ਪੰਨੇ 'ਤੇ ਇੱਕ ਨਵਾਂ ਮੁੱਦਾ ਬਣਾਓ ਜਦੋਂ ਤੁਹਾਡੇ ਕੋਲ ਸਮਾਂ ਹੁੰਦਾ ਹੈ, ਪ੍ਰਸ਼ਨ ਵਿੱਚ ਗਲਤੀਆਂ ਦੇ ਨਾਲ ਨਾਲ ਜੁੜੀ ਕਿਸੇ ਵੀ ਹੋਰ ਢੁਕਵੀਂ ਜਾਣਕਾਰੀ ਦੇ ਨਾਲ। ਧੰਨਵਾਦ।"
 field:
  Date: "ਤਾਰੀਖ਼"

@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Korean language data (last modified: 2023.09.25).
+# This file: Korean language data (last modified: 2024.05.04).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -29,7 +29,7 @@ SafeBrowseLookup:
  400: "API 요청이 부정"
  401: "API 인증 오류"
  503: "API 서비스 이용 불가"
- 999: "알 수없는 API 오류"
+ 999: "알 수 없는 API 오류"
 error_log_header: "다음과 같은 오류가 계속 발생하면, 여가 시간이있을 때, GitHub의 phpMussel issues 페이지를 문제를보고하거나 도움을 요청하기 위해. 오류 및 기타 관련 정보를 포함하십시오. 감사."
 field:
  Date: "날짜 "

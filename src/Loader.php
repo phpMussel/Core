@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2024.03.21).
+ * This file: The loader (last modified: 2024.07.01).
  */
 
 namespace phpMussel\Core;
@@ -563,24 +563,20 @@ class Loader
      */
     public function loadL10N(string $Path = ''): void
     {
-        if ($this->Configuration['core']['lang'] === 'en') {
-            $Primary = $this->readFile($Path . 'en.yml');
-            $Fallback = '';
-        } else {
-            if (($Primary = $this->readFile($Path . $this->Configuration['core']['lang'] . '.yml')) === '') {
-                if (isset($this->ConfigurationDefaults['core']['lang']['defer'][$this->Configuration['core']['lang']])) {
-                    $Primary = $this->readFile($Path . $this->ConfigurationDefaults['core']['lang']['defer'][$this->Configuration['core']['lang']] . '.yml');
+        if (($Primary = $this->readFile($Path . $this->Configuration['core']['lang'] . '.yml')) === '') {
+            if (isset($this->ConfigurationDefaults['core']['lang']['defer'][$this->Configuration['core']['lang']])) {
+                if (($Primary = $this->readFile($Path . $this->ConfigurationDefaults['core']['lang']['defer'][$this->Configuration['core']['lang']] . '.yml')) === '') {
+                    $Primary = $this->readFile($Path . preg_replace('~-.*$~', '', $this->ConfigurationDefaults['core']['lang']['defer'][$this->Configuration['core']['lang']]) . '.yml');
                 }
-                if ($Primary === '') {
-                    $Try = preg_replace('~-.*$~', '', $this->Configuration['core']['lang']);
-                    if (($Primary = $this->readFile($Path . $Try . '.yml')) === '') {
-                        if (isset($this->ConfigurationDefaults['core']['lang']['defer'][$Try])) {
-                            $Primary = $this->readFile($Path . $this->ConfigurationDefaults['core']['lang']['defer'][$Try] . '.yml');
-                        }
+            }
+            if ($Primary === '') {
+                $Try = preg_replace('~-.*$~', '', $this->Configuration['core']['lang']);
+                if (($Primary = $this->readFile($Path . $Try . '.yml')) === '') {
+                    if (isset($this->ConfigurationDefaults['core']['lang']['defer'][$Try])) {
+                        $Primary = $this->readFile($Path . $this->ConfigurationDefaults['core']['lang']['defer'][$Try] . '.yml');
                     }
                 }
             }
-            $Fallback = $this->readFile($Path . 'en.yml');
         }
         if ($Primary !== '') {
             $Accepted = $this->ConfigurationDefaults['core']['lang']['assume'][$this->Configuration['core']['lang']] ?? $this->Configuration['core']['lang'];
@@ -594,6 +590,7 @@ class Loader
         if ($this->L10NAccepted === '' && $Accepted !== '') {
             $this->L10NAccepted = $Accepted;
         }
+        $Fallback = substr($this->L10NAccepted, 0, 3) === 'en-' ? '' : $this->readFile($Path . 'en.yml');
         if ($Fallback !== '') {
             $Arr = [];
             $this->YAML->process($Fallback, $Arr);
@@ -612,12 +609,12 @@ class Loader
             }
         } else {
             $this->L10N = new \Maikuolan\Common\L10N($Primary, $Fallback);
-            if ($this->Configuration['core']['lang'] === 'en') {
-                $this->L10N->autoAssignRules('en-AU');
+            if (substr($this->L10NAccepted, 0, 3) === 'en-') {
+                $this->L10N->autoAssignRules($this->L10NAccepted);
             } else {
                 $this->L10N->autoAssignRules($this->L10NAccepted, 'en-AU');
             }
-            $this->L10N->PreferredVariant = $this->L10NAccepted;
+            $this->L10N->PreferredVariant = $this->ConfigurationDefaults['core']['lang']['defer'][$this->L10NAccepted] ?? $this->L10NAccepted;
         }
 
         /** Load client-specified L10N data if possible. */
@@ -637,8 +634,7 @@ class Loader
                         $IsSameAs = true;
                         break 2;
                     }
-                    if (is_readable($Path . $Accepted . '.yml')) {
-                        $Primary = $this->readFile($Path . $Accepted . '.yml');
+                    if (($Primary = $this->readFile($Path . $Accepted . '.yml')) !== '') {
                         break 2;
                     }
                     if (isset($this->ConfigurationDefaults['core']['lang']['defer'][$Accepted])) {
@@ -646,8 +642,10 @@ class Loader
                             $IsSameAs = true;
                             break 2;
                         }
-                        if (is_readable($Path . $this->ConfigurationDefaults['core']['lang']['defer'][$Accepted] . '.yml')) {
-                            $Primary = $this->readFile($Path . $this->ConfigurationDefaults['core']['lang']['defer'][$Accepted] . '.yml');
+                        if (
+                            ($Primary = $this->readFile($Path . $this->ConfigurationDefaults['core']['lang']['defer'][$Accepted] . '.yml')) !== '' ||
+                            ($Primary = $this->readFile($Path . preg_replace('~-.*$~', '', $this->ConfigurationDefaults['core']['lang']['defer'][$Accepted]) . '.yml')) !== ''
+                        ) {
                             break 2;
                         }
                     }
@@ -661,6 +659,7 @@ class Loader
             if ($IsSameAs) {
                 if (!($this->ClientL10N instanceof \Maikuolan\Common\L10N)) {
                     $this->ClientL10N = &$this->L10N;
+                    $this->ClientL10NAccepted = &$this->L10NAccepted;
                 }
             } elseif ($Primary !== '') {
                 $Arr = [];
@@ -673,6 +672,7 @@ class Loader
                 } else {
                     $this->ClientL10N = new \Maikuolan\Common\L10N($Arr, $this->L10N);
                     $this->ClientL10N->autoAssignRules($Accepted);
+                    $this->ClientL10N->PreferredVariant = $this->ConfigurationDefaults['core']['lang']['defer'][$Accepted] ?? $Accepted;
                 }
             } elseif (!($this->ClientL10N instanceof \Maikuolan\Common\L10N)) {
                 $this->ClientL10N = new \Maikuolan\Common\L10N([], $this->L10N);
@@ -683,7 +683,7 @@ class Loader
         /** Fallback for missing accepted client L10N choice. */
         if ($this->ClientL10NAccepted === '') {
             $this->ClientL10NAccepted = $this->L10NAccepted;
-            $this->ClientL10N->PreferredVariant = $this->L10NAccepted;
+            $this->ClientL10N->PreferredVariant = $this->ConfigurationDefaults['core']['lang']['defer'][$this->L10NAccepted] ?? $this->L10NAccepted;
         }
     }
 

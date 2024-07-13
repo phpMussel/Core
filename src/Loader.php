@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2024.07.01).
+ * This file: The loader (last modified: 2024.07.13).
  */
 
 namespace phpMussel\Core;
@@ -629,25 +629,27 @@ class Loader
                 $Accepted = preg_replace(['~;.*$~', '~[^-A-Za-z]~'], '', $Accepted);
                 $Primary = '';
                 $IsSameAs = false;
-                foreach ([$Accepted, strtolower(preg_replace('~-.*$~', '', $Accepted))] as $Accepted) {
-                    if ($this->L10NAccepted === $Accepted) {
+                if ($this->L10NAccepted === $Accepted) {
+                    $IsSameAs = true;
+                    break;
+                }
+                $Main = strpos($Accepted, '-') === false ? '' : strtolower(preg_replace('~-.*$~', '', $Accepted));
+                if (($Primary = $this->readFile($Path . $Accepted . '.yml')) !== '' || ($Primary = $this->readFile($Path . $Main . '.yml')) !== '') {
+                    break;
+                }
+                foreach ([$Accepted, $Main] as $Accepted) {
+                    if ($Accepted === '' || !isset($this->ConfigurationDefaults['core']['lang']['defer'][$Accepted])) {
+                        break;
+                    }
+                    if ($this->L10NAccepted === $this->ConfigurationDefaults['core']['lang']['defer'][$Accepted]) {
                         $IsSameAs = true;
                         break 2;
                     }
-                    if (($Primary = $this->readFile($Path . $Accepted . '.yml')) !== '') {
+                    if (
+                        ($Primary = $this->readFile($Path . $this->ConfigurationDefaults['core']['lang']['defer'][$Accepted] . '.yml')) !== '' ||
+                        ($Primary = $this->readFile($Path . preg_replace('~-.*$~', '', $this->ConfigurationDefaults['core']['lang']['defer'][$Accepted]) . '.yml')) !== ''
+                    ) {
                         break 2;
-                    }
-                    if (isset($this->ConfigurationDefaults['core']['lang']['defer'][$Accepted])) {
-                        if ($this->L10NAccepted === $this->ConfigurationDefaults['core']['lang']['defer'][$Accepted]) {
-                            $IsSameAs = true;
-                            break 2;
-                        }
-                        if (
-                            ($Primary = $this->readFile($Path . $this->ConfigurationDefaults['core']['lang']['defer'][$Accepted] . '.yml')) !== '' ||
-                            ($Primary = $this->readFile($Path . preg_replace('~-.*$~', '', $this->ConfigurationDefaults['core']['lang']['defer'][$Accepted]) . '.yml')) !== ''
-                        ) {
-                            break 2;
-                        }
                     }
                 }
             }
@@ -676,7 +678,6 @@ class Loader
                 }
             } elseif (!($this->ClientL10N instanceof \Maikuolan\Common\L10N)) {
                 $this->ClientL10N = new \Maikuolan\Common\L10N([], $this->L10N);
-                $this->ClientL10N->autoAssignRules($Accepted);
             }
         }
 

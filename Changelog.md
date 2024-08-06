@@ -157,3 +157,5 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 [2024.07.02; Maikuolan]: Refactored the `loadL10N` method. Merged zh and zh-TW L10N, and dropped region designations (e.g., CN, TW) in favour of script designations (e.g., Hans, Hant).
 
 [2024.07.13; Bug-fix; Maikuolan]: If the client-specified language was the same as the configured language, the client-specified preferred variant would be ignored, even if it wasn't the same as the configured preferred variant; Fixed.
+
+[2024.08.06; Maikuolan]: Updated the default filetype blacklist (#7).

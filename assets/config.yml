@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Configuration defaults file (last modified: 2024.07.01).
+# This file: Configuration defaults file (last modified: 2024.08.06).
 ##/
 
 core:
@@ -320,7 +320,7 @@ files:
   hints: "hints_xlists"
  filetype_blacklist:
   type: "string"
-  default: "386,acc*,acm,act*,apk,app,ash*,asm*,asx*,ax,bat,bin,ccc,cgi,cmd,com*,cpl,cpp,csh,dll,drv,elf,exe,fxp,gad*,hta*,htp*,ico,inf,ins,inx,ipa,isu,job,js,jse,ksh,lnk,msc,msi,msp,mst,net,ocx,ops,org,osx,out,paf,php*,pif,pl,prg,ps1,reg,rgs,rs,run,scr*,sct,shb,shs,sql*,sys,u3p,url,vb,vbe,vbs*,wor*,ws,wsf,xsl"
+  default: "386,acc*,acm,act*,apk,app,ash*,asm*,asx*,ax,bat,bin,ccc,cgi,cmd,com*,cpl,cpp,csh,dll,drv,elf,exe,fxp,gad*,hta*,htp*,ico,inf,ins,inx,ipa,isu,job,js,jse,ksh,lnk,msc,msi*,msp,mst,net,ocx,ops,org,osx,out,paf,php*,pif,pl,prg,ps1,reg,rgs,rs,run,scr*,sct,shb,shs,sql*,sys,u3p,url,vb,vbe,vbs*,wor*,ws,wsf,xsl"
   value_preg_filter:
    "~\s~": ""
   hints: "hints_xlists"

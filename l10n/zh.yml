@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Chinese language data (last modified: 2024.07.02).
+# This file: Chinese language data (last modified: 2024.08.14).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -36,7 +36,7 @@ error_log_header:
 field:
  Date: "日期"
  Hash signatures reconstruction: {"zh-Hans": "哈希签名重建", "zh-Hant": "哈希簽名重建"}
- IP address: "IP地址"
+ IP address: {"zh-Hans": "IP地址", "zh-Hant": "IP位址"}
  PE sectional signatures reconstruction: {"zh-Hans": "PE部分签名重建", "zh-Hant": "PE部分簽名重建"}
  Scan results (why flagged): {"zh-Hans": "扫描结果（为什么标记）", "zh-Hant": "掃描結果（為什麼標記）"}
 label:

@@ -159,3 +159,5 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 [2024.07.13; Bug-fix; Maikuolan]: If the client-specified language was the same as the configured language, the client-specified preferred variant would be ignored, even if it wasn't the same as the configured preferred variant; Fixed.
 
 [2024.08.06; Maikuolan]: Updated the default filetype blacklist (#7).
+
+[2024.09.02; Maikuolan]: Code-style patch.

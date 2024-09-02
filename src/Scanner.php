@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2024.03.21).
+ * This file: The scanner (last modified: 2024.09.02).
  */
 
 namespace phpMussel\Core;
@@ -3632,37 +3632,30 @@ class Scanner
              * @link https://developers.google.com/safe-browsing/v4/status-codes
              */
             if (isset($this->Loader->MostRecentHttpCode) && $this->Loader->MostRecentHttpCode !== 200) {
-                /**
-                 * Malformed request detected (e.g., invalid argument, invalid
-                 * request payload, etc).
-                 */
                 if ($this->Loader->MostRecentHttpCode === '400') {
+                    /**
+                     * Malformed request detected (e.g., invalid argument, invalid request payload,
+                     * etc).
+                     */
                     $returnVal = 400;
-                }
-
-                /**
-                 * Unauthorised (most likely an invalid API key used). Returning
-                 * the same message for 401 and 403 because the returned message is
-                 * suitable either way.
-                 */
-                elseif ($this->Loader->MostRecentHttpCode >= '401' && $this->Loader->MostRecentHttpCode <= 403) {
+                } elseif ($this->Loader->MostRecentHttpCode >= '401' && $this->Loader->MostRecentHttpCode <= 403) {
+                    /**
+                     * Unauthorised (most likely an invalid API key used). Returning the same
+                     * message for 401 and 403 because the returned message is suitable either way.
+                     */
                     $returnVal = 401;
-                }
-
-                /**
-                 * Service unavailable or internal server error. Returning the same
-                 * message for 429, 500, 503, 504 alike because, for our purpose,
-                 * the returned message is suitable in any case.
-                 */
-                elseif ($this->Loader->MostRecentHttpCode >= '429') {
+                } elseif ($this->Loader->MostRecentHttpCode >= '429') {
+                    /**
+                     * Service unavailable or internal server error. Returning the same message for
+                     * 429, 500, 503, 504 alike because, for our purpose, the returned message is
+                     * suitable in any case.
+                     */
                     $returnVal = 503;
-                }
-
-                /**
-                 * Fallback for other error codes (in theory, this shouldn't ever
-                 * be reached, but adding it here just in case).
-                 */
-                else {
+                } else {
+                    /**
+                     * Fallback for other error codes (in theory, this shouldn't ever be reached, but
+                     * adding it here just in case).
+                     */
                     $returnVal = 999;
                 }
 

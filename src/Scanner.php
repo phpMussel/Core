@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2024.09.02).
+ * This file: The scanner (last modified: 2024.10.15).
  */
 
 namespace phpMussel\Core;
@@ -1058,6 +1058,7 @@ class Scanner
 
             /** Add hash cache entry here if necessary (e.g., because of encryption). */
             if (
+                empty($this->Loader->InstanceCache['wc']) &&
                 ($InSha256 = hash('sha256', $In)) &&
                 ($AtInstanceLookupKey = sprintf('%s:%d:%s', $InSha256, strlen($In), $OriginalFilenameClean)) &&
                 isset($this->Loader->ScanResultsIntegers[$AtInstanceLookupKey]) &&
@@ -2720,7 +2721,7 @@ class Scanner
         $this->Loader->Events->fireEvent('afterVirusTotal');
 
         /** Add hash cache entry. */
-        if (!empty($HashCacheID)) {
+        if (empty($this->Loader->InstanceCache['wc']) && !empty($HashCacheID)) {
             /** 0: (int) {-5...2}; 1: Text. */
             $HashCacheEntry = json_encode([
                 $this->Loader->ScanResultsIntegers[$AtInstanceLookupKey] ?? 1,

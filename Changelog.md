@@ -39,14 +39,13 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 
 ### v3.2.1
 
-- [2021.03.11]: Added some missing return type declarations.
-
 #### Bugs fixed.
 - [2021.04.19]: BuildPath could potentially trigger warnings when open_basedir is defined, causing logging, among various other internal file operations, to fail (related to PHP bug 69240); Fixed.
 - [2021.05.01]: Log truncation not being calculated properly; Fixed.
 - [2021.05.28]: Wrong casing used for some variables would cause undefined variable errors to occur; Fixed (#3).
 
 #### Other changes.
+- [2021.03.11]: Added some missing return type declarations.
 - [2021.05.28]: Performed some minor refactoring.
 
 ### v3.3.0
@@ -58,19 +57,21 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 
 ### v3.3.1
 
-- [2021.11.27]: At the front-end configuration page, configuration directives relying on specific extensions (specifically, at this time, the supplementary cache options) will now include a notice as to whether the extensions relied upon are available.
-
 #### Bugs fixed.
 - [2022.02.01]: Failed to correctly determine the client's IP address under certain circumstances (e.g., multiple choices available via HTTP_X_FORWARDED_FOR); Fixed.
 
-### v3.3.2
+#### Other changes.
+- [2021.11.27]: At the front-end configuration page, configuration directives relying on specific extensions (specifically, at this time, the supplementary cache options) will now include a notice as to whether the extensions relied upon are available.
 
-- [2022.02.21]: Improved IP address resolution strategy.
-- [2022.02.21]: Added a default caching prefix.
+### v3.3.2
 
 #### Bugs fixed.
 - [2022.03.11]: Shorthand data was quoted, but needed to be defined as literals in order to avoid being unentitised prior to being parsed as regular expression partials, in order to avoid breaking those expressions and potentially triggering fatal errors; Fixed.
 - [2022.03.24]: Fixed a bottleneck in the scan process caused by the readFileBlocks method (phpMussel/phpMussel#231).
+
+#### Other changes.
+- [2022.02.21]: Improved IP address resolution strategy.
+- [2022.02.21]: Added a default caching prefix.
 
 ### v3.3.3
 
@@ -139,13 +140,13 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 
 ### v3.5.2
 
-- [2024.07.02]: Refactored the `loadL10N` method. Merged zh and zh-TW L10N, and dropped region designations (e.g., CN, TW) in favour of script designations (e.g., Hans, Hant).
-
 #### Bugs fixed.
 - [2024.07.13]: If the client-specified language was the same as the configured language, the client-specified preferred variant would be ignored, even if it wasn't the same as the configured preferred variant; Fixed.
 
 #### Other changes.
+- [2024.07.02]: Refactored the `loadL10N` method. Merged zh and zh-TW L10N, and dropped region designations (e.g., CN, TW) in favour of script designations (e.g., Hans, Hant).
 - [2024.08.06]: Updated the default filetype blacklist (#7).
 - [2024.09.02]: Code-style patch.
 - [2024.09.10]: Added L10N for Marathi.
 - [2024.09.13]: Added L10N for Malayalam.
+- [2024.10.15]: Added support to optionally disable adding new hash cache entries when a specific instance cache flag is used.

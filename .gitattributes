@@ -4,6 +4,7 @@
 * text eol=lf
 *.ini text eol=crlf
 *.dat binary
+switch.dat eol=lf
 *.exe binary
 *.gif binary
 *.gz binary

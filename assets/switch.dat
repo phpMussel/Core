@@ -15,10 +15,10 @@ FD:d9d505f920a163d7:A:8;infectable=false
 FD:fffb90:A:3;infectable=false
 
 == Assists with determining potential file content ==
+$fileswitch:unassigned;FN:\.[Mm][Pp]?4.?$;FD-RX:63(686170|6c6970|72676e|746162)|66726565|66747970|696d6170|6a7032|6b6d6174|6c6f6164|6d(617474|646174|6f6f66|6f6f76)|70696374|706e6f74|73(637074|6b6970|737263|796e63)|746d6364|75647461|75756964|77696465:4:4;fileswitch=mp4
 $fileswitch:unassigned;FD:4d5a:A:2;fileswitch=pefile
 $fileswitch:unassigned;FD-RX:(cafebabe|cafed00d|cefaedfe|cffaedfe|feedface|feedfacf):A:4;fileswitch=java
-$fileswitch:unassigned;FD:494433:A:3;fileswitch=mp3
-$fileswitch:unassigned;FD:fffb90:A:3;fileswitch=mp3
+$fileswitch:unassigned;FD-RX:494433|fffb90:A:3;fileswitch=mp3
 $fileswitch:unassigned;FD-NORM-RX:23212f7573722f(6c6f63616c2f)?62696e2f(656e76)?7065726c:A:24;fileswitch=perl
 $fileswitch:unassigned;FD:43723234:A:4;fileswitch=chrome
 $fileswitch:unassigned;FD:4c00000001140200:A:8;fileswitch=lnk

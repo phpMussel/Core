@@ -1687,7 +1687,7 @@ class Scanner
             strpos(',phar,', ',' . $gzxt . ',') === false &&
             strpos(',php*,', ',' . $gzxts . ',') === false &&
             strpos($str_hex_norm, '3c3f706870') === false
-        ) || $is_pe);
+        ) || $is_pe || $fileswitch === 'mp4');
 
         /** Set debug values, if this has been enabled. */
         if (isset($this->debugArr)) {

@@ -150,3 +150,4 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 - [2024.09.10]: Added L10N for Marathi.
 - [2024.09.13]: Added L10N for Malayalam.
 - [2024.10.15]: Added support to optionally disable adding new hash cache entries when a specific instance cache flag is used.
+- [2024.10.15]: Added support to inform the user via an optional instance cache flag which flags were set by the switch file during the scan when scanning via CLI.

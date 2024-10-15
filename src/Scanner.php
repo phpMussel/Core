@@ -1367,6 +1367,12 @@ class Scanner
 
         /** Worked by the switch file. */
         $fileswitch = 'unassigned';
+        if (!empty($this->Loader->InstanceCache['sf'])) {
+            if (!isset($this->Loader->InstanceCache['Print after CLI scan'])) {
+                $this->Loader->InstanceCache['Print after CLI scan'] = '';
+            }
+            $this->Loader->InstanceCache['Print after CLI scan'] .= sprintf($this->Loader->L10N->getString('label.Flags set by the switch file while scanning %s'), $OriginalFilename) . "\n";
+        }
         if (!isset($this->Loader->InstanceCache['switch.dat'])) {
             $this->Loader->InstanceCache['switch.dat'] = $this->Loader->readFileAsArray($this->AssetsPath . 'switch.dat', FILE_IGNORE_NEW_LINES);
         }
@@ -1508,6 +1514,9 @@ class Scanner
                 }
             }
             if (count($Switch) > 1) {
+                if (!empty($this->Loader->InstanceCache['sf'])) {
+                    $this->Loader->InstanceCache['Print after CLI scan'] .= sprintf("\$%s = %s\n", $theSwitch, $Switch[1]);
+                }
                 if ($Switch[1] === 'true') {
                     $$theSwitch = true;
                     continue;
@@ -1518,6 +1527,9 @@ class Scanner
                 }
                 $$theSwitch = $Switch[1];
             } else {
+                if (!empty($this->Loader->InstanceCache['sf'])) {
+                    $this->Loader->InstanceCache['Print after CLI scan'] .= sprintf("\$%s = %s\n", $theSwitch, !isset($$theSwitch) || !$$theSwitch ? 'true' : 'false');
+                }
                 if (!isset($$theSwitch)) {
                     $$theSwitch = true;
                     continue;

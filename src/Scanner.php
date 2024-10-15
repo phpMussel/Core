@@ -1269,7 +1269,6 @@ class Scanner
         $len_hgb = ($StringLength > 536870912) ? 1 : 0;
         $phase = $this->Loader->InstanceCache['phase'];
         $container = $this->Loader->InstanceCache['container'];
-        $pdf_magic = ($fourcc === '25504446');
 
         /** CoEx flags for configuration directives related to signatures. */
         foreach ([
@@ -1341,21 +1340,6 @@ class Scanner
             $str_hex
         ) || preg_match('/0a2d2d.{32}(?:2d2d)?(?:0d)?0a/i', $str_hex));
 
-        /** Look for potential Mach-O indicators. */
-        $is_macho = preg_match('/^(?:cafe(?:babe|d00d)|c[ef]faedfe|feedfac[ef])$/', $fourcc);
-
-        /** Look for potential PDF indicators. */
-        $is_pdf = ($pdf_magic || $xt === 'pdf');
-
-        /** Look for potential Shockwave/SWF indicators. */
-        $is_swf = (
-            strpos(',435753,465753,5a5753,', ',' . substr($str_hex, 0, 6) . ',') !== false ||
-            strpos(',swf,swt,', ',' . $xt . ',') !== false
-        );
-
-        /** "Infectable"? Used by ClamAV General and ClamAV ASCII signatures. */
-        $infectable = true;
-
         /** "Asciiable"? Used by all ASCII signatures. */
         $asciiable = (bool)$str_hex_norm_len;
 
@@ -1365,23 +1349,26 @@ class Scanner
             strpos(',bin,ole,xml,rels,', ',' . $xt . ',') !== false
         );
 
-        /** Worked by the switch file. */
-        $fileswitch = 'unassigned';
         if (!empty($this->Loader->InstanceCache['sf'])) {
             if (!isset($this->Loader->InstanceCache['Print after CLI scan'])) {
                 $this->Loader->InstanceCache['Print after CLI scan'] = '';
             }
             $this->Loader->InstanceCache['Print after CLI scan'] .= sprintf($this->Loader->L10N->getString('label.Flags set by the switch file while scanning %s'), $OriginalFilename) . "\n";
         }
+
+        /** Process the switch file. */
         if (!isset($this->Loader->InstanceCache['switch.dat'])) {
             $this->Loader->InstanceCache['switch.dat'] = $this->Loader->readFileAsArray($this->AssetsPath . 'switch.dat', FILE_IGNORE_NEW_LINES);
         }
         foreach ($this->Loader->InstanceCache['switch.dat'] as $ThisRule) {
+            if ($ThisRule === '' || substr($ThisRule, 0, 1) === '#') {
+                continue;
+            }
             $Switch = (strpos($ThisRule, ';') === false) ? $ThisRule : $this->Loader->substrAfterLast($ThisRule, ';');
             if (strpos($Switch, '=') === false) {
                 continue;
             }
-            $Switch = explode('=', preg_replace('/[^\x20-\xFF]/', '', $Switch));
+            $Switch = explode('=', preg_replace('/[^\x20-\xFF]/', '', $Switch), 2);
             if (empty($Switch[0])) {
                 continue;
             }
@@ -1389,9 +1376,9 @@ class Scanner
                 $Switch[1] = false;
             }
             $theSwitch = $Switch[0];
-            $ThisRule = (strpos($ThisRule, ';') === false) ? [$ThisRule] : explode(';', $this->Loader->substrBeforeLast($ThisRule, ';'));
+            $ThisRule = (strpos($ThisRule, ';') === false) ? [] : explode(';', $this->Loader->substrBeforeLast($ThisRule, ';'));
             foreach ($ThisRule as $Fragment) {
-                $Fragment = (strpos($Fragment, ':') === false) ? false : $this->splitSigParts($Fragment, 7);
+                $Fragment = (strpos($Fragment, ':') === false) ? [] : $this->splitSigParts($Fragment, 7);
                 if (empty($Fragment[0])) {
                     continue 2;
                 }
@@ -1489,15 +1476,17 @@ class Scanner
                             continue 2;
                         }
                     }
-                } elseif (
+                } elseif (isset($Fragment[1]) && (
                     ($Fragment[0] === 'FN' && !preg_match('/(?:' . $Fragment[1] . ')/i', $OriginalFilename)) ||
                     ($Fragment[0] === 'FS-MIN' && $StringLength < $Fragment[1]) ||
                     ($Fragment[0] === 'FS-MAX' && $StringLength > $Fragment[1]) ||
                     ($Fragment[0] === 'FD' && strpos($str_hex, $Fragment[1]) === false) ||
                     ($Fragment[0] === 'FD-RX' && !preg_match('/(?:' . $Fragment[1] . ')/i', $str_hex)) ||
                     ($Fragment[0] === 'FD-NORM' && strpos($str_hex_norm, $Fragment[1]) === false) ||
-                    ($Fragment[0] === 'FD-NORM-RX' && !preg_match('/(?:' . $Fragment[1] . ')/i', $str_hex_norm))
-                ) {
+                    ($Fragment[0] === 'FD-NORM-RX' && !preg_match('/(?:' . $Fragment[1] . ')/i', $str_hex_norm)) ||
+                    ($Fragment[0] === 'ISSET' && !isset(${$Fragment[1]})) ||
+                    ($Fragment[0] === '!ISSET' && isset(${$Fragment[1]}))
+                )) {
                     continue 2;
                 } elseif (substr($Fragment[0], 0, 1) === '$') {
                     $VarInSigFile = substr($Fragment[0], 1);
@@ -1506,10 +1495,10 @@ class Scanner
                     }
                 } elseif (substr($Fragment[0], 0, 2) === '!$') {
                     $VarInSigFile = substr($Fragment[0], 2);
-                    if (!isset($$VarInSigFile) || is_array($$VarInSigFile) || $$VarInSigFile == $Fragment[1]) {
+                    if (isset($$VarInSigFile) && !is_array($$VarInSigFile) && $$VarInSigFile == $Fragment[1]) {
                         continue 2;
                     }
-                } elseif (strpos(',FN,FS-MIN,FS-MAX,FD,FD-RX,FD-NORM,FD-NORM-RX,', ',' . $Fragment[0] . ',') === false) {
+                } elseif (strpos(',FN,FS-MIN,FS-MAX,FD,FD-RX,FD-NORM,FD-NORM-RX,ISSET,!ISSET,', ',' . $Fragment[0] . ',') === false) {
                     continue 2;
                 }
             }

@@ -152,3 +152,4 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 - [2024.10.15]: Added support to optionally disable adding new hash cache entries when a specific instance cache flag is used.
 - [2024.10.15]: Added support to inform the user via an optional instance cache flag which flags were set by the switch file during the scan when scanning via CLI.
 - [2024.10.15]: Added MP4 file type detection and modified PHP file type detection to reduce the risk of false positives (e.g., see phpMussel/phpMussel#241).
+- [2024.10.15]: Improved the phpMussel switch file.

@@ -156,4 +156,8 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 
 ### v3.5.3
 
+#### Bugs fixed.
+- [2024.11.06]: When phpMussel encountered a sufficiently zip-like file which isn't a valid zip file (e.g., any non-zip file beginning with the 'PK' header) and consequently attempted to read that non-zip file using ZipHandler, ZipHandler's destructor would generate a fatal error per invalid/uninitialised Zip object when invoked; Fixed. *Refer [#242](https://github.com/phpMussel/phpMussel/issues/242).*
+
+#### Other changes.
 - [2024.11.06]: Added PHP 8.4 to workflows.

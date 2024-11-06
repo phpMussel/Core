@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2024.10.15).
+ * This file: The scanner (last modified: 2024.11.06).
  */
 
 namespace phpMussel\Core;
@@ -2860,8 +2860,8 @@ class Scanner
              * @link https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT
              */
             if ($this->Loader->Configuration['files']['block_encrypted_archives']) {
-                $Bits = $this->explodeBits(substr($Data, 6, 2));
-                if ($Bits && $Bits[7]) {
+                $Bits = $this->explodeBits(substr($Data, 6, 1));
+                if ($Bits !== '' && substr($Bits, 7, 1) === '1') {
                     $this->atHit($DataHash, $DataLen, $ItemRef, sprintf(
                         $this->Loader->L10N->getString('grammar_exclamation_mark'),
                         sprintf(

@@ -16,7 +16,7 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 ### v3.0.2
 
 #### Bugs fixed.
-- [2020.10.01; Bug-fix; v10mthibault]: Typo in Loader.php; Trying to call function sprint instead of sprintf which leads to an error; Fixed.
+- [2020.10.01; v10mthibault]: Typo in Loader.php; Trying to call function sprint instead of sprintf which leads to an error; Fixed.
 - [2020.10.15]: Wrong number of files reported when recursively scanning through directories; Fixed. *Refer [#225](https://github.com/phpMussel/phpMussel/issues/225).*
 
 ### v3.0.3
@@ -136,7 +136,7 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 ### v3.5.1
 
 #### Bugs fixed.
-- [2024.03.21; Bug-fix; jedso]: Changed `$this->IPAddr` to `$this->Loader->IPAddr` in `Scanner.php`.
+- [2024.03.21; jedso]: Changed `$this->IPAddr` to `$this->Loader->IPAddr` in `Scanner.php`.
 
 ### v3.5.2
 

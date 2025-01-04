@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Dutch language data (last modified: 2024.10.15).
+# This file: Dutch language data (last modified: 2024.12.28).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -26,7 +26,7 @@
 
 SafeBrowseLookup:
  200: "Potentieel schadelijke URL gedetecteerd"
- 400: "API aanvraag foute"
+ 400: "API verzoek foute"
  401: "API niet geautoriseerd"
  503: "API dienst niet beschikbaar"
  999: "Onbekende API fout"

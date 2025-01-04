@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2024.12.26).
+ * This file: The loader (last modified: 2025.01.04).
  */
 
 namespace phpMussel\Core;
@@ -948,7 +948,7 @@ class Loader
      * @param ?resource $Context Refer to the description for file().
      * @return array The file's contents or an empty array on failure.
      */
-    public function readFileAsArray(string $Filename, int $Flags = 0, ?resource $Context = null): array
+    public function readFileAsArray(string $Filename, int $Flags = 0, $Context = null): array
     {
         /** Guard. */
         if (!is_file($Filename) || !is_readable($Filename) || !$Filesize = filesize($Filename)) {

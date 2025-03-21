@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Marathi language data (last modified: 2024.10.15).
+# This file: Marathi language data (last modified: 2025.03.07).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -69,7 +69,7 @@ response:
  Macros aren_t permitted: "मॅक्रोना परवानगी नाही"
  Missing filename: "फाइलनाव गहाळ आहे"
  No problems found: "कोणतीही समस्या आढळली नाही."
- Only image files are permitted: "फक्त इमेज फाइल्सना परवानगी आहे"
+ Only image files are permitted: "फक्त इमेज फायलींना परवानगी आहे"
  Quarantined as: ""%s.qfu" म्हणून अलग ठेवले."
  Recursion depth limit exceeded: "पुनरावृत्ती खोली मर्यादा ओलांडली"
  Signature file missing: "स्वाक्षरी फाइल गहाळ आहे"

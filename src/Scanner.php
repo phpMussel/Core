@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2024.11.06).
+ * This file: The scanner (last modified: 2025.03.21).
  */
 
 namespace phpMussel\Core;
@@ -1311,6 +1311,9 @@ class Scanner
         $str_hex_html = bin2hex($str_html);
         $str_hex_html_len = $str_html_len * 2;
 
+        /** Shannon entropy. */
+        $Entropy = $this->Loader->Demojibakefier->shannonEntropy($str);
+
         /** Look for potential Linux/ELF indicators. */
         $is_elf = ($fourcc === '7f454c46' || $xt === 'elf');
 
@@ -1695,6 +1698,7 @@ class Scanner
                 'ScanPhase' => $phase,
                 'Container' => $container,
                 'FileSwitch' => $fileswitch,
+                'Entropy' => $Entropy,
                 'Is_ELF' => $is_elf,
                 'Is_Graphics' => $is_graphics,
                 'Is_HTML' => $is_html,
@@ -2202,16 +2206,25 @@ class Scanner
             }
         }
 
+        /** Whether the entropy limits have been exceeded. */
+        $EntropyLimited = (
+            $Entropy > $this->Loader->Configuration['files']['entropy_limit'] &&
+            $StringLength > $this->Loader->readBytes($this->Loader->Configuration['files']['entropy_filesize_limit'])
+        );
+
         /** Process mappable signatures. */
         foreach ([
-            ['Filename', 'str_hex', 'str_hex_len', 2],
-            ['Standard', 'str_hex', 'str_hex_len', 0],
-            ['Normalised', 'str_hex_norm', 'str_hex_norm_len', 0],
-            ['HTML', 'str_hex_html', 'str_hex_html_len', 0],
-            ['Standard_RegEx', 'str_hex', 'str_hex_len', 1],
-            ['Normalised_RegEx', 'str_hex_norm', 'str_hex_norm_len', 1],
-            ['HTML_RegEx', 'str_hex_html', 'str_hex_html_len', 1]
+            ['Filename', 'str_hex', 'str_hex_len', 2, false],
+            ['Standard', 'str_hex', 'str_hex_len', 0, false],
+            ['Normalised', 'str_hex_norm', 'str_hex_norm_len', 0, $EntropyLimited],
+            ['HTML', 'str_hex_html', 'str_hex_html_len', 0, false],
+            ['Standard_RegEx', 'str_hex', 'str_hex_len', 1, false],
+            ['Normalised_RegEx', 'str_hex_norm', 'str_hex_norm_len', 1, $EntropyLimited],
+            ['HTML_RegEx', 'str_hex_html', 'str_hex_html_len', 1, false]
         ] as $ThisConf) {
+            if ($ThisConf[4]) {
+                continue;
+            }
             $DataSource = $ThisConf[1];
             $DataSourceLen = $ThisConf[2];
 

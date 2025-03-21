@@ -162,3 +162,7 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 #### Other changes.
 - [2024.11.06]: Added PHP 8.4 to workflows.
 - [2024.11.06]: Improved encrypted zip file detection.
+
+### v3.6.0
+
+- [2025.03.21]: Added entropy limits for signatures that use normalised data, configurable via two newly added directives, entropy_limit and entropy_filesize_limit. When the entropy limits are exceeded, in order to reduce the risk of false positives, some signatures which use normalised data will be ignored.

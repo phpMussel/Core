@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2025.01.04).
+ * This file: The loader (last modified: 2025.03.21).
  */
 
 namespace phpMussel\Core;
@@ -91,9 +91,14 @@ class Loader
     public $Cache;
 
     /**
+     * @var \Maikuolan\Common\Demojibakefier Ensure correct data encoding.
+     */
+    public $Demojibakefier;
+
+    /**
      * @var string phpMussel version number (SemVer).
      */
-    public $ScriptVersion = '3.5.4';
+    public $ScriptVersion = '3.6.0';
 
     /**
      * @var string phpMussel version identifier (complete notation).
@@ -429,6 +434,9 @@ class Loader
             $this->InstanceCache['PendingErrorLogData'] .= $Message . "\n";
             return true;
         });
+
+        /** phpMussel leverages the Demojibakefier's shannonEntropy method to make decisions about certain kinds of files. */
+        $this->Demojibakefier = new \Maikuolan\Common\Demojibakefier();
     }
 
     /**

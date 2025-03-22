@@ -91,7 +91,7 @@ class Loader
     public $Cache;
 
     /**
-     * @var \Maikuolan\Common\Demojibakefier Ensure correct data encoding.
+     * @var \Maikuolan\Common\Demojibakefier Used for calculating entropy.
      */
     public $Demojibakefier;
 
@@ -435,7 +435,7 @@ class Loader
             return true;
         });
 
-        /** phpMussel leverages the Demojibakefier's shannonEntropy method to make decisions about certain kinds of files. */
+        /** Used for calculating entropy. */
         $this->Demojibakefier = new \Maikuolan\Common\Demojibakefier();
     }
 

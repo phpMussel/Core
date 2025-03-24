@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Configuration defaults file (last modified: 2025.03.21).
+# This file: Configuration defaults file (last modified: 2025.03.24).
 ##/
 
 core:
@@ -406,11 +406,9 @@ files:
   type: "float"
   step: "any"
   default: 7.7
-  experimental: true
  entropy_filesize_limit:
   type: "kb"
   default: "512KB"
-  experimental: true
 quarantine:
  quarantine_key:
   type: "string"

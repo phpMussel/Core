@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2025.03.21).
+ * This file: The scanner (last modified: 2025.03.24).
  */
 
 namespace phpMussel\Core;
@@ -2499,7 +2499,7 @@ class Scanner
         );
 
         /** PHP chameleon attack detection. */
-        if ($this->Loader->Configuration['files']['chameleon_from_php']) {
+        if ($this->Loader->Configuration['files']['chameleon_from_php'] && !$EntropyLimited) {
             if ($this->containsMustAssert([
                 $this->Loader->Configuration['files']['can_contain_php_file_extensions'],
                 $this->Loader->Configuration['files']['archive_file_extensions']

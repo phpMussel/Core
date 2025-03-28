@@ -709,6 +709,108 @@ class Scanner
     }
 
     /**
+     * Does some more complex decoding and normalisation work on strings.
+     *
+     * @param string $str The string to be decoded/normalised.
+     * @param bool $html If true, "style" and "script" tags will be stripped from
+     *      the input string (optional; defaults to false).
+     * @param bool $decode If false, the input string will be normalised, but not
+     *      decoded; If true, the input string will be normalised *and* decoded.
+     *      Optional; Defaults to false.
+     * @return string The decoded/normalised string.
+     */
+    public function normalise(string $str, bool $html = false, bool $decode = false): string
+    {
+        /** Fire event: "atStartOf_normalise". */
+        $this->Loader->Events->fireEvent('atStartOf_normalise');
+
+        $ostr = '';
+        if ($decode) {
+            $ostr .= $str;
+            while (true) {
+                if (
+                    function_exists('gzinflate') &&
+                    $c = preg_match_all('/(gzinflate\s*\\(\s*["\'])(.{1,4096})(,\d)?(["\']\s*\\))/i', $str, $matches)
+                ) {
+                    for ($i = 0; $c > $i; $i++) {
+                        $str = str_ireplace(
+                            $matches[0][$i],
+                            '"' . gzinflate($this->Loader->substrBeforeLast($this->Loader->substrAfterFirst($matches[0][$i], $matches[1][$i]), $matches[4][$i])) . '"',
+                            $str
+                        );
+                    }
+                    continue;
+                }
+                if ($c = preg_match_all(
+                    '/(base64_decode|decode_base64|base64\.b64decode|atob|Base64\.decode64)(\s*' .
+                    '\\(\s*["\'\`])([\da-z+\/]{4})*([\da-z+\/]{4}|[\da-z+\/]{3}=|[\da-z+\/]{2}==)(["\'\`]' .
+                    '\s*\\))/i',
+                    $str,
+                    $matches
+                )) {
+                    for ($i = 0; $c > $i; $i++) {
+                        $str = str_ireplace(
+                            $matches[0][$i],
+                            '"' . base64_decode($this->Loader->substrBeforeLast($this->Loader->substrAfterFirst($matches[0][$i], $matches[1][$i] . $matches[2][$i]), $matches[5][$i])) . '"',
+                            $str
+                        );
+                    }
+                    continue;
+                }
+                if ($c = preg_match_all(
+                    '/(str_rot13\s*\\(\s*["\'])([^\'"\\(\\)]{1,4096})(["\']\s*\\))/i',
+                    $str,
+                    $matches
+                )) {
+                    for ($i = 0; $c > $i; $i++) {
+                        $str = str_ireplace(
+                            $matches[0][$i],
+                            '"' . str_rot13($this->Loader->substrBeforeLast($this->Loader->substrAfterFirst($matches[0][$i], $matches[1][$i]), $matches[3][$i])) . '"',
+                            $str
+                        );
+                    }
+                    continue;
+                }
+                if ($c = preg_match_all(
+                    '/(hex2bin\s*\\(\s*["\'])([\da-f]{1,4096})(["\']\s*\\))/i',
+                    $str,
+                    $matches
+                )) {
+                    for ($i = 0; $c > $i; $i++) {
+                        $str = str_ireplace(
+                            $matches[0][$i],
+                            '"' . $this->Loader->hexSafe($this->Loader->substrBeforeLast($this->Loader->substrAfterFirst($matches[0][$i], $matches[1][$i]), $matches[3][$i])) . '"',
+                            $str
+                        );
+                    }
+                    continue;
+                }
+                if ($c = preg_match_all(
+                    '/([Uu][Nn][Pp][Aa][Cc][Kk]\s*\\(\s*["\']\s*H\*\s*["\']\s*,\s*["\'])([\da-fA-F]{1,4096})(["\']\s*\\))/',
+                    $str,
+                    $matches
+                )) {
+                    for ($i = 0; $c > $i; $i++) {
+                        $str = str_replace($matches[0][$i], '"' . $this->Loader->hexSafe($this->Loader->substrBeforeLast($this->Loader->substrAfterFirst($matches[0][$i], $matches[1][$i]), $matches[3][$i])) . '"', $str);
+                    }
+                    continue;
+                }
+                break;
+            }
+        }
+        $str = preg_replace('/[^\x21-\x7E]/', '', strtolower($this->prescanDecode($str . $ostr)));
+        if ($html) {
+            $str = preg_replace([
+                '@<script[^>]*?>.*?</script>@si',
+                '@<[\/\!]*?[^<>]*?>@si',
+                '@<style[^>]*?>.*?</style>@siU',
+                '@<![\s\S]*?--[ \t\n\r]*>@'
+            ], '', $str);
+        }
+        return trim($str);
+    }
+
+    /**
      * Responsible for recursing through any files given to it to be scanned, which
      * may be necessary for the case of archives and directories. It performs the
      * preparations necessary for scanning files using the "datahandler" and the
@@ -3299,108 +3401,6 @@ class Scanner
             $Arr['Count']++;
         }
         return $Arr;
-    }
-
-    /**
-     * Does some more complex decoding and normalisation work on strings.
-     *
-     * @param string $str The string to be decoded/normalised.
-     * @param bool $html If true, "style" and "script" tags will be stripped from
-     *      the input string (optional; defaults to false).
-     * @param bool $decode If false, the input string will be normalised, but not
-     *      decoded; If true, the input string will be normalised *and* decoded.
-     *      Optional; Defaults to false.
-     * @return string The decoded/normalised string.
-     */
-    private function normalise(string $str, bool $html = false, bool $decode = false): string
-    {
-        /** Fire event: "atStartOf_normalise". */
-        $this->Loader->Events->fireEvent('atStartOf_normalise');
-
-        $ostr = '';
-        if ($decode) {
-            $ostr .= $str;
-            while (true) {
-                if (
-                    function_exists('gzinflate') &&
-                    $c = preg_match_all('/(gzinflate\s*\\(\s*["\'])(.{1,4096})(,\d)?(["\']\s*\\))/i', $str, $matches)
-                ) {
-                    for ($i = 0; $c > $i; $i++) {
-                        $str = str_ireplace(
-                            $matches[0][$i],
-                            '"' . gzinflate($this->Loader->substrBeforeLast($this->Loader->substrAfterFirst($matches[0][$i], $matches[1][$i]), $matches[4][$i])) . '"',
-                            $str
-                        );
-                    }
-                    continue;
-                }
-                if ($c = preg_match_all(
-                    '/(base64_decode|decode_base64|base64\.b64decode|atob|Base64\.decode64)(\s*' .
-                    '\\(\s*["\'\`])([\da-z+\/]{4})*([\da-z+\/]{4}|[\da-z+\/]{3}=|[\da-z+\/]{2}==)(["\'\`]' .
-                    '\s*\\))/i',
-                    $str,
-                    $matches
-                )) {
-                    for ($i = 0; $c > $i; $i++) {
-                        $str = str_ireplace(
-                            $matches[0][$i],
-                            '"' . base64_decode($this->Loader->substrBeforeLast($this->Loader->substrAfterFirst($matches[0][$i], $matches[1][$i] . $matches[2][$i]), $matches[5][$i])) . '"',
-                            $str
-                        );
-                    }
-                    continue;
-                }
-                if ($c = preg_match_all(
-                    '/(str_rot13\s*\\(\s*["\'])([^\'"\\(\\)]{1,4096})(["\']\s*\\))/i',
-                    $str,
-                    $matches
-                )) {
-                    for ($i = 0; $c > $i; $i++) {
-                        $str = str_ireplace(
-                            $matches[0][$i],
-                            '"' . str_rot13($this->Loader->substrBeforeLast($this->Loader->substrAfterFirst($matches[0][$i], $matches[1][$i]), $matches[3][$i])) . '"',
-                            $str
-                        );
-                    }
-                    continue;
-                }
-                if ($c = preg_match_all(
-                    '/(hex2bin\s*\\(\s*["\'])([\da-f]{1,4096})(["\']\s*\\))/i',
-                    $str,
-                    $matches
-                )) {
-                    for ($i = 0; $c > $i; $i++) {
-                        $str = str_ireplace(
-                            $matches[0][$i],
-                            '"' . $this->Loader->hexSafe($this->Loader->substrBeforeLast($this->Loader->substrAfterFirst($matches[0][$i], $matches[1][$i]), $matches[3][$i])) . '"',
-                            $str
-                        );
-                    }
-                    continue;
-                }
-                if ($c = preg_match_all(
-                    '/([Uu][Nn][Pp][Aa][Cc][Kk]\s*\\(\s*["\']\s*H\*\s*["\']\s*,\s*["\'])([\da-fA-F]{1,4096})(["\']\s*\\))/',
-                    $str,
-                    $matches
-                )) {
-                    for ($i = 0; $c > $i; $i++) {
-                        $str = str_replace($matches[0][$i], '"' . $this->Loader->hexSafe($this->Loader->substrBeforeLast($this->Loader->substrAfterFirst($matches[0][$i], $matches[1][$i]), $matches[3][$i])) . '"', $str);
-                    }
-                    continue;
-                }
-                break;
-            }
-        }
-        $str = preg_replace('/[^\x21-\x7E]/', '', strtolower($this->prescanDecode($str . $ostr)));
-        if ($html) {
-            $str = preg_replace([
-                '@<script[^>]*?>.*?</script>@si',
-                '@<[\/\!]*?[^<>]*?>@si',
-                '@<style[^>]*?>.*?</style>@siU',
-                '@<![\s\S]*?--[ \t\n\r]*>@'
-            ], '', $str);
-        }
-        return trim($str);
     }
 
     /**

@@ -169,5 +169,9 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 
 ### v3.6.1
 
-- [2025.03.24]: Applied entropy limits to some additional detections.
+#### Bugs fixed.
 - [2025.03.28]: Adjusted debug array code to avoid dynamic properties.
+- [2025.03.28]: Changed the normalise method's visibility from private to public in order to avoid raising fatal errors when using CLI mode's url_sig command.
+
+#### Other changes.
+- [2025.03.24]: Applied entropy limits to some additional detections.

@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2025.03.24).
+ * This file: The scanner (last modified: 2025.03.28).
  */
 
 namespace phpMussel\Core;
@@ -600,11 +600,11 @@ class Scanner
      */
     public function setScanDebugArray(&$Arr): void
     {
-        unset($this->debugArr);
+        unset($this->Loader->InstanceCache['DebugArr']);
         if (!is_array($Arr)) {
             $Arr = [];
         }
-        $this->debugArr = &$Arr;
+        $this->Loader->InstanceCache['DebugArr'] = &$Arr;
     }
 
     /**
@@ -615,7 +615,7 @@ class Scanner
      */
     public function destroyScanDebugArray(&$Arr): void
     {
-        unset($this->Loader->InstanceCache['DebugArrKey'], $this->debugArr);
+        unset($this->Loader->InstanceCache['DebugArrKey'], $this->Loader->InstanceCache['DebugArr']);
         $Arr = null;
     }
 
@@ -1202,9 +1202,9 @@ class Scanner
             }
 
             /** Set debug values, if this has been enabled. */
-            if (isset($this->debugArr)) {
-                $this->Loader->InstanceCache['DebugArrKey'] = count($this->debugArr);
-                $this->debugArr[$this->Loader->InstanceCache['DebugArrKey']] = [
+            if (isset($this->Loader->InstanceCache['DebugArr'])) {
+                $this->Loader->InstanceCache['DebugArrKey'] = count($this->Loader->InstanceCache['DebugArr']);
+                $this->Loader->InstanceCache['DebugArr'][$this->Loader->InstanceCache['DebugArrKey']] = [
                     'Filename' => $OriginalFilename,
                     'FromCache' => true,
                     'Depth' => $Depth,
@@ -1682,9 +1682,9 @@ class Scanner
         ) || $is_pe || $fileswitch === 'mp4');
 
         /** Set debug values, if this has been enabled. */
-        if (isset($this->debugArr)) {
-            $this->Loader->InstanceCache['DebugArrKey'] = count($this->debugArr);
-            $this->debugArr[$this->Loader->InstanceCache['DebugArrKey']] = [
+        if (isset($this->Loader->InstanceCache['DebugArr'])) {
+            $this->Loader->InstanceCache['DebugArrKey'] = count($this->Loader->InstanceCache['DebugArr']);
+            $this->Loader->InstanceCache['DebugArr'][$this->Loader->InstanceCache['DebugArrKey']] = [
                 'Filename' => $OriginalFilename,
                 'FromCache' => false,
                 'Depth' => $Depth,
@@ -1711,7 +1711,7 @@ class Scanner
                 'Is_Not_PHP' => $is_not_php
             ];
             if ($is_pe) {
-                $this->debugArr[$this->Loader->InstanceCache['DebugArrKey']] += [
+                $this->Loader->InstanceCache['DebugArr'][$this->Loader->InstanceCache['DebugArrKey']] += [
                     'NumOfSections' => $NumOfSections,
                     'PEFileDescription' => $PEFileDescription,
                     'PEFileVersion' => $PEFileVersion,
@@ -2745,9 +2745,9 @@ class Scanner
         }
 
         /** Set final debug values, if this has been enabled. */
-        if (isset($this->debugArr, $this->Loader->InstanceCache['DebugArrKey'])) {
-            $this->debugArr[$this->Loader->InstanceCache['DebugArrKey']]['Results'] = $this->Loader->ScanResultsIntegers[$AtInstanceLookupKey] ?? 1;
-            $this->debugArr[$this->Loader->InstanceCache['DebugArrKey']]['Output'] = $this->Loader->ScanResultsText[$AtInstanceLookupKey] ?? '';
+        if (isset($this->Loader->InstanceCache['DebugArr'], $this->Loader->InstanceCache['DebugArrKey'])) {
+            $this->Loader->InstanceCache['DebugArr'][$this->Loader->InstanceCache['DebugArrKey']]['Results'] = $this->Loader->ScanResultsIntegers[$AtInstanceLookupKey] ?? 1;
+            $this->Loader->InstanceCache['DebugArr'][$this->Loader->InstanceCache['DebugArrKey']]['Output'] = $this->Loader->ScanResultsText[$AtInstanceLookupKey] ?? '';
         }
 
         /** Register object flagged. */

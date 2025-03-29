@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2025.03.28).
+ * This file: The scanner (last modified: 2025.03.29).
  */
 
 namespace phpMussel\Core;
@@ -1457,6 +1457,8 @@ class Scanner
         if (!empty($this->Loader->InstanceCache['sf'])) {
             if (!isset($this->Loader->InstanceCache['Print after CLI scan'])) {
                 $this->Loader->InstanceCache['Print after CLI scan'] = '';
+            } else {
+                $this->Loader->InstanceCache['Print after CLI scan'] .= "\n";
             }
             $this->Loader->InstanceCache['Print after CLI scan'] .= sprintf($this->Loader->L10N->getString('label.Flags set by the switch file while scanning %s'), $OriginalFilename) . "\n";
         }

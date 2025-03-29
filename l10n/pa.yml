@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Punjabi language data (last modified: 2024.10.15).
+# This file: Punjabi language data (last modified: 2025.03.29).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -59,6 +59,17 @@ field:
  Scan results (why flagged):
   pa-IN: "ਸਕੈਨ ਨਤੀਜੇ (ਕਿਉਂ ਫਲੈਗ ਕੀਤਾ ਗਿਆ)"
   [pa-160, pa-Arab, pa-PK]: "سکین دے نتائج (کیوں فلیگ کیتا گیا اے)"
+ size:
+  Total size:
+   pa-IN: "ਕੁੱਲ ਆਕਾਰ:"
+   [pa-160, pa-Arab, pa-PK]: "کل سائز:"
+  bytes:
+   0:
+    pa-IN: "ਬਾਈਟ"
+    [pa-160, pa-Arab, pa-PK]: "بائٹ"
+   1:
+    pa-IN: "ਬਾਈਟ"
+    [pa-160, pa-Arab, pa-PK]: "بائٹس"
 label:
  Flags set by the switch file while scanning %s:
   pa-IN: "%s ਨੂੰ ਸਕੈਨ ਕਰਦੇ ਸਮੇਂ ਸਵਿੱਚ ਫਾਈਲ ਦੁਆਰਾ ਫਲੈਗ ਸੈੱਟ ਕੀਤੇ ਗਏ:"

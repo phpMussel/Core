@@ -177,3 +177,7 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 - [2025.03.24]: Applied entropy limits to some additional detections.
 - [2025.03.29]: Moved a small number of L10N strings from the front-end to the core due to being needed for some new CLI functionality.
 - [2025.03.29]: Spaced out the CLI switch file printouts to slightly improve readability.
+
+### v3.6.2
+
+- [2025.05.20]: Halved entropy_filesize_limit's default value to 256KB to provide a safer margin against false positives.

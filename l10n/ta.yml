@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Tamil language data (last modified: 2025.03.29).
+# This file: Tamil language data (last modified: 2025.05.31).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -34,7 +34,7 @@ error_log_header: "பின்வரும் பிழைகள் ஏதே�
 field:
  Date: "தேதி"
  Hash signatures reconstruction: "ஹாஷ் கையொப்பங்கள் புனரமைப்பு"
- IP address: "ஐபி முகவரி"
+ IP address: "IP முகவரி"
  PE sectional signatures reconstruction: "PE பிரிவு கையொப்பங்கள் புனரமைப்பு"
  Scan results (why flagged): "ஸ்கேன் முடிவுகள் (ஏன் கொடியிடப்பட்டது)"
  size:

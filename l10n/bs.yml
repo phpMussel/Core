@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Bosnian language data (last modified: 2025.03.29).
+# This file: Bosnian language data (last modified: 2025.06.10).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -67,11 +67,11 @@ response:
  Failed to access %s: "Pristup "%s" nije uspio!"
  Filename manipulation detected: "Otkrivena je manipulacija imenom datoteke"
  Filesize limit exceeded: "Ograničenje veličine datoteke je premašeno"
- Filetype blacklisted: "Tip datoteke na crnoj listi"
+ Filetype blacklisted: "Vrsta datoteke na crnoj listi"
  Finished: "Završeno"
  Image: "Slika"
  Invalid data: "Nevažeći podaci!"
- Invalid file: "Nevažeći fajl!"
+ Invalid file: "Nevažeća datoteka!"
  Macros aren_t permitted: "Makroi nisu dozvoljeni"
  Missing filename: "Nedostaje naziv datoteke"
  No problems found: "Nisu pronađeni problemi."

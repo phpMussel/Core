@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2025.06.10).
+ * This file: The loader (last modified: 2025.07.08).
  */
 
 namespace phpMussel\Core;
@@ -362,6 +362,7 @@ class Loader
         }
         $this->Request->Disabled = $this->Configuration['core']['disabled_channels'];
         $this->Request->UserAgent = $this->ScriptUA;
+        $this->Request->SendToOut = (defined('DEV_DEBUG_MODE') && DEV_DEBUG_MODE === true);
 
         /** If the language directive is empty, default to English. */
         if (empty($this->Configuration['core']['lang'])) {

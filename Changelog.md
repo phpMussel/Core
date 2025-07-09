@@ -181,3 +181,7 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 ### v3.6.2
 
 - [2025.05.20]: Halved entropy_filesize_limit's default value to 256KB to provide a safer margin against false positives.
+
+### v3.7.0
+
+- [2025.07.08]: Added the ability to route all outbound requests through a proxy, and two new configuration directives, `request_proxy` and `request_proxyauth`.

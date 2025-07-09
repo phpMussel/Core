@@ -98,7 +98,7 @@ class Loader
     /**
      * @var string phpMussel version number (SemVer).
      */
-    public $ScriptVersion = '3.6.2';
+    public $ScriptVersion = '3.7.0';
 
     /**
      * @var string phpMussel version identifier (complete notation).
@@ -361,6 +361,8 @@ class Loader
             $this->Request->Channels['Triggers'] = [];
         }
         $this->Request->Disabled = $this->Configuration['core']['disabled_channels'];
+        $this->Request->Proxy = $this->Configuration['core']['request_proxy'];
+        $this->Request->ProxyAuth = $this->Configuration['core']['request_proxyauth'];
         $this->Request->UserAgent = $this->ScriptUA;
         $this->Request->SendToOut = (defined('DEV_DEBUG_MODE') && DEV_DEBUG_MODE === true);
 

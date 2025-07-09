@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Configuration defaults file (last modified: 2025.05.20).
+# This file: Configuration defaults file (last modified: 2025.07.08).
 ##/
 
 core:
@@ -270,6 +270,12 @@ core:
    VirusTotal_HTTP: "VirusTotal (HTTP)"
   value_preg_filter:
    "~\s~": ""
+ request_proxy:
+  type: "string"
+  default: ""
+ request_proxyauth:
+  type: "string"
+  default: ""
  default_timeout:
   type: "int"
   default: 12
@@ -399,7 +405,6 @@ files:
  block_macros:
   type: "bool"
   default: false
-  experimental: true
  only_allow_images:
   type: "bool"
   default: false

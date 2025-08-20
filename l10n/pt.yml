@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Portuguese language data (last modified: 2025.03.29).
+# This file: Portuguese language data (last modified: 2025.08.17).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -59,7 +59,7 @@ response:
  Detected potentially dangerous file tampering: "Detectado potencialmente perigoso arquivo adulteração"
  Error: "Erro"
  Failed (missing required extensions): "Fracassado (faltando extensões necessárias)!"
- Failed to access %s: "Falha ao acessar "%s"!"
+ Failed to access %s: {"pt-BR": "Falha ao acessar "%s"!", "pt-PT": "Falha ao aceder ao "%s"!"}
  Filename manipulation detected: "Arquivo nome manipulação detectado"
  Filesize limit exceeded: "Arquivo tamanho limite excedido"
  Filetype blacklisted: "Tipo de arquivo está na negra lista"

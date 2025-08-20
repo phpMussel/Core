@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Norwegian language data (last modified: 2025.03.29).
+# This file: Norwegian language data (last modified: 2025.08.20).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -30,7 +30,7 @@ SafeBrowseLookup:
  401: "API-autorisasjonsfeil"
  503: "API-tjenesten er ikke tilgjengelig"
  999: "Ukjent API-feil"
-error_log_header: "Hvis noen av følgende feil vedvarer, å rapportere dem, eller å søke støtte, kan du opprette en ny issue på phpMussel issue-siden på GitHub når du har et ledig øyeblikk, med de aktuelle feilene sammen med annen relevant informasjon vedlagt. Takk."
+error_log_header: "Hvis noen av følgende feil vedvarer, å rapportere dem, eller å søke støtte, du kan opprette en ny issue på phpMussel issue-siden på GitHub når du har et ledig øyeblikk, med de aktuelle feilene sammen med annen relevant informasjon vedlagt. Takk."
 field:
  Date: "Dato"
  Hash signatures reconstruction: "Hash signerer rekonstruksjon"

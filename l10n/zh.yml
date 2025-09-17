@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Chinese language data (last modified: 2025.03.29).
+# This file: Chinese language data (last modified: 2025.09.11).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -60,26 +60,26 @@ response:
  Detected %s: {"zh-Hans": "检测%s", "zh-Hant": "檢測%s"}
  Detected control characters: {"zh-Hans": "检测控制字符", "zh-Hant": "檢測控製字符"}
  Detected corrupted PE: {"zh-Hans": "检测损坏PE", "zh-Hant": "檢測損壞PE"}
- Detected encrypted archive: {"zh-Hans": "检测加密档案文件; 加密档案文件不允许", "zh-Hant": "檢測加密檔案文件; 加密檔案文件不允許"}
- Detected potentially dangerous file tampering: {"zh-Hans": "检测潜在的危险文件篡改", "zh-Hant": "檢測潛在的危險文件篡改"}
+ Detected encrypted archive: {"zh-Hans": "检测加密档案文件; 加密档案文件不允许", "zh-Hant": "檢測加密檔案; 加密檔案不允許"}
+ Detected potentially dangerous file tampering: {"zh-Hans": "检测潜在的危险文件篡改", "zh-Hant": "檢測潛在的危險檔案篡改"}
  Error: {"zh-Hans": "错误", "zh-Hant": "錯誤"}
  Failed (missing required extensions): "失败（失踪必需的扩展）！"
  Failed to access %s: {"zh-Hans": "无法访问“%s”！", "zh-Hant": "無法訪問『%s』！"}
  Filename manipulation detected: {"zh-Hans": "文件名操控检测", "zh-Hant": "檔案名稱操控檢測"}
- Filesize limit exceeded: {"zh-Hans": "文件大小超过限制", "zh-Hant": "文件大小超過限制"}
- Filetype blacklisted: {"zh-Hans": "文件类型列入黑名单", "zh-Hant": "文件類型列入黑名單"}
+ Filesize limit exceeded: {"zh-Hans": "文件大小超过限制", "zh-Hant": "檔案大小超過限制"}
+ Filetype blacklisted: {"zh-Hans": "文件类型列入黑名单", "zh-Hant": "檔案類型列入黑名單"}
  Finished: "完了"
  Image: {"zh-Hans": "图像", "zh-Hant": "圖像"}
  Invalid data: {"zh-Hans": "无效数据！", "zh-Hant": "無效數據！"}
- Invalid file: {"zh-Hans": "无效的文件！", "zh-Hant": "無效的文件！"}
+ Invalid file: {"zh-Hans": "无效的文件！", "zh-Hant": "無效的檔案！"}
  Macros aren_t permitted: {"zh-Hans": "不允许使用宏", "zh-Hant": "不允許使用宏"}
  Missing filename: {"zh-Hans": "文件名是失踪", "zh-Hant": "檔案名稱是失踪"}
  No problems found: {"zh-Hans": "没有任何问题发现。", "zh-Hant": "沒有任何問題發現。"}
- Only image files are permitted: {"zh-Hans": "仅允许图像文件", "zh-Hant": "僅允許圖像文件"}
+ Only image files are permitted: {"zh-Hans": "仅允许图像文件", "zh-Hant": "僅允許圖像檔案"}
  Quarantined as: {"zh-Hans": "隔离为“%s.qfu”。", "zh-Hant": "隔離為『%s.qfu』。"}
  Recursion depth limit exceeded: {"zh-Hans": "递归深度超过是限制", "zh-Hant": "遞歸深度超過是限制"}
- Signature file missing: {"zh-Hans": "签名文件是失踪", "zh-Hant": "簽名文件是失踪"}
+ Signature file missing: {"zh-Hans": "签名文件是失踪", "zh-Hant": "簽名檔案是失踪"}
  Started: {"zh-Hans": "开始", "zh-Hant": "開始"}
  Task failed because a necessary component is unavailable: {"zh-Hans": "任务失败，因为必要的组件不可用。", "zh-Hant": "任務失敗，因為必要的組件不可用。"}
  Too many URLs: "太多的URL"
- Too many files in the archive: {"zh-Hans": "存档中太多的文件", "zh-Hant": "存檔中太多的文件"}
+ Too many files in the archive: {"zh-Hans": "存档中太多的文件", "zh-Hant": "存檔中太多的檔案"}

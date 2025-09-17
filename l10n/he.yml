@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Hebrew language data (last modified: 2025.03.29).
+# This file: Hebrew language data (last modified: 2025.09.17).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -30,7 +30,7 @@ SafeBrowseLookup:
  401: "שגיאת הרשאת API"
  503: "שירות API אינו זמין"
  999: "שגיאת API לא ידועה"
-error_log_header: "אם אחת מהשגיאות הבאות נמשכת, כדי לדווח עליהן או לבקש תמיכה, אנא צור issue חדשה בדף issues של phpMussel ב-GitHub כשיש לך רגע פנוי, עם השגיאות וכל מידע רלוונטי אחר מְצוֹרָף. תודה."
+error_log_header: "אם אחת מהשגיאות הבאות נמשכת, כדי לדווח עליהן או לבקש תמיכה, אנא צור issue חדשה בדף issues של phpMussel ב-GitHub כשיש לך רגע פנוי, עם השגיאות וכל מידע רלוונטי אחר מצורף. תודה."
 field:
  Date: "תאריך"
  Hash signatures reconstruction: "שחזור חתימות hash"

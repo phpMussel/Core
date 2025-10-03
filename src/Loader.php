@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2025.07.08).
+ * This file: The loader (last modified: 2025.10.03).
  */
 
 namespace phpMussel\Core;
@@ -1137,7 +1137,7 @@ class Loader
             preg_quote($Remainder) . ($LastStep ? preg_quote($LastStep) . ($GZ ? '(?:\.gz)?' : '') . '$' : '')
         );
         $Pattern = '~^' . preg_quote($BaseFrom) . $Steps . '~i';
-        $List = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($BaseFrom), \RecursiveIteratorIterator::SELF_FIRST);
+        $List = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($BaseFrom, \RecursiveDirectoryIterator::SKIP_DOTS), \RecursiveIteratorIterator::SELF_FIRST);
         foreach ($List as $Name => $SplData) {
             if (preg_match($Pattern, $Name) && ($Name = realpath($Name))) {
                 yield $Name;

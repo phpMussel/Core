@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2025.03.29).
+ * This file: The scanner (last modified: 2025.10.03).
  */
 
 namespace phpMussel\Core;
@@ -378,9 +378,9 @@ class Scanner
     {
         $Arr = [];
         $Offset = strlen($Base);
-        $List = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($Base), \RecursiveIteratorIterator::SELF_FIRST);
+        $List = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($Base, \RecursiveDirectoryIterator::SKIP_DOTS), \RecursiveIteratorIterator::SELF_FIRST);
         foreach ($List as $Item => $List) {
-            if (preg_match('~^(?:/\.\.|./\.|\.{3})$~', str_replace('\\', '/', substr($Item, -3))) || !is_readable($Item)) {
+            if (!is_readable($Item)) {
                 continue;
             }
             if (is_dir($Item) && !$Directories) {
@@ -3381,7 +3381,7 @@ class Scanner
     {
         $Offset = strlen($Path);
         $Files = [];
-        $List = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($Path), \RecursiveIteratorIterator::SELF_FIRST);
+        $List = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($Path, \RecursiveDirectoryIterator::SKIP_DOTS), \RecursiveIteratorIterator::SELF_FIRST);
         foreach ($List as $Item => $List) {
             $File = str_replace('\\', '/', substr($Item, $Offset));
             if ($File && strtolower(substr($Item, -4)) === '.qfu' && is_file($Item) && !is_link($Item) && is_readable($Item)) {

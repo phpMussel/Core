@@ -185,3 +185,8 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 ### v3.7.0
 
 - [2025.07.08]: Added the ability to route all outbound requests through a proxy, and two new configuration directives, `request_proxy` and `request_proxyauth`.
+
+### v3.7.1
+
+- [2025.10.03]: Optimised some iterators.
+- [2025.10.07]: Added support for NO_COLOR.

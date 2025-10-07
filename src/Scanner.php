@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2025.10.03).
+ * This file: The scanner (last modified: 2025.10.07).
  */
 
 namespace phpMussel\Core;
@@ -55,6 +55,12 @@ class Scanner
      * @var bool Whether the most recently processed signature is weighted.
      */
     private $HeuristicMode = false;
+
+    /**
+     * @var bool Whether to use colours for CLI output.
+     * @link https://no-color.org/
+     */
+    private $NoColor = false;
 
     /**
      * Construct the scanner.
@@ -158,6 +164,8 @@ class Scanner
             $this->Loader->logRotation($this->Loader->Configuration['core']['scan_log']);
             return true;
         });
+
+        $this->NoColor = !empty(getenv('NO_COLOR'));
     }
 
     /**
@@ -691,7 +699,7 @@ class Scanner
             }
         }
 
-        if ($this->CalledFrom === 'CLI') {
+        if ($this->CalledFrom === 'CLI' && !$this->NoColor) {
             if ($Code === 1) {
                 $Text = "\033[0;92m" . $Text . "\033[0;33m";
             } elseif ($Code === 2 || $Code < 0) {
@@ -808,6 +816,17 @@ class Scanner
             ], '', $str);
         }
         return trim($str);
+    }
+
+    /**
+     * Set CLI text colour if colours are enabled.
+     *
+     * @param string $In The colour to set.
+     * @return string The colour to set.
+     */
+    public function cliColour(string $Colour): string
+    {
+        return $this->NoColor ? '' : $Colour;
     }
 
     /**

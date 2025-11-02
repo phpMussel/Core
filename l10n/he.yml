@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Hebrew language data (last modified: 2025.09.17).
+# This file: Hebrew language data (last modified: 2025.10.19).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -66,7 +66,7 @@ response:
  Failed to access %s: "הגישה ל-"%s" נכשלה!"
  Filename manipulation detected: "זוהתה מניפולציה של שם הקובץ"
  Filesize limit exceeded: "חרגת ממגבלת גודל הקובץ"
- Filetype blacklisted: "סוג הקובץ ברשימה השחורה"
+ Filetype blacklisted: "סוג הקובץ בblacklist"
  Finished: "גמור"
  Image: "תמונה"
  Invalid data: "לא נתונים חוקי!"

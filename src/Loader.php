@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2025.10.03).
+ * This file: The loader (last modified: 2025.11.02).
  */
 
 namespace phpMussel\Core;
@@ -215,7 +215,7 @@ class Loader
         string $VendorPath = ''
     ) {
         /** Ensure minimum PHP version requirement is met. */
-        if (!version_compare(PHP_VERSION, '7.2.0', '>=')) {
+        if (\PHP_VERSION_ID < 70200) {
             throw new \Exception('phpMussel v3 requires PHP >= 7.2.0 in order to work properly.');
         }
 

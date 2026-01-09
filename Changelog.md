@@ -192,3 +192,7 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 - [2025.10.07]: Added support for NO_COLOR.
 - [2025.11.02]: Some minor refactoring.
 - [2025.11.21]: Added PHP 8.5 to workflows.
+
+### v3.7.2
+
+- [2026.01.09]: Slightly improved the PDF handler's stream detection.

@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: Pdf handler (last modified: 2021.10.30).
+ * This file: Pdf handler (last modified: 2026.01.09).
  */
 
 namespace phpMussel\Core;
@@ -63,7 +63,7 @@ class PdfHandler extends ArchiveHandler
 
         /** Building object tree. */
         $Tree = [];
-        $Check = preg_match_all('~\n(\d+) (\d+) obj ?\r?\n(.+?) ?\r?\nendobj ?\r?\n~s', $File, $Matches);
+        $Check = preg_match_all('~\n(\d+) (\d+) obj ?(?:\r?\n|\r\n?)(.+?) ?(?:\r?\n|\r\n?)endobj ?(?:\r?\n|\r\n?)~s', $File, $Matches);
         if ($Check && isset($Matches, $Matches[0], $Matches[0][0])) {
             $Count = count($Matches[0]);
             for ($Iterator = 0; $Iterator < $Count; $Iterator++) {
@@ -72,7 +72,7 @@ class PdfHandler extends ArchiveHandler
                     'Generation Number' => $Matches[2][$Iterator],
                     'Data' => $Matches[3][$Iterator]
                 ];
-                if (preg_match('~(.*)stream ?\r?\n(.+) ?\r?\nendstream~s', $Tree[$Iterator]['Data'], $SubMatches)) {
+                if (preg_match('~(.*)stream ?(?:\r?\n|\r\n?)(.+) ?(?:\r?\n|\r\n?)endstream~s', $Tree[$Iterator]['Data'], $SubMatches)) {
                     $Tree[$Iterator]['Stream'] = trim($SubMatches[2]);
                     $Tree[$Iterator]['Data'] = trim($SubMatches[1]);
                 }

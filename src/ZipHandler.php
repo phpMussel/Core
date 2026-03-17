@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: Zip handler (last modified: 2024.11.06).
+ * This file: Zip handler (last modified: 2026.03.17).
  */
 
 namespace phpMussel\Core;
@@ -44,13 +44,13 @@ class ZipHandler extends ArchiveHandler
     public function __construct($Pointer)
     {
         /** Zip class requirements guard. */
-        if (!class_exists('\ZipArchive')) {
+        if (!\class_exists('\ZipArchive')) {
             $this->ErrorState = 1;
             return;
         }
 
         /** Bad pointer guard. */
-        if (!is_readable($Pointer)) {
+        if (!\is_readable($Pointer)) {
             $this->ErrorState = 2;
             return;
         }
@@ -60,7 +60,7 @@ class ZipHandler extends ArchiveHandler
             $this->ErrorState = 2;
             return;
         }
-        $this->ErrorState = is_object($this->ZipObject) ? 0 : 2;
+        $this->ErrorState = \is_object($this->ZipObject) ? 0 : 2;
         $this->NumFiles = $this->ZipObject->numFiles;
     }
 
@@ -71,7 +71,7 @@ class ZipHandler extends ArchiveHandler
      */
     public function __destruct()
     {
-        if (is_object($this->ZipObject) && $this->ErrorState === 0) {
+        if (\is_object($this->ZipObject) && $this->ErrorState === 0) {
             $this->ZipObject->close();
         }
     }
@@ -118,7 +118,7 @@ class ZipHandler extends ArchiveHandler
      */
     public function EntryIsDirectory(): bool
     {
-        return (!$this->EntryActualSize() && !$this->EntryCompressedSize() && substr($this->EntryName(), -1) === '/');
+        return (!$this->EntryActualSize() && !$this->EntryCompressedSize() && \substr($this->EntryName(), -1) === '/');
     }
 
     /**
@@ -138,7 +138,7 @@ class ZipHandler extends ArchiveHandler
      */
     public function EntryCRC(): string
     {
-        return (isset($this->StatIndex['crc']) && is_int($this->StatIndex['crc'])) ? dechex($this->StatIndex['crc']) : '';
+        return (isset($this->StatIndex['crc']) && \is_int($this->StatIndex['crc'])) ? \dechex($this->StatIndex['crc']) : '';
     }
 
     /**
@@ -149,7 +149,7 @@ class ZipHandler extends ArchiveHandler
      */
     public function EntryName(): string
     {
-        return (isset($this->StatIndex['name']) && is_string($this->StatIndex['name'])) ? $this->StatIndex['name'] : '';
+        return (isset($this->StatIndex['name']) && \is_string($this->StatIndex['name'])) ? $this->StatIndex['name'] : '';
     }
 
     /**

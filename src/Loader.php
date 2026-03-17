@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2025.11.21).
+ * This file: The loader (last modified: 2026.03.17).
  */
 
 namespace phpMussel\Core;
@@ -98,7 +98,7 @@ class Loader
     /**
      * @var string phpMussel version number (SemVer).
      */
-    public $ScriptVersion = '3.7.1';
+    public $ScriptVersion = '3.7.2';
 
     /**
      * @var string phpMussel version identifier (complete notation).
@@ -225,7 +225,7 @@ class Loader
         }
 
         /** The specified vendor directory doesn't exist or isn't readable. */
-        if (!is_dir($VendorPath) || !is_readable($VendorPath)) {
+        if (!\is_dir($VendorPath) || !\is_readable($VendorPath)) {
             if (!isset($_SERVER['DOCUMENT_ROOT'], $_SERVER['SCRIPT_NAME'])) {
                 /** Further safeguards not possible. Generate exception. */
                 throw new \Exception('Vendor directory is undefined or unreadable.');
@@ -233,19 +233,19 @@ class Loader
 
 
             /** Safeguard for symlinked installations. */
-            $VendorPath = $this->buildPath(dirname($_SERVER['DOCUMENT_ROOT'] . $_SERVER['SCRIPT_NAME']) . DIRECTORY_SEPARATOR . 'vendor', false);
+            $VendorPath = $this->buildPath(\dirname($_SERVER['DOCUMENT_ROOT'] . $_SERVER['SCRIPT_NAME']) . DIRECTORY_SEPARATOR . 'vendor', false);
 
             /** Eep.. Still not working. Generate exception. */
-            if ($VendorPath === '' || !is_dir($VendorPath) || !is_readable($VendorPath)) {
+            if ($VendorPath === '' || !\is_dir($VendorPath) || !\is_readable($VendorPath)) {
                 throw new \Exception('Vendor directory is undefined or unreadable.');
             }
         }
 
         /** Prepare the phpMussel version identifier. */
-        $this->ScriptIdent = sprintf($this->ScriptIdent, $this->ScriptVersion);
+        $this->ScriptIdent = \sprintf($this->ScriptIdent, $this->ScriptVersion);
 
         /** Prepare the phpMussel user agent. */
-        $this->ScriptUA = sprintf($this->ScriptUA, $this->ScriptIdent);
+        $this->ScriptUA = \sprintf($this->ScriptUA, $this->ScriptIdent);
 
         /** Instantiate YAML object. */
         $this->YAML = new \Maikuolan\Common\YAML();
@@ -279,23 +279,23 @@ class Loader
         });
 
         /** Calculate configuration path. */
-        if ($ConfigurationPath && is_readable($ConfigurationPath)) {
+        if ($ConfigurationPath && \is_readable($ConfigurationPath)) {
             $this->ConfigurationPath = $ConfigurationPath;
-        } elseif ($VendorPath && is_readable($VendorPath . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'phpmussel.ini')) {
+        } elseif ($VendorPath && \is_readable($VendorPath . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'phpmussel.ini')) {
             $this->ConfigurationPath = $VendorPath . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'phpmussel.ini';
-        } elseif ($VendorPath && is_readable($VendorPath . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'phpmussel.yml')) {
+        } elseif ($VendorPath && \is_readable($VendorPath . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'phpmussel.yml')) {
             $this->ConfigurationPath = $VendorPath . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'phpmussel.yml';
         } else {
             throw new \Exception('Unable to locate phpMussel\'s configuration file.');
         }
 
         /** Read the phpMussel configuration file. */
-        if (strtolower(substr($this->ConfigurationPath, -4)) === '.ini') {
+        if (\strtolower(\substr($this->ConfigurationPath, -4)) === '.ini') {
             $this->Configuration = parse_ini_file($this->ConfigurationPath, true);
 
             /** Multiline support. */
             $this->decodeForMultilineSupport();
-        } elseif (preg_match('~\.ya?ml$~i', $this->ConfigurationPath)) {
+        } elseif (\preg_match('~\.ya?ml$~i', $this->ConfigurationPath)) {
             if ($Configuration = $this->readFile($this->ConfigurationPath)) {
                 $this->YAML->process($Configuration, $this->Configuration);
             }
@@ -303,13 +303,13 @@ class Loader
 
         /** Load phpMussel core configuration defaults and perform fallbacks. */
         if (
-            is_readable($this->AssetsPath . 'config.yml') &&
+            \is_readable($this->AssetsPath . 'config.yml') &&
             $Configuration = $this->readFile($this->AssetsPath . 'config.yml')
         ) {
             $Defaults = [];
             $this->YAML->process($Configuration, $Defaults);
             $this->fallback($Defaults);
-            $this->ConfigurationDefaults = array_merge_recursive($this->ConfigurationDefaults, $Defaults);
+            $this->ConfigurationDefaults = \array_merge_recursive($this->ConfigurationDefaults, $Defaults);
         }
 
         /** Register log paths. */
@@ -323,12 +323,12 @@ class Loader
                 if (!$VendorPath) {
                     continue;
                 }
-                $$Path = $VendorPath . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'phpmussel-' . strtolower(substr($Path, 0, -4));
+                $$Path = $VendorPath . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'phpmussel-' . \strtolower(\substr($Path, 0, -4));
             }
             if (!$this->buildPath($$Path, false)) {
-                throw new \Exception(sprintf('Unable to build the path, "%s".', $$Path));
+                throw new \Exception(\sprintf('Unable to build the path, "%s".', $$Path));
             }
-            if (($End = substr($$Path, -1)) && $End !== '/' && $End !== '\\') {
+            if (($End = \substr($$Path, -1)) && $End !== '/' && $End !== '\\') {
                 $$Path .= DIRECTORY_SEPARATOR;
             }
             $this->$Path = $$Path;
@@ -339,7 +339,7 @@ class Loader
 
         /** Set timezone. */
         if (!empty($this->Configuration['core']['timezone']) && $this->Configuration['core']['timezone'] !== 'SYSTEM') {
-            date_default_timezone_set($this->Configuration['core']['timezone']);
+            \date_default_timezone_set($this->Configuration['core']['timezone']);
         }
 
         /** Revert script ident if "hide_version" is true. */
@@ -364,7 +364,7 @@ class Loader
         $this->Request->Proxy = $this->Configuration['core']['request_proxy'];
         $this->Request->ProxyAuth = $this->Configuration['core']['request_proxyauth'];
         $this->Request->UserAgent = $this->ScriptUA;
-        $this->Request->SendToOut = (defined('DEV_DEBUG_MODE') && DEV_DEBUG_MODE === true);
+        $this->Request->SendToOut = (\defined('DEV_DEBUG_MODE') && DEV_DEBUG_MODE === true);
 
         /** If the language directive is empty, default to English. */
         if (empty($this->Configuration['core']['lang'])) {
@@ -375,7 +375,7 @@ class Loader
         $this->loadL10N($this->L10NPath);
 
         /** Calculate instantiation time. */
-        $this->Time = time() + ($this->Configuration['core']['time_offset'] * 60);
+        $this->Time = \time() + ($this->Configuration['core']['time_offset'] * 60);
 
         /** Initialise the cache. */
         $this->initialiseCache();
@@ -396,18 +396,18 @@ class Loader
             }
 
             $Truncate = $this->readBytes($this->Configuration['core']['truncate']);
-            if (!file_exists($File) || !filesize($File) || ($Truncate && filesize($File) >= $Truncate)) {
+            if (!\file_exists($File) || !\filesize($File) || ($Truncate && \filesize($File) >= $Truncate)) {
                 $WriteMode = 'wb';
                 $Data = $this->L10N->getString('error_log_header') . "\n=====\n" . $this->InstanceCache['PendingErrorLogData'];
             } else {
                 $WriteMode = 'ab';
                 $Data = $this->InstanceCache['PendingErrorLogData'];
             }
-            if (!is_resource($Handle = fopen($File, $WriteMode))) {
+            if (!\is_resource($Handle = \fopen($File, $WriteMode))) {
                 return false;
             }
-            fwrite($Handle, $Data);
-            fclose($Handle);
+            \fwrite($Handle, $Data);
+            \fclose($Handle);
             $this->logRotation($this->Configuration['core']['error_log']);
             return true;
         });
@@ -426,9 +426,9 @@ class Loader
             if (!isset($this->InstanceCache['PendingErrorLogData'])) {
                 $this->InstanceCache['PendingErrorLogData'] = '';
             }
-            $Message = sprintf(
+            $Message = \sprintf(
                 '[%s] Error at %s:L%d (error code %d)%s.',
-                date('c', time()),
+                \date('c', \time()),
                 empty($Err[2]) ? '?' : $Err[2],
                 empty($Err[3]) ? 0 : $Err[3],
                 empty($Err[0]) ? 0 : $Err[0],
@@ -468,16 +468,16 @@ class Loader
     public function readBytes(string $In, int $Mode = 0)
     {
         $Unit = '';
-        if (preg_match('/([KkMmGgTtPpOoBb]|К|к|М|м|Г|г|Т|т|П|п|Ｋ|ｋ|Ｍ|ｍ|Ｇ|ｇ|Ｔ|ｔ|Ｐ|ｐ|Б|б|Ｂ|ｂ)([OoBb]|Б|б|Ｂ|ｂ)?$/', $In, $Matches)) {
-            if (preg_match('/^([Kk]|К|к)$/', $Matches[1])) {
+        if (\preg_match('/([KkMmGgTtPpOoBb]|К|к|М|м|Г|г|Т|т|П|п|Ｋ|ｋ|Ｍ|ｍ|Ｇ|ｇ|Ｔ|ｔ|Ｐ|ｐ|Б|б|Ｂ|ｂ)([OoBb]|Б|б|Ｂ|ｂ)?$/', $In, $Matches)) {
+            if (\preg_match('/^([Kk]|К|к)$/', $Matches[1])) {
                 $Unit = 'K';
-            } elseif (preg_match('/^([Mm]|М|м)$/', $Matches[1])) {
+            } elseif (\preg_match('/^([Mm]|М|м)$/', $Matches[1])) {
                 $Unit = 'M';
-            } elseif (preg_match('/^([Gg]|Г|г)$/', $Matches[1])) {
+            } elseif (\preg_match('/^([Gg]|Г|г)$/', $Matches[1])) {
                 $Unit = 'G';
-            } elseif (preg_match('/^([Tt]|Т|т)$/', $Matches[1])) {
+            } elseif (\preg_match('/^([Tt]|Т|т)$/', $Matches[1])) {
                 $Unit = 'T';
-            } elseif (preg_match('/^([Pp]|П|п)$/', $Matches[1])) {
+            } elseif (\preg_match('/^([Pp]|П|п)$/', $Matches[1])) {
                 $Unit = 'P';
             }
         }
@@ -489,7 +489,7 @@ class Loader
         if (isset($Multiply[$Unit])) {
             $In *= $Multiply[$Unit];
         }
-        return (int)floor($In);
+        return (int)\floor($In);
     }
 
     /**
@@ -502,18 +502,18 @@ class Loader
      */
     public function autoType(&$Var, string $Type = ''): void
     {
-        if (in_array($Type, ['string', 'timezone', 'checkbox', 'url', 'email'], true)) {
+        if (\in_array($Type, ['string', 'timezone', 'checkbox', 'url', 'email'], true)) {
             $Var = (string)$Var;
         } elseif ($Type === 'int') {
             $Var = (int)$Var;
         } elseif ($Type === 'float') {
             $Var = (float)$Var;
         } elseif ($Type === 'bool') {
-            $Var = (strtolower($Var) !== 'false' && $Var);
+            $Var = (\strtolower($Var) !== 'false' && $Var);
         } elseif ($Type === 'kb') {
             $Var = $this->readBytes((string)$Var, 1);
         } else {
-            $LVar = strtolower($Var);
+            $LVar = \strtolower($Var);
             if ($LVar === 'true') {
                 $Var = true;
             } elseif ($LVar === 'false') {
@@ -540,7 +540,7 @@ class Loader
                 unset($Cat);
             }
             $Cat = &$this->Configuration[$KeyCat];
-            if (!is_array($DCat)) {
+            if (!\is_array($DCat)) {
                 continue;
             }
             foreach ($DCat as $DKey => $DData) {
@@ -554,9 +554,9 @@ class Loader
                     $Cat[$DKey] = '';
                 }
                 $Dir = &$Cat[$DKey];
-                if (isset($DData['value_preg_filter']) && is_array($DData['value_preg_filter'])) {
+                if (isset($DData['value_preg_filter']) && \is_array($DData['value_preg_filter'])) {
                     foreach ($DData['value_preg_filter'] as $FilterKey => $FilterValue) {
-                        $Dir = preg_replace($FilterKey, $FilterValue, $Dir);
+                        $Dir = \preg_replace($FilterKey, $FilterValue, $Dir);
                     }
                 }
                 if (isset($DData['type'])) {
@@ -577,11 +577,11 @@ class Loader
         if (($Primary = $this->readFile($Path . $this->Configuration['core']['lang'] . '.yml')) === '') {
             if (isset($this->ConfigurationDefaults['core']['lang']['defer'][$this->Configuration['core']['lang']])) {
                 if (($Primary = $this->readFile($Path . $this->ConfigurationDefaults['core']['lang']['defer'][$this->Configuration['core']['lang']] . '.yml')) === '') {
-                    $Primary = $this->readFile($Path . preg_replace('~-.*$~', '', $this->ConfigurationDefaults['core']['lang']['defer'][$this->Configuration['core']['lang']]) . '.yml');
+                    $Primary = $this->readFile($Path . \preg_replace('~-.*$~', '', $this->ConfigurationDefaults['core']['lang']['defer'][$this->Configuration['core']['lang']]) . '.yml');
                 }
             }
             if ($Primary === '') {
-                $Try = preg_replace('~-.*$~', '', $this->Configuration['core']['lang']);
+                $Try = \preg_replace('~-.*$~', '', $this->Configuration['core']['lang']);
                 if (($Primary = $this->readFile($Path . $Try . '.yml')) === '') {
                     if (isset($this->ConfigurationDefaults['core']['lang']['defer'][$Try])) {
                         $Primary = $this->readFile($Path . $this->ConfigurationDefaults['core']['lang']['defer'][$Try] . '.yml');
@@ -601,7 +601,7 @@ class Loader
         if ($this->L10NAccepted === '' && $Accepted !== '') {
             $this->L10NAccepted = $Accepted;
         }
-        $Fallback = substr($this->L10NAccepted, 0, 3) === 'en-' ? '' : $this->readFile($Path . 'en.yml');
+        $Fallback = \substr($this->L10NAccepted, 0, 3) === 'en-' ? '' : $this->readFile($Path . 'en.yml');
         if ($Fallback !== '') {
             $Arr = [];
             $this->YAML->process($Fallback, $Arr);
@@ -611,16 +611,16 @@ class Loader
         }
 
         /** Instantiate the L10N object, or append to the instance if it already exists. */
-        if ($this->L10N instanceof \Maikuolan\Common\L10N && is_array($this->L10N->Data)) {
-            if (!empty($Primary) && is_array($this->L10N->Data)) {
-                $this->L10N->Data = array_merge_recursive($this->L10N->Data, $Primary);
+        if ($this->L10N instanceof \Maikuolan\Common\L10N && \is_array($this->L10N->Data)) {
+            if (!empty($Primary) && \is_array($this->L10N->Data)) {
+                $this->L10N->Data = \array_merge_recursive($this->L10N->Data, $Primary);
             }
-            if (!empty($Fallback) && is_array($this->L10N->Fallback)) {
-                $this->L10N->Fallback = array_merge_recursive($this->L10N->Fallback, $Fallback);
+            if (!empty($Fallback) && \is_array($this->L10N->Fallback)) {
+                $this->L10N->Fallback = \array_merge_recursive($this->L10N->Fallback, $Fallback);
             }
         } else {
             $this->L10N = new \Maikuolan\Common\L10N($Primary, $Fallback);
-            if (substr($this->L10NAccepted, 0, 3) === 'en-') {
+            if (\substr($this->L10NAccepted, 0, 3) === 'en-') {
                 $this->L10N->autoAssignRules($this->L10NAccepted);
             } else {
                 $this->L10N->autoAssignRules($this->L10NAccepted, 'en-AU');
@@ -634,17 +634,17 @@ class Loader
                 $this->ClientL10N = &$this->L10N;
             }
         } else {
-            $Try = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE'], 20);
+            $Try = \explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE'], 20);
             $Accepted = '';
             foreach ($Try as $Accepted) {
-                $Accepted = preg_replace(['~;.*$~', '~[^-A-Za-z]|-$~'], '', $Accepted);
+                $Accepted = \preg_replace(['~;.*$~', '~[^-A-Za-z]|-$~'], '', $Accepted);
                 $Primary = '';
                 $IsSameAs = false;
                 if ($this->L10NAccepted === $Accepted) {
                     $IsSameAs = true;
                     break;
                 }
-                $Main = strpos($Accepted, '-') === false ? '' : strtolower(preg_replace('~-.*$~', '', $Accepted));
+                $Main = \strpos($Accepted, '-') === false ? '' : \strtolower(\preg_replace('~-.*$~', '', $Accepted));
                 if (($Primary = $this->readFile($Path . $Accepted . '.yml')) !== '' || ($Primary = $this->readFile($Path . $Main . '.yml')) !== '') {
                     break;
                 }
@@ -658,7 +658,7 @@ class Loader
                     }
                     if (
                         ($Primary = $this->readFile($Path . $this->ConfigurationDefaults['core']['lang']['defer'][$Accepted] . '.yml')) !== '' ||
-                        ($Primary = $this->readFile($Path . preg_replace('~-.*$~', '', $this->ConfigurationDefaults['core']['lang']['defer'][$Accepted]) . '.yml')) !== ''
+                        ($Primary = $this->readFile($Path . \preg_replace('~-.*$~', '', $this->ConfigurationDefaults['core']['lang']['defer'][$Accepted]) . '.yml')) !== ''
                     ) {
                         break 2;
                     }
@@ -680,8 +680,8 @@ class Loader
                     $this->ClientL10NAccepted = $Accepted;
                 }
                 $this->YAML->process($Primary, $Arr);
-                if ($this->ClientL10N instanceof \Maikuolan\Common\L10N && is_array($this->ClientL10N->Data)) {
-                    $this->ClientL10N->Data = array_merge_recursive($this->ClientL10N->Data, $Arr);
+                if ($this->ClientL10N instanceof \Maikuolan\Common\L10N && \is_array($this->ClientL10N->Data)) {
+                    $this->ClientL10N->Data = \array_merge_recursive($this->ClientL10N->Data, $Arr);
                 } else {
                     $this->ClientL10N = new \Maikuolan\Common\L10N($Arr, $this->L10N);
                     $this->ClientL10N->autoAssignRules($Accepted);
@@ -709,28 +709,28 @@ class Loader
     public function timeFormat(int $Time, $In)
     {
         /** Guard. */
-        if (!is_array($In) && (strpos($In, '{') === false || strpos($In, '}') === false)) {
+        if (!\is_array($In) && (\strpos($In, '{') === false || \strpos($In, '}') === false)) {
             return $In;
         }
 
-        $Time = date('dmYHisDMP', $Time);
+        $Time = \date('dmYHisDMP', $Time);
         $Values = [
-            'dd' => substr($Time, 0, 2),
-            'mm' => substr($Time, 2, 2),
-            'yyyy' => substr($Time, 4, 4),
-            'yy' => substr($Time, 6, 2),
-            'hh' => substr($Time, 8, 2),
-            'ii' => substr($Time, 10, 2),
-            'ss' => substr($Time, 12, 2),
-            'Day' => substr($Time, 14, 3),
-            'Mon' => substr($Time, 17, 3),
-            'tz' => substr($Time, 20, 3) . substr($Time, 24, 2),
-            't:z' => substr($Time, 20, 6)
+            'dd' => \substr($Time, 0, 2),
+            'mm' => \substr($Time, 2, 2),
+            'yyyy' => \substr($Time, 4, 4),
+            'yy' => \substr($Time, 6, 2),
+            'hh' => \substr($Time, 8, 2),
+            'ii' => \substr($Time, 10, 2),
+            'ss' => \substr($Time, 12, 2),
+            'Day' => \substr($Time, 14, 3),
+            'Mon' => \substr($Time, 17, 3),
+            'tz' => \substr($Time, 20, 3) . \substr($Time, 24, 2),
+            't:z' => \substr($Time, 20, 6)
         ];
         $Values['d'] = (int)$Values['dd'];
         $Values['m'] = (int)$Values['mm'];
-        if (is_array($In)) {
-            return array_map(function (string $Item) use (&$Values): string {
+        if (\is_array($In)) {
+            return \array_map(function (string $Item) use (&$Values): string {
                 return $this->parse($Values, $Item);
             }, $In);
         }
@@ -751,16 +751,16 @@ class Loader
         if ($Haystack === '') {
             return '';
         }
-        if ($L10N && preg_match_all('~\{([.,%_ ?!\dA-Za-z()-]+)\}~', $Haystack, $Matches)) {
-            foreach (array_unique($Matches[1]) as $Key) {
+        if ($L10N && \preg_match_all('~\{([.,%_ ?!\dA-Za-z()-]+)\}~', $Haystack, $Matches)) {
+            foreach (\array_unique($Matches[1]) as $Key) {
                 if (($Value = $this->L10N->getString($Key)) !== '') {
-                    $Haystack = str_replace('{' . $Key . '}', $Value, $Haystack);
+                    $Haystack = \str_replace('{' . $Key . '}', $Value, $Haystack);
                 }
             }
         }
         foreach ($Needles as $Key => $Value) {
-            if (!is_array($Value) && $Value !== null) {
-                $Haystack = str_replace('{' . $Key . '}', $Value, $Haystack);
+            if (!\is_array($Value) && $Value !== null) {
+                $Haystack = \str_replace('{' . $Key . '}', $Value, $Haystack);
             }
         }
         return $Haystack;
@@ -774,15 +774,15 @@ class Loader
      */
     public function pseudonymiseIP(string $IP): string
     {
-        if (($CPos = strpos($IP, ':')) !== false) {
-            $Parts = [(substr($IP, 0, $CPos) ?: ''), (substr($IP, $CPos + 1) ?: '')];
-            if (($CPos = strpos($Parts[1], ':')) !== false) {
-                $Parts[1] = substr($Parts[1], 0, $CPos) ?: '';
+        if (($CPos = \strpos($IP, ':')) !== false) {
+            $Parts = [(\substr($IP, 0, $CPos) ?: ''), (\substr($IP, $CPos + 1) ?: '')];
+            if (($CPos = \strpos($Parts[1], ':')) !== false) {
+                $Parts[1] = \substr($Parts[1], 0, $CPos) ?: '';
             }
             $Parts = $Parts[0] . ':' . $Parts[1] . '::x';
-            return str_replace(':::', '::', $Parts);
+            return \str_replace(':::', '::', $Parts);
         }
-        return preg_replace(
+        return \preg_replace(
             '/^([01]?\d{1,2}|2[0-4]\d|25[0-5])\.([01]?\d{1,2}|2[0-4]\d|25[0-5])\.([01]?\d{1,2}|2[0-4]\d|25[0-5])\.([01]?\d{1,2}|2[0-4]\d|25[0-5])$/i',
             '\1.\2.\3.x',
             $IP
@@ -811,25 +811,25 @@ class Loader
         $Path = $this->timeFormat($this->Time, $Path);
 
         /** We'll skip is_dir/mkdir calls if open_basedir is populated (to avoid PHP bug #69240). */
-        $Restrictions = strlen(ini_get('open_basedir')) > 0;
+        $Restrictions = \strlen(ini_get('open_basedir')) > 0;
 
         /** Split path into steps. */
-        $Steps = preg_split('~[\\\\/]~', $Path, -1, PREG_SPLIT_NO_EMPTY);
+        $Steps = \preg_split('~[\\\\/]~', $Path, -1, PREG_SPLIT_NO_EMPTY);
 
         /** Separate file from path. */
-        $File = $PointsToFile ? array_pop($Steps) : '';
+        $File = $PointsToFile ? \array_pop($Steps) : '';
 
         /** Build directories. */
         foreach ($Steps as $Step) {
             if (!isset($Rebuilt)) {
-                $Rebuilt = preg_match('~^[\\\\/]~', $Path) ? DIRECTORY_SEPARATOR . $Step : $Step;
+                $Rebuilt = \preg_match('~^[\\\\/]~', $Path) ? DIRECTORY_SEPARATOR . $Step : $Step;
             } else {
                 $Rebuilt .= DIRECTORY_SEPARATOR . $Step;
             }
-            if (preg_match('~^\.+$~', $Step)) {
+            if (\preg_match('~^\.+$~', $Step)) {
                 continue;
             }
-            if (!$Restrictions && !is_dir($Rebuilt) && !mkdir($Rebuilt)) {
+            if (!$Restrictions && !\is_dir($Rebuilt) && !\mkdir($Rebuilt)) {
                 return '';
             }
         }
@@ -840,7 +840,7 @@ class Loader
         }
 
         /** Return an empty string if the final rebuilt path isn't writable. */
-        if (!is_writable($Rebuilt)) {
+        if (!\is_writable($Rebuilt)) {
             return '';
         }
 
@@ -862,7 +862,7 @@ class Loader
      */
     public function substrBeforeFirst(string $Haystack, string $Needle): string
     {
-        return $Needle === '' ? '' : substr($Haystack, 0, strpos($Haystack, $Needle));
+        return $Needle === '' ? '' : \substr($Haystack, 0, \strpos($Haystack, $Needle));
     }
 
     /**
@@ -874,7 +874,7 @@ class Loader
      */
     public function substrAfterFirst(string $Haystack, string $Needle): string
     {
-        return !($Length = strlen($Needle)) ? '' : substr($Haystack, strpos($Haystack, $Needle) + $Length);
+        return !($Length = \strlen($Needle)) ? '' : \substr($Haystack, \strpos($Haystack, $Needle) + $Length);
     }
 
     /**
@@ -886,7 +886,7 @@ class Loader
      */
     public function substrBeforeLast(string $Haystack, string $Needle): string
     {
-        return $Needle === '' ? '' : substr($Haystack, 0, strrpos($Haystack, $Needle));
+        return $Needle === '' ? '' : \substr($Haystack, 0, \strrpos($Haystack, $Needle));
     }
 
     /**
@@ -898,7 +898,7 @@ class Loader
      */
     public function substrAfterLast(string $Haystack, string $Needle): string
     {
-        return !($Length = strlen($Needle)) ? '' : substr($Haystack, strrpos($Haystack, $Needle) + $Length);
+        return !($Length = \strlen($Needle)) ? '' : \substr($Haystack, \strrpos($Haystack, $Needle) + $Length);
     }
 
     /**
@@ -910,12 +910,12 @@ class Loader
     public function readFile(string $File): string
     {
         /** Guard. */
-        if ($File === '' || !is_file($File) || !is_readable($File)) {
+        if ($File === '' || !\is_file($File) || !\is_readable($File)) {
             return '';
         }
 
-        $Data = file_get_contents($File);
-        return is_string($Data) ? $Data : '';
+        $Data = \file_get_contents($File);
+        return \is_string($Data) ? $Data : '';
     }
 
     /**
@@ -927,24 +927,24 @@ class Loader
     public function readFileGZ(string $File): string
     {
         /** Guard. */
-        if ($File === '' || !is_file($File) || !is_readable($File) || !$Filesize = filesize($File)) {
+        if ($File === '' || !\is_file($File) || !\is_readable($File) || !$Filesize = \filesize($File)) {
             return '';
         }
 
         /** Calculate this file's blocks to read. */
-        $BlocksToRead = ($Filesize && $this->Blocksize) ? ceil($Filesize / $this->Blocksize) : 0;
+        $BlocksToRead = ($Filesize && $this->Blocksize) ? \ceil($Filesize / $this->Blocksize) : 0;
 
         $Data = '';
         if ($BlocksToRead > 0) {
-            if (!is_resource($Handle = gzopen($File, 'rb'))) {
+            if (!\is_resource($Handle = \gzopen($File, 'rb'))) {
                 return '';
             }
             $Done = 0;
-            while (!gzeof($GZLogHandler) && $Done < $BlocksToRead) {
-                $Data .= gzread($Handle, $this->Blocksize);
+            while (!\gzeof($GZLogHandler) && $Done < $BlocksToRead) {
+                $Data .= \gzread($Handle, $this->Blocksize);
                 $Done++;
             }
-            gzclose($Handle);
+            \gzclose($Handle);
         }
         return $Data;
     }
@@ -956,22 +956,22 @@ class Loader
      *
      * @param string $Filename Refer to the description for file().
      * @param int $Flags Refer to the description for file().
-     * @param ?resource $Context Refer to the description for file().
+     * @param resource|null $Context Refer to the description for file().
      * @return array The file's contents or an empty array on failure.
      */
     public function readFileAsArray(string $Filename, int $Flags = 0, $Context = null): array
     {
         /** Guard. */
-        if (!is_file($Filename) || !is_readable($Filename) || !$Filesize = filesize($Filename)) {
+        if (!\is_file($Filename) || !\is_readable($Filename) || !$Filesize = \filesize($Filename)) {
             return [];
         }
 
-        if (!is_resource($Context)) {
-            $Output = !$Flags ? file($Filename) : file($Filename, $Flags);
+        if (!\is_resource($Context)) {
+            $Output = !$Flags ? \file($Filename) : \file($Filename, $Flags);
         } else {
-            $Output = file($Filename, $Flags, $Context);
+            $Output = \file($Filename, $Flags, $Context);
         }
-        return is_array($Output) ? $Output : [];
+        return \is_array($Output) ? $Output : [];
     }
 
     /**
@@ -983,24 +983,24 @@ class Loader
      */
     public function unpackSafe(string $Format, string $Data): array
     {
-        if (strlen($Data) < 1) {
+        if (\strlen($Data) < 1) {
             return [];
         }
-        return unpack($Format, $Data) ?: [];
+        return \unpack($Format, $Data) ?: [];
     }
 
     /**
-     * If input isn't an array, make it so. Remove empty elements.
+     * Ensure input is an array and remove empty elements.
      *
      * @param mixed $Input
      * @return void
      */
     public function arrayify(&$Input): void
     {
-        if (!is_array($Input)) {
+        if (!\is_array($Input)) {
             $Input = [$Input];
         }
-        $Input = array_filter($Input);
+        $Input = \array_filter($Input);
     }
 
     /**
@@ -1012,19 +1012,19 @@ class Loader
     public function gZCompressFile(string $File): bool
     {
         /** Guard. */
-        if ($File === '' || !is_file($File) || !is_readable($File)) {
+        if ($File === '' || !\is_file($File) || !\is_readable($File)) {
             return false;
         }
 
-        if (!is_resource($Handle = fopen($File, 'rb')) || !is_resource($HandleGZ = gzopen($File . '.gz', 'wb'))) {
+        if (!\is_resource($Handle = \fopen($File, 'rb')) || !\is_resource($HandleGZ = \gzopen($File . '.gz', 'wb'))) {
             return false;
         }
-        while (!feof($Handle)) {
-            $Data = fread($Handle, $this->Blocksize);
-            gzwrite($HandleGZ, $Data);
+        while (!\feof($Handle)) {
+            $Data = \fread($Handle, $this->Blocksize);
+            \gzwrite($HandleGZ, $Data);
         }
-        gzclose($HandleGZ);
-        fclose($Handle);
+        \gzclose($HandleGZ);
+        \fclose($Handle);
         return true;
     }
 
@@ -1047,12 +1047,12 @@ class Loader
      */
     public function deleteDirectory(string $Dir): void
     {
-        while (strrpos($Dir, DIRECTORY_SEPARATOR) !== false) {
-            $Dir = substr($Dir, 0, strrpos($Dir, DIRECTORY_SEPARATOR));
-            if (!is_dir($Dir) || !$this->isDirEmpty($Dir)) {
+        while (\strrpos($Dir, DIRECTORY_SEPARATOR) !== false) {
+            $Dir = \substr($Dir, 0, \strrpos($Dir, DIRECTORY_SEPARATOR));
+            if (!\is_dir($Dir) || !$this->isDirEmpty($Dir)) {
                 break;
             }
-            rmdir($Dir);
+            \rmdir($Dir);
         }
     }
 
@@ -1070,9 +1070,9 @@ class Loader
             return false;
         }
         $Arr = [];
-        if ((strpos($Pattern, '{') === false && strpos($Pattern, '}') === false)) {
-            if (is_file($Pattern)) {
-                $Arr[] = realpath($Pattern);
+        if ((\strpos($Pattern, '{') === false && \strpos($Pattern, '}') === false)) {
+            if (\is_file($Pattern)) {
+                $Arr[] = \realpath($Pattern);
             }
         } else {
             foreach ($this->resolvePaths($Pattern, true, false) as $Item) {
@@ -1081,19 +1081,19 @@ class Loader
         }
         $Files = [];
         foreach ($Arr as $Item) {
-            if ($Item && is_file($Item) && is_readable($Item)) {
-                $Files[$Item] = filemtime($Item);
+            if ($Item && \is_file($Item) && \is_readable($Item)) {
+                $Files[$Item] = \filemtime($Item);
             }
         }
         $Count = count($Files);
         $Err = 0;
         if ($Count > $Limit) {
-            asort($Files, SORT_NUMERIC);
+            \asort($Files, SORT_NUMERIC);
             foreach ($Files as $Item => $Modified) {
                 if ($Action === 'Archive') {
                     $Err += !$this->gZCompressFile($Item);
                 }
-                $Err += !unlink($Item);
+                $Err += !\unlink($Item);
                 $this->deleteDirectory($Item);
                 $Count--;
                 if (!($Count > $Limit)) {
@@ -1114,32 +1114,32 @@ class Loader
      */
     public function resolvePaths(string $Base, bool $LastIsFile = true, bool $GZ = true): \Generator
     {
-        $Steps = preg_split('~[\\\\/]~', $Base, -1, PREG_SPLIT_NO_EMPTY);
-        $LastStep = $LastIsFile ? array_pop($Steps) : '';
+        $Steps = \preg_split('~[\\\\/]~', $Base, -1, PREG_SPLIT_NO_EMPTY);
+        $LastStep = $LastIsFile ? \array_pop($Steps) : '';
         $BaseFrom = '';
         $Remainder = '';
         foreach ($Steps as $Step) {
-            if (!$Remainder && strpos($Step, '{') === false && strpos($Step, '}') === false) {
+            if (!$Remainder && \strpos($Step, '{') === false && \strpos($Step, '}') === false) {
                 $BaseFrom .= $Step . DIRECTORY_SEPARATOR;
                 continue;
             }
             $Remainder .= ($Remainder ? DIRECTORY_SEPARATOR : '') . $Step;
         }
-        if (!$BaseFrom || !is_dir($BaseFrom) || !is_readable($BaseFrom)) {
+        if (!$BaseFrom || !\is_dir($BaseFrom) || !\is_readable($BaseFrom)) {
             return;
         }
         if ($Remainder && $LastStep) {
             $LastStep = DIRECTORY_SEPARATOR . $LastStep;
         }
-        $Steps = preg_replace(
+        $Steps = \preg_replace(
             ['~\\{(?:dd|mm|yy|hh|ii|ss)\\}~i', '~\\{yyyy\\}~i', '~\\{(?:Day|Mon)\\}~i', '~\\{tz\\}~i', '~\\{t:z\\}~i'],
             ['\d{2}', '\d{4}', '\w{3}', '.{1,2}\d{4}', '.{1,2}\d{2}:\d{2}'],
-            preg_quote($Remainder) . ($LastStep ? preg_quote($LastStep) . ($GZ ? '(?:\.gz)?' : '') . '$' : '')
+            \preg_quote($Remainder) . ($LastStep ? \preg_quote($LastStep) . ($GZ ? '(?:\.gz)?' : '') . '$' : '')
         );
-        $Pattern = '~^' . preg_quote($BaseFrom) . $Steps . '~i';
+        $Pattern = '~^' . \preg_quote($BaseFrom) . $Steps . '~i';
         $List = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($BaseFrom, \RecursiveDirectoryIterator::SKIP_DOTS), \RecursiveIteratorIterator::SELF_FIRST);
         foreach ($List as $Name => $SplData) {
-            if (preg_match($Pattern, $Name) && ($Name = realpath($Name))) {
+            if (\preg_match($Pattern, $Name) && ($Name = \realpath($Name))) {
                 yield $Name;
             }
         }
@@ -1153,7 +1153,7 @@ class Loader
      */
     public function hexSafe(string $Data): string
     {
-        return ($Data && !preg_match('/[^\da-f]/i', $Data) && !(strlen($Data) % 2)) ? hex2bin($Data) : '';
+        return ($Data && !\preg_match('/[^\da-f]/i', $Data) && !(\strlen($Data) % 2)) ? \hex2bin($Data) : '';
     }
 
     /**
@@ -1173,45 +1173,45 @@ class Loader
      */
     public function updateConfiguration(): bool
     {
-        if (strtolower(substr($this->ConfigurationPath, -4)) === '.ini') {
+        if (\strtolower(\substr($this->ConfigurationPath, -4)) === '.ini') {
             $Reconstructed = '';
             foreach ($this->Configuration as $CatKey => $CatValue) {
-                if (!is_array($CatValue)) {
+                if (!\is_array($CatValue)) {
                     continue;
                 }
-                $Reconstructed .= sprintf("[%s]\r\n", $CatKey);
+                $Reconstructed .= \sprintf("[%s]\r\n", $CatKey);
                 foreach ($CatValue as $DirKey => $DirValue) {
-                    if (!is_scalar($DirValue)) {
+                    if (!\is_scalar($DirValue)) {
                         continue;
                     }
                     if ($DirValue === true) {
-                        $Reconstructed .= sprintf("%s=true\r\n", $DirKey);
+                        $Reconstructed .= \sprintf("%s=true\r\n", $DirKey);
                     } elseif ($DirValue === false) {
-                        $Reconstructed .= sprintf("%s=false\r\n", $DirKey);
-                    } elseif (is_string($DirValue)) {
+                        $Reconstructed .= \sprintf("%s=false\r\n", $DirKey);
+                    } elseif (\is_string($DirValue)) {
                         /** Multiline support. */
-                        $DirValue = preg_replace('~[^\x00-\xFF]~', '', str_replace(
+                        $DirValue = \preg_replace('~[^\x00-\xFF]~', '', \str_replace(
                             ['\\', "\0", "\7", "\8", "\t", "\n", "\x0B", "\x0C", "\r", "\x1B"],
                             ['\\\\', '\0', '\a', '\b', '\t', '\n', '\v', '\f', '\r', '\e'],
                             $DirValue
                         ));
 
-                        $Reconstructed .= sprintf("%s='%s'\r\n", $DirKey, $DirValue);
+                        $Reconstructed .= \sprintf("%s='%s'\r\n", $DirKey, $DirValue);
                     } else {
-                        $Reconstructed .= sprintf("%s=%s\r\n", $DirKey, $DirValue);
+                        $Reconstructed .= \sprintf("%s=%s\r\n", $DirKey, $DirValue);
                     }
                 }
             }
-        } elseif (preg_match('~\.ya?ml$~i', $this->ConfigurationPath)) {
+        } elseif (\preg_match('~\.ya?ml$~i', $this->ConfigurationPath)) {
             $Reconstructed = $this->YAML->reconstruct($this->Configuration);
         } else {
             return false;
         }
-        if (!is_resource($Handle = fopen($this->ConfigurationPath, 'wb'))) {
+        if (!\is_resource($Handle = \fopen($this->ConfigurationPath, 'wb'))) {
             return false;
         }
-        $Err = fwrite($Handle, $Reconstructed);
-        fclose($Handle);
+        $Err = \fwrite($Handle, $Reconstructed);
+        \fclose($Handle);
         return $Err !== false;
     }
 
@@ -1243,7 +1243,7 @@ class Loader
      */
     public function isReserved(string $Name): bool
     {
-        return preg_match('~(?:^|\\\\|/)(?:\.{1,3}|aux|com(?:\d+|¹|²|³)|con|lpt(?:\d+|¹|²|³)|nul|prn)(?:(?:\..*)?$|\\\\|/)|[ .]$~i', $Name);
+        return \preg_match('~(?:^|\\\\|/)(?:\.{1,3}|aux|com(?:\d+|¹|²|³)|con|lpt(?:\d+|¹|²|³)|nul|prn)(?:(?:\..*)?$|\\\\|/)|[ .]$~i', $Name);
     }
 
     /**
@@ -1253,18 +1253,18 @@ class Loader
      */
     private function decodeForMultilineSupport(): void
     {
-        if (!is_array($this->Configuration)) {
+        if (!\is_array($this->Configuration)) {
             return;
         }
         foreach ($this->Configuration as $CatKey => &$CatVal) {
-            if (!is_array($CatVal)) {
+            if (!\is_array($CatVal)) {
                 continue;
             }
             foreach ($CatVal as $DirKey => &$DirVal) {
-                if (!is_string($DirVal)) {
+                if (!\is_string($DirVal)) {
                     continue;
                 }
-                $DirVal = str_replace(
+                $DirVal = \str_replace(
                     ['\\\\', '\0', '\a', '\b', '\t', '\n', '\v', '\f', '\r', '\e'],
                     ['\\', "\0", "\7", "\8", "\t", "\n", "\x0B", "\x0C", "\r", "\x1B"],
                     $DirVal
@@ -1306,7 +1306,11 @@ class Loader
 
         /** Assign cache path. */
         if ($this->CachePath !== '') {
-            $this->Cache->FFDefault = $this->CachePath . DIRECTORY_SEPARATOR . 'cache.dat';
+            if (($End = \substr($this->CachePath, -1)) === '\\' || $End === '/') {
+                $this->Cache->FFDefault = $this->CachePath . 'cache.dat';
+            } else {
+                $this->Cache->FFDefault = $this->CachePath . DIRECTORY_SEPARATOR . 'cache.dat';
+            }
         }
 
         /** Attempt to connect. */

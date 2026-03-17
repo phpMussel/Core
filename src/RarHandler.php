@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: Rar handler (last modified: 2021.07.10).
+ * This file: Rar handler (last modified: 2026.03.17).
  */
 
 namespace phpMussel\Core;
@@ -44,19 +44,19 @@ class RarHandler extends ArchiveHandler
     public function __construct($Pointer)
     {
         /** Rar class requirements guard. */
-        if (!class_exists('\RarArchive') || !class_exists('\RarEntry')) {
+        if (!\class_exists('\RarArchive') || !\class_exists('\RarEntry')) {
             $this->ErrorState = 1;
             return;
         }
 
         /** Bad pointer guard. */
-        if (!is_readable($Pointer)) {
+        if (!\is_readable($Pointer)) {
             $this->ErrorState = 2;
             return;
         }
 
         $this->RarObject = \RarArchive::open($Pointer);
-        $this->ErrorState = is_object($this->RarObject) ? 0 : 2;
+        $this->ErrorState = \is_object($this->RarObject) ? 0 : 2;
         $this->PointerSelf = $Pointer;
     }
 
@@ -67,7 +67,7 @@ class RarHandler extends ArchiveHandler
      */
     public function __destruct()
     {
-        if (is_object($this->RarObject) && $this->ErrorState === 0) {
+        if (\is_object($this->RarObject) && $this->ErrorState === 0) {
             $this->RarObject->close();
         }
     }
@@ -86,8 +86,8 @@ class RarHandler extends ArchiveHandler
         }
         $Output = '';
         if ($Bytes > 0 && ($Stream = $this->RarEntry->getStream())) {
-            $Output .= fread($Stream, $this->RarEntry->getUnpackedSize());
-            fclose($Stream);
+            $Output .= \fread($Stream, $this->RarEntry->getUnpackedSize());
+            \fclose($Stream);
         }
         return $Output;
     }
@@ -99,7 +99,7 @@ class RarHandler extends ArchiveHandler
      */
     public function EntryCompressedSize(): int
     {
-        return is_object($this->RarEntry) ? (int)$this->RarEntry->getPackedSize() : 0;
+        return \is_object($this->RarEntry) ? (int)$this->RarEntry->getPackedSize() : 0;
     }
 
     /**
@@ -109,7 +109,7 @@ class RarHandler extends ArchiveHandler
      */
     public function EntryActualSize(): int
     {
-        return is_object($this->RarEntry) ? (int)$this->RarEntry->getUnpackedSize() : 0;
+        return \is_object($this->RarEntry) ? (int)$this->RarEntry->getUnpackedSize() : 0;
     }
 
     /**
@@ -119,7 +119,7 @@ class RarHandler extends ArchiveHandler
      */
     public function EntryIsDirectory(): bool
     {
-        return is_object($this->RarEntry) ? $this->RarEntry->isDirectory() : false;
+        return \is_object($this->RarEntry) ? $this->RarEntry->isDirectory() : false;
     }
 
     /**
@@ -129,7 +129,7 @@ class RarHandler extends ArchiveHandler
      */
     public function EntryIsEncrypted(): bool
     {
-        return is_object($this->RarEntry) ? $this->RarEntry->isEncrypted() : false;
+        return \is_object($this->RarEntry) ? $this->RarEntry->isEncrypted() : false;
     }
 
     /**
@@ -139,7 +139,7 @@ class RarHandler extends ArchiveHandler
      */
     public function EntryCRC(): string
     {
-        return is_object($this->RarEntry) ? (string)$this->RarEntry->getCrc() : '';
+        return \is_object($this->RarEntry) ? (string)$this->RarEntry->getCrc() : '';
     }
 
     /**
@@ -150,9 +150,9 @@ class RarHandler extends ArchiveHandler
      */
     public function EntryName(): string
     {
-        if (is_object($this->RarEntry)) {
+        if (\is_object($this->RarEntry)) {
             $Try = $this->RarEntry->getName();
-            if (is_string($Try)) {
+            if (\is_string($Try)) {
                 return $Try;
             }
         }
@@ -166,11 +166,11 @@ class RarHandler extends ArchiveHandler
      */
     public function EntryNext(): bool
     {
-        if (!is_array($this->RarEntries)) {
+        if (!\is_array($this->RarEntries)) {
             $this->RarEntries = scandir('rar://' . $this->PointerSelf);
         }
-        if (is_array($this->RarEntries) && !empty($this->RarEntries)) {
-            $this->RarEntry = $this->RarObject->getEntry(array_shift($this->RarEntries));
+        if (\is_array($this->RarEntries) && !empty($this->RarEntries)) {
+            $this->RarEntry = $this->RarObject->getEntry(\array_shift($this->RarEntries));
             return true;
         }
         return false;

@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: Pdf handler (last modified: 2026.01.09).
+ * This file: Pdf handler (last modified: 2026.03.17).
  */
 
 namespace phpMussel\Core;
@@ -39,14 +39,14 @@ class PdfHandler extends ArchiveHandler
     public function __construct(string $File)
     {
         /** Guard against the wrong type of file being used as pointer. */
-        if (substr($File, 0, 4) !== "\x25PDF") {
+        if (\substr($File, 0, 4) !== "\x25PDF") {
             $this->ErrorState = 2;
             return;
         }
 
         /** Determine format version. */
-        if (substr($File, 4, 1) === '-' && ($EoL = strpos($File, "\n", 5)) !== false) {
-            $this->PDFVersion = preg_replace('~[^\d\.]~', '', substr($File, 5, $EoL - 5));
+        if (\substr($File, 4, 1) === '-' && ($EoL = \strpos($File, "\n", 5)) !== false) {
+            $this->PDFVersion = \preg_replace('~[^\d\.]~', '', \substr($File, 5, $EoL - 5));
         }
 
         /** Data offset for building the object tree. */
@@ -63,7 +63,7 @@ class PdfHandler extends ArchiveHandler
 
         /** Building object tree. */
         $Tree = [];
-        $Check = preg_match_all('~\n(\d+) (\d+) obj ?(?:\r?\n|\r\n?)(.+?) ?(?:\r?\n|\r\n?)endobj ?(?:\r?\n|\r\n?)~s', $File, $Matches);
+        $Check = \preg_match_all('~\n(\d+) (\d+) obj ?(?:\r?\n|\r\n?)(.+?) ?(?:\r?\n|\r\n?)endobj ?(?:\r?\n|\r\n?)~s', $File, $Matches);
         if ($Check && isset($Matches, $Matches[0], $Matches[0][0])) {
             $Count = count($Matches[0]);
             for ($Iterator = 0; $Iterator < $Count; $Iterator++) {
@@ -72,27 +72,27 @@ class PdfHandler extends ArchiveHandler
                     'Generation Number' => $Matches[2][$Iterator],
                     'Data' => $Matches[3][$Iterator]
                 ];
-                if (preg_match('~(.*)stream ?(?:\r?\n|\r\n?)(.+) ?(?:\r?\n|\r\n?)endstream~s', $Tree[$Iterator]['Data'], $SubMatches)) {
-                    $Tree[$Iterator]['Stream'] = trim($SubMatches[2]);
-                    $Tree[$Iterator]['Data'] = trim($SubMatches[1]);
+                if (\preg_match('~(.*)stream ?(?:\r?\n|\r\n?)(.+) ?(?:\r?\n|\r\n?)endstream~s', $Tree[$Iterator]['Data'], $SubMatches)) {
+                    $Tree[$Iterator]['Stream'] = \trim($SubMatches[2]);
+                    $Tree[$Iterator]['Data'] = \trim($SubMatches[1]);
                 }
-                if (preg_match('~<<\s*(.*)\s*>>~s', $Tree[$Iterator]['Data'], $SubMatches)) {
+                if (\preg_match('~<<\s*(.*)\s*>>~s', $Tree[$Iterator]['Data'], $SubMatches)) {
                     $Tree[$Iterator]['Data'] = $SubMatches[1];
                 }
                 $Params = [];
                 $Offset = 0;
-                while (($SPos = strpos($Tree[$Iterator]['Data'], '/', $Offset)) !== false) {
+                while (($SPos = \strpos($Tree[$Iterator]['Data'], '/', $Offset)) !== false) {
                     $Offset = $SPos + 1;
-                    $NextSPos = strpos($Tree[$Iterator]['Data'], '/', $Offset);
+                    $NextSPos = \strpos($Tree[$Iterator]['Data'], '/', $Offset);
                     foreach ([['[[', ']]'], ['{{', '}}'], ['((', '))'], ['<<', '>>']] as $Boundary) {
-                        $BoundaryOpen = strpos($Tree[$Iterator]['Data'], $Boundary[0], $Offset);
-                        $BoundaryWidth = strlen($Boundary[1]);
-                        $BoundaryClose = strpos($Tree[$Iterator]['Data'], $Boundary[1], $Offset);
+                        $BoundaryOpen = \strpos($Tree[$Iterator]['Data'], $Boundary[0], $Offset);
+                        $BoundaryWidth = \strlen($Boundary[1]);
+                        $BoundaryClose = \strpos($Tree[$Iterator]['Data'], $Boundary[1], $Offset);
                         $BoundaryOffset = $BoundaryOpen + $BoundaryWidth;
                         while (
-                            ($Working = substr($Tree[$Iterator]['Data'], $BoundaryOffset, $BoundaryClose - $BoundaryOffset)) &&
-                            ($RPos = strpos($Working, $Boundary[0])) !== false &&
-                            ($Try = strpos($Tree[$Iterator]['Data'], $Boundary[1], $BoundaryClose + $BoundaryWidth)) !== false
+                            ($Working = \substr($Tree[$Iterator]['Data'], $BoundaryOffset, $BoundaryClose - $BoundaryOffset)) &&
+                            ($RPos = \strpos($Working, $Boundary[0])) !== false &&
+                            ($Try = \strpos($Tree[$Iterator]['Data'], $Boundary[1], $BoundaryClose + $BoundaryWidth)) !== false
                         ) {
                             $BoundaryOffset += $RPos + $BoundaryWidth;
                             $BoundaryClose = $Try;
@@ -105,13 +105,13 @@ class PdfHandler extends ArchiveHandler
                                 $NextSPos === false ||
                                 (
                                     $BoundaryOpen < $NextSPos &&
-                                    trim(substr($Tree[$Iterator]['Data'], $BoundaryClose + $BoundaryWidth, $NextSPos - $BoundaryClose - $BoundaryWidth)) === ''
+                                    \trim(\substr($Tree[$Iterator]['Data'], $BoundaryClose + $BoundaryWidth, $NextSPos - $BoundaryClose - $BoundaryWidth)) === ''
                                 )
                             )
                         ) {
-                            $Label = trim(substr($Tree[$Iterator]['Data'], $Offset, $BoundaryOpen - $Offset));
-                            $Property = trim(substr($Tree[$Iterator]['Data'], $BoundaryOpen + $BoundaryWidth, $BoundaryClose - $BoundaryOpen - $BoundaryWidth));
-                            if (strlen($Label)) {
+                            $Label = \trim(\substr($Tree[$Iterator]['Data'], $Offset, $BoundaryOpen - $Offset));
+                            $Property = \trim(\substr($Tree[$Iterator]['Data'], $BoundaryOpen + $BoundaryWidth, $BoundaryClose - $BoundaryOpen - $BoundaryWidth));
+                            if (\strlen($Label)) {
                                 $Params[$Label] = $Property;
                             }
                             $Offset = $BoundaryClose + $BoundaryWidth;
@@ -119,19 +119,19 @@ class PdfHandler extends ArchiveHandler
                         }
                     }
                     foreach ([' '] as $Boundary) {
-                        $BPos = strpos($Tree[$Iterator]['Data'], $Boundary, $Offset);
+                        $BPos = \strpos($Tree[$Iterator]['Data'], $Boundary, $Offset);
                         if ($BPos !== false) {
-                            $Label = trim(substr($Tree[$Iterator]['Data'], $Offset, $BPos - $Offset));
+                            $Label = \trim(\substr($Tree[$Iterator]['Data'], $Offset, $BPos - $Offset));
                             if ($NextSPos === false) {
-                                $Property = trim(substr($Tree[$Iterator]['Data'], $BPos + 1));
-                                if (strlen($Label)) {
+                                $Property = \trim(\substr($Tree[$Iterator]['Data'], $BPos + 1));
+                                if (\strlen($Label)) {
                                     $Params[$Label] = $Property;
                                 }
                             } elseif ($BPos > $NextSPos) {
                                 continue;
                             } else {
-                                $Property = trim(substr($Tree[$Iterator]['Data'], $BPos + 1, $NextSPos - $BPos - 1));
-                                if (strlen($Label)) {
+                                $Property = \trim(\substr($Tree[$Iterator]['Data'], $BPos + 1, $NextSPos - $BPos - 1));
+                                if (\strlen($Label)) {
                                     $Params[$Label] = $Property;
                                 }
                             }
@@ -139,14 +139,14 @@ class PdfHandler extends ArchiveHandler
                         }
                     }
                     if ($NextSPos === false) {
-                        $Label = trim(substr($Tree[$Iterator]['Data'], $Offset));
-                        if (strlen($Label)) {
+                        $Label = \trim(\substr($Tree[$Iterator]['Data'], $Offset));
+                        if (\strlen($Label)) {
                             $Params[$Label] = '';
                         }
                         continue;
                     }
-                    $Label = trim(substr($Tree[$Iterator]['Data'], $Offset, $NextSPos - $Offset));
-                    if (strlen($Label)) {
+                    $Label = \trim(\substr($Tree[$Iterator]['Data'], $Offset, $NextSPos - $Offset));
+                    if (\strlen($Label)) {
                         $Params[$Label] = '';
                     }
                 }
@@ -166,8 +166,8 @@ class PdfHandler extends ArchiveHandler
                     while (true) {
                         $Changed = false;
                         foreach ([['[', ']'], ['{', '}'], ['((', ')'], ['<', '>']] as $Boundary) {
-                            if (substr($ParamValue, 0, 1) === $Boundary[0] && substr($ParamValue, -1) === $Boundary[1]) {
-                                $ParamValue = substr($ParamValue, 1, -1);
+                            if (\substr($ParamValue, 0, 1) === $Boundary[0] && \substr($ParamValue, -1) === $Boundary[1]) {
+                                $ParamValue = \substr($ParamValue, 1, -1);
                                 $Changed = true;
                             }
                         }
@@ -185,8 +185,8 @@ class PdfHandler extends ArchiveHandler
                 if (!empty($Params['Filter']) && !empty($Tree[$Iterator]['Stream'])) {
                     while (true) {
                         $Changed = false;
-                        if (substr($Params['Filter'], 0, 12) === '/FlateDecode') {
-                            $Params['Filter'] = trim(substr($Params['Filter'], 12));
+                        if (\substr($Params['Filter'], 0, 12) === '/FlateDecode') {
+                            $Params['Filter'] = \trim(\substr($Params['Filter'], 12));
                             $Try = gzuncompress($Tree[$Iterator]['Stream']);
                             if ($Try !== false) {
                                 $Tree[$Iterator]['Stream'] = $Try;
@@ -195,9 +195,9 @@ class PdfHandler extends ArchiveHandler
                                 break;
                             }
                         }
-                        if (substr($Params['Filter'], 0, 15) === '/ASCIIHexDecode') {
-                            $Params['Filter'] = trim(substr($Params['Filter'], 15));
-                            $Try = hex2bin(preg_replace('~[^a-f0-9]~i', '', $Tree[$Iterator]['Stream']));
+                        if (\substr($Params['Filter'], 0, 15) === '/ASCIIHexDecode') {
+                            $Params['Filter'] = \trim(\substr($Params['Filter'], 15));
+                            $Try = \hex2bin(\preg_replace('~[^a-f0-9]~i', '', $Tree[$Iterator]['Stream']));
                             if ($Try !== false) {
                                 $Tree[$Iterator]['Stream'] = $Try;
                                 $Changed = true;
@@ -205,13 +205,13 @@ class PdfHandler extends ArchiveHandler
                                 break;
                             }
                         }
-                        if (substr($Params['Filter'], 0, 14) === '/ASCII85Decode') {
-                            $Params['Filter'] = trim(substr($Params['Filter'], 14));
+                        if (\substr($Params['Filter'], 0, 14) === '/ASCII85Decode') {
+                            $Params['Filter'] = \trim(\substr($Params['Filter'], 14));
                             $Tree[$Iterator]['Stream'] = $this->base85_decode($Tree[$Iterator]['Stream']);
                             $Changed = true;
                         }
-                        if (substr($Params['Filter'], 0, 10) === '/LZWDecode') {
-                            $Params['Filter'] = trim(substr($Params['Filter'], 10));
+                        if (\substr($Params['Filter'], 0, 10) === '/LZWDecode') {
+                            $Params['Filter'] = \trim(\substr($Params['Filter'], 10));
                             if (function_exists('lzf_decompress')) {
                                 $Try = lzf_decompress($Tree[$Iterator]['Stream']);
                                 if ($Try !== false) {
@@ -229,14 +229,14 @@ class PdfHandler extends ArchiveHandler
                 }
 
                 /** Normalise types. */
-                if (isset($Params['Type']) && strpos($Params['Type'], '#') !== false) {
-                    while (($HPos = strpos($Params['Type'], '#')) !== false) {
-                        $Bytes = substr($Params['Type'], $HPos + 1, 2);
-                        $Len = strlen($Bytes);
-                        if (!$Len || preg_match('/[^\da-f]/i', $Bytes) || ($Len % 2)) {
+                if (isset($Params['Type']) && \strpos($Params['Type'], '#') !== false) {
+                    while (($HPos = \strpos($Params['Type'], '#')) !== false) {
+                        $Bytes = \substr($Params['Type'], $HPos + 1, 2);
+                        $Len = \strlen($Bytes);
+                        if (!$Len || \preg_match('/[^\da-f]/i', $Bytes) || ($Len % 2)) {
                             break;
                         }
-                        $Params['Type'] = substr($Params['Type'], 0, $HPos) . chr(hexdec($Bytes)) . substr($Params['Type'], $HPos + 3);
+                        $Params['Type'] = \substr($Params['Type'], 0, $HPos) . chr(\hexdec($Bytes)) . \substr($Params['Type'], $HPos + 3);
                     }
                 }
 
@@ -249,9 +249,9 @@ class PdfHandler extends ArchiveHandler
 
         /** Build references. */
         for ($Iterator = 0; $Iterator < $Counts; $Iterator++) {
-            if (isset($Tree[$Iterator]['Data']) && is_array($Tree[$Iterator]['Data'])) {
+            if (isset($Tree[$Iterator]['Data']) && \is_array($Tree[$Iterator]['Data'])) {
                 foreach ($Tree[$Iterator]['Data'] as $ParamKey => $ParamValue) {
-                    $Check = preg_match('~^(\d+) (\d+) R$~', $ParamValue, $Matches);
+                    $Check = \preg_match('~^(\d+) (\d+) R$~', $ParamValue, $Matches);
                     if ($Check) {
                         $Matches[1] = $Matches[1] - 1;
                         $Matches[2] = (int)$Matches[2];
@@ -276,7 +276,7 @@ class PdfHandler extends ArchiveHandler
 
         /** Export scannables to final object tree. */
         for ($Iterator = 0; $Iterator < $Counts; $Iterator++) {
-            if (isset($Tree[$Iterator]['Data']) && is_array($Tree[$Iterator]['Data'])) {
+            if (isset($Tree[$Iterator]['Data']) && \is_array($Tree[$Iterator]['Data'])) {
                 if (
                     isset($Tree[$Iterator]['Data']['Type'], $Tree[$Iterator]['Stream']) &&
                     $Tree[$Iterator]['Data']['Type'] === '/EmbeddedFile'
@@ -285,7 +285,7 @@ class PdfHandler extends ArchiveHandler
                     if (isset($Tree[$Iterator]['Data']['Length'])) {
                         $Object['EntryCompressedSize'] = (int)$Tree[$Iterator]['Data']['Length'];
                     }
-                    $Object['EntryActualSize'] = strlen($Tree[$Iterator]['Stream']);
+                    $Object['EntryActualSize'] = \strlen($Tree[$Iterator]['Stream']);
                     $Object['Data'] = $Tree[$Iterator]['Stream'];
                     $this->Objects[] = $Object;
                 }
@@ -310,13 +310,13 @@ class PdfHandler extends ArchiveHandler
      */
     public function base85_decode(string $In): string
     {
-        $In = str_replace(["\t", "\r", "\n", "\f", '/z/', '/y/'], ['', '', '', '', '!!!!!', '+<VdL/'], $In);
-        $Len = strlen($In);
+        $In = \str_replace(["\t", "\r", "\n", "\f", '/z/', '/y/'], ['', '', '', '', '!!!!!', '+<VdL/'], $In);
+        $Len = \strlen($In);
         $Padding = ($Len % 5 === 0) ? 0 : 5 - ($Len % 5);
-        $In .= str_repeat('u', $Padding);
+        $In .= \str_repeat('u', $Padding);
         $Num = 0;
         $Out = '';
-        while ($Chunk = substr($In, $Num * 5, 5)) {
+        while ($Chunk = \substr($In, $Num * 5, 5)) {
             $Char = 0;
             foreach (unpack('C*', $Chunk) as $ThisChar) {
                 $Char *= 85;
@@ -325,7 +325,7 @@ class PdfHandler extends ArchiveHandler
             $Out .= pack('N', $Char);
             $Num++;
         }
-        return substr($Out, 0, strlen($Out) - $Padding);
+        return \substr($Out, 0, \strlen($Out) - $Padding);
     }
 
     /**
@@ -337,7 +337,7 @@ class PdfHandler extends ArchiveHandler
     public function EntryRead(int $Bytes = -1): string
     {
         if ($Bytes > -1) {
-            return isset($this->Objects[$this->Index]['Data']) ? substr($this->Objects[$this->Index]['Data'], 0, $Bytes) : '';
+            return isset($this->Objects[$this->Index]['Data']) ? \substr($this->Objects[$this->Index]['Data'], 0, $Bytes) : '';
         }
         return $this->Objects[$this->Index]['Data'] ?? '';
     }

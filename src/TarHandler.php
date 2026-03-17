@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: Tar handler (last modified: 2023.12.01).
+ * This file: Tar handler (last modified: 2026.03.17).
  */
 
 namespace phpMussel\Core;
@@ -44,13 +44,13 @@ class TarHandler extends ArchiveHandler
     public function __construct($File)
     {
         /** Guard against the wrong type of file being used as pointer. */
-        if (substr($File, 257, 6) !== "ustar\0") {
+        if (\substr($File, 257, 6) !== "ustar\0") {
             $this->ErrorState = 2;
             return;
         }
 
         /** Set total size. */
-        $this->TotalSize = strlen($File);
+        $this->TotalSize = \strlen($File);
 
         /** Set archive data. */
         $this->Data = $File;
@@ -71,7 +71,7 @@ class TarHandler extends ArchiveHandler
         if ($Bytes < 0 || $Bytes > $Actual) {
             $Bytes = $Actual;
         }
-        return substr($this->Data, $this->Offset + 512, $Bytes);
+        return \substr($this->Data, $this->Offset + 512, $Bytes);
     }
 
     /**
@@ -82,7 +82,7 @@ class TarHandler extends ArchiveHandler
      */
     public function EntryCompressedSize(): int
     {
-        return octdec(preg_replace('/\D/', '', substr($this->Data, $this->Offset + 124, 12))) ?: 0;
+        return octdec(\preg_replace('/\D/', '', \substr($this->Data, $this->Offset + 124, 12))) ?: 0;
     }
 
     /**
@@ -92,7 +92,7 @@ class TarHandler extends ArchiveHandler
      */
     public function EntryActualSize(): int
     {
-        return octdec(preg_replace('/\D/', '', substr($this->Data, $this->Offset + 124, 12))) ?: 0;
+        return octdec(\preg_replace('/\D/', '', \substr($this->Data, $this->Offset + 124, 12))) ?: 0;
     }
 
     /**
@@ -103,7 +103,7 @@ class TarHandler extends ArchiveHandler
     public function EntryIsDirectory(): bool
     {
         $Name = $this->EntryName();
-        $Separator = substr($Name, -1, 1);
+        $Separator = \substr($Name, -1, 1);
         return (($Separator === '\\' || $Separator === '/') && $this->EntryActualSize() === 0);
     }
 
@@ -135,7 +135,7 @@ class TarHandler extends ArchiveHandler
      */
     public function EntryName(): string
     {
-        return preg_replace('/[^\x20-\xff]/', '', substr($this->Data, $this->Offset, 100));
+        return \preg_replace('/[^\x20-\xff]/', '', \substr($this->Data, $this->Offset, 100));
     }
 
     /**
@@ -152,7 +152,7 @@ class TarHandler extends ArchiveHandler
             return ($this->Initialised = true);
         }
         $Actual = $this->EntryActualSize();
-        $Blocks = $Actual > 0 ? ceil($Actual / 512) + 1 : 1;
+        $Blocks = $Actual > 0 ? \ceil($Actual / 512) + 1 : 1;
         $this->Offset += $Blocks * 512;
         return true;
     }

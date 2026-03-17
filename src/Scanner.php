@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2025.10.07).
+ * This file: The scanner (last modified: 2026.03.17).
  */
 
 namespace phpMussel\Core;
@@ -98,7 +98,7 @@ class Scanner
 
             /** Get detections. */
             if (count($this->Loader->ScanResultsText)) {
-                $Detections = implode($this->Loader->L10N->getString('grammar_spacer'), $this->Loader->ScanResultsText);
+                $Detections = \implode($this->Loader->L10N->getString('grammar_spacer'), $this->Loader->ScanResultsText);
             } else {
                 $Detections = $this->Loader->L10N->getString('response.Data not available');
             }
@@ -113,13 +113,13 @@ class Scanner
                 'Detections' => $Detections
             ]) . "\n";
             $Truncate = $this->Loader->readBytes($this->Loader->Configuration['core']['truncate']);
-            $WriteMode = (!file_exists($File) || ($Truncate > 0 && filesize($File) >= $Truncate)) ? 'wb' : 'ab';
-            if (!is_resource($Stream = fopen($File, $WriteMode))) {
-                trigger_error('The "writeToSerialLog" event failed to open "' . $File . '" for writing.');
+            $WriteMode = (!\file_exists($File) || ($Truncate > 0 && \filesize($File) >= $Truncate)) ? 'wb' : 'ab';
+            if (!\is_resource($Stream = \fopen($File, $WriteMode))) {
+                \trigger_error('The "writeToSerialLog" event failed to open "' . $File . '" for writing.');
                 return false;
             }
-            fwrite($Stream, $Data);
-            fclose($Stream);
+            \fwrite($Stream, $Data);
+            \fclose($Stream);
             $this->Loader->logRotation($this->Loader->Configuration['core']['scan_log_serialized']);
             return true;
         });
@@ -132,35 +132,35 @@ class Scanner
         $this->Loader->Events->addHandler('writeToScanLog', function (): bool {
             /** Guard. */
             if (
-                strlen($this->Loader->ScanResultsFormatted) === 0 ||
+                \strlen($this->Loader->ScanResultsFormatted) === 0 ||
                 $this->Loader->Configuration['core']['scan_log'] === '' ||
                 !($File = $this->Loader->buildPath($this->Loader->Configuration['core']['scan_log']))
             ) {
                 return false;
             }
 
-            $Results = sprintf(
+            $Results = \sprintf(
                 "%s %s\n%s%s %s\n\n",
                 $this->Loader->InstanceCache['StartTime2822'],
-                sprintf($this->Loader->L10N->getString('grammar_fullstop'), $this->Loader->L10N->getString('response.Started')),
+                \sprintf($this->Loader->L10N->getString('grammar_fullstop'), $this->Loader->L10N->getString('response.Started')),
                 $this->Loader->ScanResultsFormatted,
                 $this->Loader->InstanceCache['EndTime2822'],
-                sprintf($this->Loader->L10N->getString('grammar_fullstop'), $this->Loader->L10N->getString('response.Finished'))
+                \sprintf($this->Loader->L10N->getString('grammar_fullstop'), $this->Loader->L10N->getString('response.Finished'))
             );
 
-            if (!file_exists($File)) {
+            if (!\file_exists($File)) {
                 $Results = \phpMussel\Core\Loader::SAFETY . "\n" . $Results;
                 $WriteMode = 'wb';
             } else {
                 $Truncate = $this->Loader->readBytes($this->Loader->Configuration['core']['truncate']);
-                $WriteMode = ($Truncate > 0 && filesize($File) >= $Truncate) ? 'wb' : 'ab';
+                $WriteMode = ($Truncate > 0 && \filesize($File) >= $Truncate) ? 'wb' : 'ab';
             }
-            if (!is_resource($Handle = fopen($File, 'ab'))) {
-                trigger_error('The "writeToScanLog" event failed to open "' . $File . '" for writing.');
+            if (!\is_resource($Handle = \fopen($File, 'ab'))) {
+                \trigger_error('The "writeToScanLog" event failed to open "' . $File . '" for writing.');
                 return false;
             }
-            fwrite($Handle, $Results);
-            fclose($Handle);
+            \fwrite($Handle, $Results);
+            \fclose($Handle);
             $this->Loader->logRotation($this->Loader->Configuration['core']['scan_log']);
             return true;
         });
@@ -236,7 +236,7 @@ class Scanner
         $this->Loader->InstanceCache['ScanErrors'] = 0;
 
         /** Start time is used for logging. */
-        $this->Loader->InstanceCache['StartTime'] = time() + ($this->Loader->Configuration['core']['time_offset'] * 60);
+        $this->Loader->InstanceCache['StartTime'] = \time() + ($this->Loader->Configuration['core']['time_offset'] * 60);
         $this->Loader->InstanceCache['StartTime2822'] = $this->Loader->timeFormat(
             $this->Loader->InstanceCache['StartTime'],
             $this->Loader->Configuration['core']['time_format']
@@ -246,7 +246,7 @@ class Scanner
         $this->recursor($Files);
 
         /** End time is used for logging. */
-        $this->Loader->InstanceCache['EndTime'] = time() + ($this->Loader->Configuration['core']['time_offset'] * 60);
+        $this->Loader->InstanceCache['EndTime'] = \time() + ($this->Loader->Configuration['core']['time_offset'] * 60);
         $this->Loader->InstanceCache['EndTime2822'] = $this->Loader->timeFormat(
             $this->Loader->InstanceCache['EndTime'],
             $this->Loader->Configuration['core']['time_format']
@@ -275,7 +275,7 @@ class Scanner
 
         /** Return human-readable text. */
         if ($Format === 4) {
-            return implode($this->Loader->L10N->getString('grammar_spacer'), array_filter($this->Loader->ScanResultsText));
+            return \implode($this->Loader->L10N->getString('grammar_spacer'), \array_filter($this->Loader->ScanResultsText));
         }
 
         /** Return an array of human-readable text. */
@@ -294,13 +294,13 @@ class Scanner
         }
 
         /** Return formatted human-readable text. */
-        return sprintf(
+        return \sprintf(
             "%s %s\n%s%s %s\n\n",
             $this->Loader->InstanceCache['StartTime2822'],
-            sprintf($this->Loader->L10N->getString('grammar_fullstop'), $this->Loader->L10N->getString('response.Started')),
+            \sprintf($this->Loader->L10N->getString('grammar_fullstop'), $this->Loader->L10N->getString('response.Started')),
             $this->Loader->ScanResultsFormatted,
             $this->Loader->InstanceCache['EndTime2822'],
-            sprintf($this->Loader->L10N->getString('grammar_fullstop'), $this->Loader->L10N->getString('response.Finished'))
+            \sprintf($this->Loader->L10N->getString('grammar_fullstop'), $this->Loader->L10N->getString('response.Finished'))
         );
     }
 
@@ -318,7 +318,7 @@ class Scanner
 
         $this->Loader->InstanceCache['StatisticsModified'] = false;
         if ($this->Loader->InstanceCache['Statistics'] = ($this->Loader->Cache->getEntry('Statistics') ?: [])) {
-            if (is_string($this->Loader->InstanceCache['Statistics'])) {
+            if (\is_string($this->Loader->InstanceCache['Statistics'])) {
                 unserialize($this->Loader->InstanceCache['Statistics']) ?: [];
             }
         }
@@ -367,11 +367,11 @@ class Scanner
     public function implodeMd(array $Arr): string
     {
         foreach ($Arr as &$Key) {
-            if (is_array($Key)) {
+            if (\is_array($Key)) {
                 $Key = $this->implodeMd($Key);
             }
         }
-        return implode($Arr);
+        return \implode($Arr);
     }
 
     /**
@@ -385,16 +385,16 @@ class Scanner
     public function directoryRecursiveList(string $Base, bool $Directories = false): array
     {
         $Arr = [];
-        $Offset = strlen($Base);
+        $Offset = \strlen($Base);
         $List = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($Base, \RecursiveDirectoryIterator::SKIP_DOTS), \RecursiveIteratorIterator::SELF_FIRST);
         foreach ($List as $Item => $List) {
-            if (!is_readable($Item)) {
+            if (!\is_readable($Item)) {
                 continue;
             }
-            if (is_dir($Item) && !$Directories) {
+            if (\is_dir($Item) && !$Directories) {
                 continue;
             }
-            $Arr[] = substr($Item, $Offset);
+            $Arr[] = \substr($Item, $Offset);
         }
         return $Arr;
     }
@@ -427,38 +427,38 @@ class Scanner
             return false;
         }
 
-        if (!$In || !$Key || !$IP || !$ID || !function_exists('gzdeflate') || (
-            strlen($Key) < 128 &&
-            !$Key = $this->Loader->hexSafe(hash('sha512', $Key) . hash('whirlpool', $Key))
+        if (!$In || !$Key || !$IP || !$ID || !\function_exists('gzdeflate') || (
+            \strlen($Key) < 128 &&
+            !$Key = $this->Loader->hexSafe(\hash('sha512', $Key) . \hash('whirlpool', $Key))
         )) {
             return false;
         }
         if ($this->Loader->Configuration['legal']['pseudonymise_ip_addresses']) {
             $IP = $this->Loader->pseudonymiseIP($IP);
         }
-        $k = strlen($Key);
-        $FileSize = strlen($In);
-        $Head = "\xA1phpMussel\x21" . $this->Loader->hexSafe(hash('md5', $In)) . pack('l*', $FileSize) . "\1";
+        $k = \strlen($Key);
+        $FileSize = \strlen($In);
+        $Head = "\xA1phpMussel\x21" . $this->Loader->hexSafe(\hash('md5', $In)) . \pack('l*', $FileSize) . "\1";
         $In = gzdeflate($In, 9);
         $Out = '';
         $i = 0;
         while ($i < $FileSize) {
             for ($j = 0; $j < $k; $j++, $i++) {
-                if (strlen($Out) >= $FileSize) {
+                if (\strlen($Out) >= $FileSize) {
                     break 2;
                 }
-                $L = substr($In, $i, 1);
-                $R = substr($Key, $j, 1);
+                $L = \substr($In, $i, 1);
+                $R = \substr($Key, $j, 1);
                 $Out .= ($L === false ? "\0" : $L) ^ ($R === false ? "\0" : $R);
             }
         }
         $Out =
             "\x2F\x3D\x3D phpMussel Quarantined File Upload \x3D\x3D\x5C\n\x7C Time\x2FDate Uploaded\x3A " .
-            str_pad($this->Loader->Time, 18, ' ') .
-            "\x7C\n\x7C Uploaded From\x3A " . str_pad($IP, 22, ' ') .
-            " \x7C\n\x5C" . str_repeat("\x3D", 39) . "\x2F\n\n\n" . $Head . $Out;
+            \str_pad($this->Loader->Time, 18, ' ') .
+            "\x7C\n\x7C Uploaded From\x3A " . \str_pad($IP, 22, ' ') .
+            " \x7C\n\x5C" . \str_repeat("\x3D", 39) . "\x2F\n\n\n" . $Head . $Out;
         $UsedMemory = $this->memoryUse($this->Loader->QuarantinePath);
-        $UsedMemory['Size'] += strlen($Out);
+        $UsedMemory['Size'] += \strlen($Out);
         $UsedMemory['Count']++;
         if ($DeductBytes = $this->Loader->readBytes($this->Loader->Configuration['quarantine']['quarantine_max_usage'])) {
             $DeductBytes = $UsedMemory['Size'] - $DeductBytes;
@@ -471,13 +471,13 @@ class Scanner
         if ($DeductBytes > 0 || $DeductFiles > 0) {
             $UsedMemory = $this->memoryUse($this->Loader->QuarantinePath, $DeductBytes, $DeductFiles);
         }
-        $Trail = substr($this->Loader->QuarantinePath, -1);
+        $Trail = \substr($this->Loader->QuarantinePath, -1);
         if ($Trail !== '/' && $Trail !== '\\') {
             $ID .= DIRECTORY_SEPARATOR;
         }
-        $Handle = fopen($this->Loader->QuarantinePath . $ID . '.qfu', 'ab');
-        fwrite($Handle, $Out);
-        fclose($Handle);
+        $Handle = \fopen($this->Loader->QuarantinePath . $ID . '.qfu', 'ab');
+        \fwrite($Handle, $Out);
+        \fclose($Handle);
         if ($this->CalledFrom === 'Web') {
             $this->statsIncrement('Web-Quarantined', 1);
         }
@@ -495,8 +495,8 @@ class Scanner
      */
     public function splitNibble(string $Input): array
     {
-        $Input = bin2hex($Input);
-        return [hexdec(substr($Input, 0, 1)), hexdec(substr($Input, 1, 1))];
+        $Input = \bin2hex($Input);
+        return [\hexdec(\substr($Input, 0, 1)), \hexdec(\substr($Input, 1, 1))];
     }
 
     /**
@@ -541,11 +541,11 @@ class Scanner
     public function lvMatch(string $Needle, string $Haystack, int $pos_A = 0, int $pos_Z = 0, int $min = 0, int $max = -1): bool
     {
         /** Guard. */
-        if (!function_exists('levenshtein') || is_array($Needle) || is_array($Haystack)) {
+        if (!\function_exists('levenshtein') || \is_array($Needle) || \is_array($Haystack)) {
             return false;
         }
 
-        $nlen = strlen($Needle);
+        $nlen = \strlen($Needle);
         $pos_A = (int)$pos_A;
         $pos_Z = (int)$pos_Z;
         $min = (int)$min;
@@ -553,16 +553,16 @@ class Scanner
         if ($pos_A !== 0 || $pos_Z !== 0) {
             $Haystack = (
                 $pos_Z === 0
-            ) ? substr($Haystack, $pos_A) : substr($Haystack, $pos_A, $pos_Z);
+            ) ? \substr($Haystack, $pos_A) : \substr($Haystack, $pos_A, $pos_Z);
         }
-        $hlen = strlen($Haystack);
+        $hlen = \strlen($Haystack);
         if ($nlen < 1 || $hlen < 1) {
             return false;
         }
         if ($nlen > $hlen) {
             [$Haystack, $hlen, $Needle, $nlen] = [$Needle, $nlen, $Haystack, $hlen];
         }
-        $lv = levenshtein(strtolower($Haystack), strtolower($Needle));
+        $lv = levenshtein(\strtolower($Haystack), \strtolower($Needle));
         return (($min === 0 || $lv >= $min) && ($max === -1 || $lv <= $max));
     }
 
@@ -577,9 +577,9 @@ class Scanner
     public function explodeBits(string $Input): string
     {
         $Out = '';
-        $Len = strlen($Input);
+        $Len = \strlen($Input);
         for ($Byte = 0; $Byte < $Len; $Byte++) {
-            $Out .= str_pad(decbin(ord($Input[$Byte])), 8, '0', STR_PAD_LEFT);
+            $Out .= \str_pad(decbin(ord($Input[$Byte])), 8, '0', STR_PAD_LEFT);
         }
         return $Out;
     }
@@ -609,7 +609,7 @@ class Scanner
     public function setScanDebugArray(&$Arr): void
     {
         unset($this->Loader->InstanceCache['DebugArr']);
-        if (!is_array($Arr)) {
+        if (!\is_array($Arr)) {
             $Arr = [];
         }
         $this->Loader->InstanceCache['DebugArr'] = &$Arr;
@@ -651,18 +651,18 @@ class Scanner
         }
 
         /** Ensure that $Text doesn't break lines and clean it up. */
-        $Text = preg_replace('~[\x00-\x1F]~', '', $Text);
+        $Text = \preg_replace('~[\x00-\x1F]~', '', $Text);
 
         /** Generate hash reference and key for various arrays to be populated. */
-        $HashReference = sprintf('%s:%d:%s', $Hash, $Size, $Name);
-        if (strpos($this->Loader->HashReference, $HashReference . "\n") === false) {
+        $HashReference = \sprintf('%s:%d:%s', $Hash, $Size, $Name);
+        if (\strpos($this->Loader->HashReference, $HashReference . "\n") === false) {
             $this->Loader->HashReference .= $HashReference . "\n";
         }
 
-        $TextLength = strlen($Text);
+        $TextLength = \strlen($Text);
 
         /** Scan results as text. */
-        if ($TextLength && isset($this->Loader->ScanResultsText[$HashReference]) && strlen($this->Loader->ScanResultsText[$HashReference])) {
+        if ($TextLength && isset($this->Loader->ScanResultsText[$HashReference]) && \strlen($this->Loader->ScanResultsText[$HashReference])) {
             $this->Loader->ScanResultsText[$HashReference] .= $this->Loader->L10N->getString('grammar_spacer') . $Text;
         } else {
             $this->Loader->ScanResultsText[$HashReference] = $Text;
@@ -683,14 +683,14 @@ class Scanner
         }
 
         /** Indenting to apply for the formatted scan results . */
-        $Indent = str_pad('→ ', ($Depth < 1 ? 4 : ($Depth * 3) + 4), '─', STR_PAD_LEFT);
+        $Indent = \str_pad('→ ', ($Depth < 1 ? 4 : ($Depth * 3) + 4), '─', STR_PAD_LEFT);
 
         /** Fallback for missing text for formatted text. */
         if ($TextLength === 0) {
             if ($Code === 0) {
-                $Text = sprintf(
+                $Text = \sprintf(
                     $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                    sprintf($this->Loader->L10N->getString('response.%s does not exist'), $Name)
+                    \sprintf($this->Loader->L10N->getString('response.%s does not exist'), $Name)
                 );
             } elseif ($Code === 1) {
                 $Text = $this->Loader->L10N->getString('response.No problems found');
@@ -737,19 +737,19 @@ class Scanner
             $ostr .= $str;
             while (true) {
                 if (
-                    function_exists('gzinflate') &&
-                    $c = preg_match_all('/(gzinflate\s*\\(\s*["\'])(.{1,4096})(,\d)?(["\']\s*\\))/i', $str, $matches)
+                    \function_exists('gzinflate') &&
+                    $c = \preg_match_all('/(gzinflate\s*\\(\s*["\'])(.{1,4096})(,\d)?(["\']\s*\\))/i', $str, $matches)
                 ) {
                     for ($i = 0; $c > $i; $i++) {
-                        $str = str_ireplace(
+                        $str = \str_ireplace(
                             $matches[0][$i],
-                            '"' . gzinflate($this->Loader->substrBeforeLast($this->Loader->substrAfterFirst($matches[0][$i], $matches[1][$i]), $matches[4][$i])) . '"',
+                            '"' . \gzinflate($this->Loader->substrBeforeLast($this->Loader->substrAfterFirst($matches[0][$i], $matches[1][$i]), $matches[4][$i])) . '"',
                             $str
                         );
                     }
                     continue;
                 }
-                if ($c = preg_match_all(
+                if ($c = \preg_match_all(
                     '/(base64_decode|decode_base64|base64\.b64decode|atob|Base64\.decode64)(\s*' .
                     '\\(\s*["\'\`])([\da-z+\/]{4})*([\da-z+\/]{4}|[\da-z+\/]{3}=|[\da-z+\/]{2}==)(["\'\`]' .
                     '\s*\\))/i',
@@ -757,35 +757,35 @@ class Scanner
                     $matches
                 )) {
                     for ($i = 0; $c > $i; $i++) {
-                        $str = str_ireplace(
+                        $str = \str_ireplace(
                             $matches[0][$i],
-                            '"' . base64_decode($this->Loader->substrBeforeLast($this->Loader->substrAfterFirst($matches[0][$i], $matches[1][$i] . $matches[2][$i]), $matches[5][$i])) . '"',
+                            '"' . \base64_decode($this->Loader->substrBeforeLast($this->Loader->substrAfterFirst($matches[0][$i], $matches[1][$i] . $matches[2][$i]), $matches[5][$i])) . '"',
                             $str
                         );
                     }
                     continue;
                 }
-                if ($c = preg_match_all(
+                if ($c = \preg_match_all(
                     '/(str_rot13\s*\\(\s*["\'])([^\'"\\(\\)]{1,4096})(["\']\s*\\))/i',
                     $str,
                     $matches
                 )) {
                     for ($i = 0; $c > $i; $i++) {
-                        $str = str_ireplace(
+                        $str = \str_ireplace(
                             $matches[0][$i],
-                            '"' . str_rot13($this->Loader->substrBeforeLast($this->Loader->substrAfterFirst($matches[0][$i], $matches[1][$i]), $matches[3][$i])) . '"',
+                            '"' . \str_rot13($this->Loader->substrBeforeLast($this->Loader->substrAfterFirst($matches[0][$i], $matches[1][$i]), $matches[3][$i])) . '"',
                             $str
                         );
                     }
                     continue;
                 }
-                if ($c = preg_match_all(
+                if ($c = \preg_match_all(
                     '/(hex2bin\s*\\(\s*["\'])([\da-f]{1,4096})(["\']\s*\\))/i',
                     $str,
                     $matches
                 )) {
                     for ($i = 0; $c > $i; $i++) {
-                        $str = str_ireplace(
+                        $str = \str_ireplace(
                             $matches[0][$i],
                             '"' . $this->Loader->hexSafe($this->Loader->substrBeforeLast($this->Loader->substrAfterFirst($matches[0][$i], $matches[1][$i]), $matches[3][$i])) . '"',
                             $str
@@ -793,29 +793,29 @@ class Scanner
                     }
                     continue;
                 }
-                if ($c = preg_match_all(
+                if ($c = \preg_match_all(
                     '/([Uu][Nn][Pp][Aa][Cc][Kk]\s*\\(\s*["\']\s*H\*\s*["\']\s*,\s*["\'])([\da-fA-F]{1,4096})(["\']\s*\\))/',
                     $str,
                     $matches
                 )) {
                     for ($i = 0; $c > $i; $i++) {
-                        $str = str_replace($matches[0][$i], '"' . $this->Loader->hexSafe($this->Loader->substrBeforeLast($this->Loader->substrAfterFirst($matches[0][$i], $matches[1][$i]), $matches[3][$i])) . '"', $str);
+                        $str = \str_replace($matches[0][$i], '"' . $this->Loader->hexSafe($this->Loader->substrBeforeLast($this->Loader->substrAfterFirst($matches[0][$i], $matches[1][$i]), $matches[3][$i])) . '"', $str);
                     }
                     continue;
                 }
                 break;
             }
         }
-        $str = preg_replace('/[^\x21-\x7E]/', '', strtolower($this->prescanDecode($str . $ostr)));
+        $str = \preg_replace('/[^\x21-\x7E]/', '', \strtolower($this->prescanDecode($str . $ostr)));
         if ($html) {
-            $str = preg_replace([
+            $str = \preg_replace([
                 '@<script[^>]*?>.*?</script>@si',
                 '@<[\/\!]*?[^<>]*?>@si',
                 '@<style[^>]*?>.*?</style>@siU',
                 '@<![\s\S]*?--[ \t\n\r]*>@'
             ], '', $str);
         }
-        return trim($str);
+        return \trim($str);
     }
 
     /**
@@ -869,13 +869,13 @@ class Scanner
          * through the array and recurse the recursor with each array element.
          * Otherwise, discern the data source and original name of the scan target.
          */
-        if (is_array($Files)) {
+        if (\is_array($Files)) {
             $SizeOfDir = count($Files);
             if ($SizeOfDir === 1) {
-                $Key = key($Files);
+                $Key = \key($Files);
                 $OriginalFilename = $this->prescanDecode($Key);
                 $Files = $Files[$Key];
-                if (is_array($Files)) {
+                if (\is_array($Files)) {
                     $this->recursor($Files, $Depth);
                     return;
                 }
@@ -891,7 +891,7 @@ class Scanner
             } else {
                 return;
             }
-        } elseif (!is_string($Files)) {
+        } elseif (!\is_string($Files)) {
             return;
         } else {
             $OriginalFilename = $this->prescanDecode($Files);
@@ -901,12 +901,12 @@ class Scanner
          * If the scan target is a directory, iterate through the directory
          * contents and recurse the recursor with these contents.
          */
-        if (is_dir($Files)) {
-            if (!is_readable($Files)) {
+        if (\is_dir($Files)) {
+            if (!\is_readable($Files)) {
                 $this->Loader->InstanceCache['ScanErrors']++;
-                $this->atHit('', -1, preg_replace(['~[\x00-\x1F]~', '~^[\\\\/]~'], '', $Files), sprintf(
+                $this->atHit('', -1, \preg_replace(['~[\x00-\x1F]~', '~^[\\\\/]~'], '', $Files), \sprintf(
                     $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                    sprintf($this->Loader->L10N->getString('response.Failed to access %s'), $OriginalFilename)
+                    \sprintf($this->Loader->L10N->getString('response.Failed to access %s'), $OriginalFilename)
                 ), -5, $Depth);
             }
             $Dir = $this->directoryRecursiveList($Files);
@@ -931,13 +931,13 @@ class Scanner
         $this->resetHeuristics();
 
         /** Ensure that the original filename doesn't break lines and clean it up. */
-        $OriginalFilenameClean = preg_replace(['~[\x00-\x1F]~', '~^[\\\\/]~'], '', $OriginalFilename);
+        $OriginalFilenameClean = \preg_replace(['~[\x00-\x1F]~', '~^[\\\\/]~'], '', $OriginalFilename);
 
         /** Indenting to apply for "checking" . */
-        $Indent = str_pad('→ ', ($Depth < 1 ? 4 : ($Depth * 3) + 4), '─', STR_PAD_LEFT);
+        $Indent = \str_pad('→ ', ($Depth < 1 ? 4 : ($Depth * 3) + 4), '─', STR_PAD_LEFT);
 
         /** Notify that we've began checking a scan target to the formatted text. */
-        $this->Loader->ScanResultsFormatted .= $Indent . sprintf($this->Loader->L10N->getString('response.Checking %s'), $OriginalFilenameClean) . "\n";
+        $this->Loader->ScanResultsFormatted .= $Indent . \sprintf($this->Loader->L10N->getString('response.Checking %s'), $OriginalFilenameClean) . "\n";
         $this->Loader->InstanceCache['CheckWasLast'] = true;
 
         /** Define file phase. */
@@ -951,12 +951,12 @@ class Scanner
 
         /** Fetch the greylist if it hasn't already been fetched. */
         if (!isset($this->Loader->InstanceCache['Greylist'])) {
-            if (!is_readable($this->Loader->GreylistPath)) {
+            if (!\is_readable($this->Loader->GreylistPath)) {
                 $this->Loader->InstanceCache['Greylist'] = ',';
-                if (is_writable($this->Loader->GreylistPath)) {
-                    $Handle = fopen($this->Loader->GreylistPath, 'wb');
-                    fwrite($Handle, ',');
-                    fclose($Handle);
+                if (\is_writable($this->Loader->GreylistPath)) {
+                    $Handle = \fopen($this->Loader->GreylistPath, 'wb');
+                    \fwrite($Handle, ',');
+                    \fclose($Handle);
                 }
             } else {
                 $this->Loader->InstanceCache['Greylist'] = $this->Loader->readFile($this->Loader->GreylistPath);
@@ -967,14 +967,14 @@ class Scanner
         $this->Loader->Events->fireEvent('before_scan');
 
         /** Kill it here if the scan target isn't a valid file. */
-        if (!$Files || !is_file($Files)) {
+        if (!$Files || !\is_file($Files)) {
             $this->Loader->InstanceCache['ThisScanDone']++;
             $this->Loader->Events->fireEvent('countersChanged');
             $this->atHit('', -1, $OriginalFilenameClean, $this->Loader->L10N->getString('response.Invalid file'), 0, $Depth + 1);
             return;
         }
 
-        $fS = filesize($Files);
+        $fS = \filesize($Files);
         if ($this->Loader->Configuration['files']['filesize_limit'] > 0) {
             if ($fS > $this->Loader->readBytes($this->Loader->Configuration['files']['filesize_limit'])) {
                 $this->Loader->InstanceCache['ThisScanDone']++;
@@ -983,35 +983,35 @@ class Scanner
                     $this->atHit('', $fS, $OriginalFilenameClean, '', 1, $Depth + 1);
                     return;
                 }
-                $this->atHit('', $fS, $OriginalFilenameClean, sprintf(
+                $this->atHit('', $fS, $OriginalFilenameClean, \sprintf(
                     $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                    sprintf(
+                    \sprintf(
                         $this->Loader->L10N->getString('grammar_brackets'),
                         $this->Loader->L10N->getString('response.Filesize limit exceeded'),
                         $OriginalFilenameClean
                     )
                 ), 2, $Depth + 1);
-                if ($this->Loader->Configuration['core']['delete_on_sight'] && is_readable($Files)) {
-                    unlink($Files);
+                if ($this->Loader->Configuration['core']['delete_on_sight'] && \is_readable($Files)) {
+                    \unlink($Files);
                 }
                 return;
             }
         }
         if (!$this->Loader->Configuration['files']['allow_leading_trailing_dots'] && (
-            substr($OriginalFilenameClean, 0, 1) === '.' || substr($OriginalFilenameClean, -1) === '.'
+            \substr($OriginalFilenameClean, 0, 1) === '.' || \substr($OriginalFilenameClean, -1) === '.'
         )) {
             $this->Loader->InstanceCache['ThisScanDone']++;
             $this->Loader->Events->fireEvent('countersChanged');
-            $this->atHit('', $fS, $OriginalFilenameClean, sprintf(
+            $this->atHit('', $fS, $OriginalFilenameClean, \sprintf(
                 $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                sprintf(
+                \sprintf(
                     $this->Loader->L10N->getString('grammar_brackets'),
                     $this->Loader->L10N->getString('response.Filename manipulation detected'),
                     $OriginalFilenameClean
                 )
             ), 2, $Depth + 1);
-            if ($this->Loader->Configuration['core']['delete_on_sight'] && is_readable($Files)) {
-                unlink($Files);
+            if ($this->Loader->Configuration['core']['delete_on_sight'] && \is_readable($Files)) {
+                \unlink($Files);
             }
             return;
         }
@@ -1040,16 +1040,16 @@ class Scanner
             $this->Loader->InstanceCache['blacklist_triggered'] = true;
             $this->Loader->InstanceCache['ThisScanDone']++;
             $this->Loader->Events->fireEvent('countersChanged');
-            $this->atHit('', $fS, $OriginalFilenameClean, sprintf(
+            $this->atHit('', $fS, $OriginalFilenameClean, \sprintf(
                 $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                sprintf(
+                \sprintf(
                     $this->Loader->L10N->getString('grammar_brackets'),
                     $this->Loader->L10N->getString('response.Filetype blacklisted'),
                     $OriginalFilenameClean
                 )
             ), 2, $Depth + 1);
-            if ($this->Loader->Configuration['core']['delete_on_sight'] && is_readable($Files)) {
-                unlink($Files);
+            if ($this->Loader->Configuration['core']['delete_on_sight'] && \is_readable($Files)) {
+                \unlink($Files);
             }
             return;
         }
@@ -1060,31 +1060,31 @@ class Scanner
         /** Enforce scannable threshold. */
         if (
             ($ScannableThreshold = $this->Loader->readBytes($this->Loader->Configuration['files']['scannable_threshold'])) > 0 &&
-            strlen($In) > $ScannableThreshold
+            \strlen($In) > $ScannableThreshold
         ) {
-            $In = substr($In, 0, $ScannableThreshold);
+            $In = \substr($In, 0, $ScannableThreshold);
         }
 
         /** Generate CRC for the file to be scanned. */
-        $fdCRC = hash('crc32b', $In);
+        $fdCRC = \hash('crc32b', $In);
 
         /** Generate SHA256 for the file to be scanned. */
-        $SHA256 = hash('sha256', $In);
+        $SHA256 = \hash('sha256', $In);
 
         /** Check for non-image items. */
-        if (!empty($In) && $this->Loader->Configuration['files']['only_allow_images'] && !$this->imageIndicators($xt, bin2hex(substr($In, 0, 16)))) {
+        if (!empty($In) && $this->Loader->Configuration['files']['only_allow_images'] && !$this->imageIndicators($xt, \bin2hex(\substr($In, 0, 16)))) {
             $this->Loader->InstanceCache['ThisScanDone']++;
             $this->Loader->Events->fireEvent('countersChanged');
-            $this->atHit($SHA256, $fS, $OriginalFilenameClean, sprintf(
+            $this->atHit($SHA256, $fS, $OriginalFilenameClean, \sprintf(
                 $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                sprintf(
+                \sprintf(
                     $this->Loader->L10N->getString('grammar_brackets'),
                     $this->Loader->L10N->getString('response.Only image files are permitted'),
                     $OriginalFilenameClean
                 )
             ), 2, $Depth + 1);
-            if ($this->Loader->Configuration['core']['delete_on_sight'] && is_readable($Files)) {
-                unlink($Files);
+            if ($this->Loader->Configuration['core']['delete_on_sight'] && \is_readable($Files)) {
+                \unlink($Files);
             }
             return;
         }
@@ -1120,7 +1120,7 @@ class Scanner
             unset($CompressionObject);
         }
 
-        $InLen = strlen($In);
+        $InLen = \strlen($In);
 
         /** Executed if any problems were detected. */
         if (empty($this->Loader->InstanceCache['CheckWasLast'])) {
@@ -1131,19 +1131,19 @@ class Scanner
                 $InLen < $this->Loader->readBytes($this->Loader->Configuration['quarantine']['quarantine_max_filesize'])
             ) {
                 /** Note: "qfu" = "Quarantined File Upload". */
-                $qfu = $this->Loader->Time . '-' . hash('md5', $this->Loader->Configuration['quarantine']['quarantine_key'] . $fdCRC . $this->Loader->Time);
+                $qfu = $this->Loader->Time . '-' . \hash('md5', $this->Loader->Configuration['quarantine']['quarantine_key'] . $fdCRC . $this->Loader->Time);
                 $this->quarantine(
                     $In,
                     $this->Loader->Configuration['quarantine']['quarantine_key'],
                     $this->Loader->IPAddr,
                     $qfu
                 );
-                $this->Loader->HashReference .= sprintf($this->Loader->L10N->getString('response.Quarantined as'), $qfu) . "\n";
+                $this->Loader->HashReference .= \sprintf($this->Loader->L10N->getString('response.Quarantined as'), $qfu) . "\n";
             }
 
             /** Delete if necessary. */
-            if ($this->Loader->Configuration['core']['delete_on_sight'] && is_readable($Files)) {
-                unlink($Files);
+            if ($this->Loader->Configuration['core']['delete_on_sight'] && \is_readable($Files)) {
+                \unlink($Files);
             }
 
             $this->Loader->InstanceCache['ThisScanDone']++;
@@ -1172,24 +1172,24 @@ class Scanner
 
             /** Begin deleting any temporary files that snuck through. */
             foreach ($this->Loader->InstanceCache['tempfilesToDelete'] as $DeleteThis) {
-                if (file_exists($DeleteThis)) {
-                    unlink($DeleteThis);
+                if (\file_exists($DeleteThis)) {
+                    \unlink($DeleteThis);
                 }
             }
 
             /** Add hash cache entry here if necessary (e.g., because of encryption). */
             if (
                 empty($this->Loader->InstanceCache['wc']) &&
-                ($InSha256 = hash('sha256', $In)) &&
-                ($AtInstanceLookupKey = sprintf('%s:%d:%s', $InSha256, strlen($In), $OriginalFilenameClean)) &&
+                ($InSha256 = \hash('sha256', $In)) &&
+                ($AtInstanceLookupKey = \sprintf('%s:%d:%s', $InSha256, \strlen($In), $OriginalFilenameClean)) &&
                 isset($this->Loader->ScanResultsIntegers[$AtInstanceLookupKey]) &&
                 $this->Loader->ScanResultsIntegers[$AtInstanceLookupKey] === -4 &&
                 isset($this->Loader->ScanResultsText[$AtInstanceLookupKey]) &&
                 $this->Loader->Configuration['core']['scan_cache_expiry'] > 0 &&
-                ($HashCacheID = $InSha256 . hash('sha256', $OriginalFilename))
+                ($HashCacheID = $InSha256 . \hash('sha256', $OriginalFilename))
             ) {
                 /** 0: (int) {-5...2}; 1: Text. */
-                $HashCacheEntry = json_encode([
+                $HashCacheEntry = \json_encode([
                     $this->Loader->ScanResultsIntegers[$AtInstanceLookupKey],
                     $this->Loader->ScanResultsText[$AtInstanceLookupKey]
                 ]);
@@ -1201,17 +1201,17 @@ class Scanner
         if (empty($this->Loader->InstanceCache['CheckWasLast'])) {
             if (
                 $this->Loader->Configuration['quarantine']['quarantine_key'] &&
-                strlen($In) < $this->Loader->readBytes($this->Loader->Configuration['quarantine']['quarantine_max_filesize'])
+                \strlen($In) < $this->Loader->readBytes($this->Loader->Configuration['quarantine']['quarantine_max_filesize'])
             ) {
                 /** Note: "qfu" = "Quarantined File Upload". */
-                $qfu = $this->Loader->Time . '-' . hash('md5', $this->Loader->Configuration['quarantine']['quarantine_key'] . $fdCRC . $this->Loader->Time);
+                $qfu = $this->Loader->Time . '-' . \hash('md5', $this->Loader->Configuration['quarantine']['quarantine_key'] . $fdCRC . $this->Loader->Time);
                 $this->quarantine(
                     $In,
                     $this->Loader->Configuration['quarantine']['quarantine_key'],
                     $this->Loader->IPAddr,
                     $qfu
                 );
-                $this->Loader->HashReference .= sprintf($this->Loader->L10N->getString('response.Quarantined as'), $qfu);
+                $this->Loader->HashReference .= \sprintf($this->Loader->L10N->getString('response.Quarantined as'), $qfu);
             }
         }
 
@@ -1219,9 +1219,9 @@ class Scanner
         if (
             empty($this->Loader->InstanceCache['CheckWasLast']) &&
             $this->Loader->Configuration['core']['delete_on_sight'] &&
-            is_readable($Files)
+            \is_readable($Files)
         ) {
-            unlink($Files);
+            \unlink($Files);
         }
 
         /** Clean. */
@@ -1263,19 +1263,19 @@ class Scanner
         $Depth++;
 
         /** There's no point bothering to scan zero-byte files. */
-        if (!$StringLength = strlen($str)) {
+        if (!$StringLength = \strlen($str)) {
             $this->atHit('', 0, $OriginalFilename, '', 1, $Depth);
             return;
         }
 
         /** Generate hash variables. */
         foreach (['md5', 'sha1', 'sha256', 'crc32b'] as $Algo) {
-            $$Algo = hash($Algo, $str);
+            $$Algo = \hash($Algo, $str);
         }
 
         /** Scan target has no name? That's a little suspicious. */
         if (!$OriginalFilename) {
-            $this->atHit($sha256, $StringLength, '', sprintf(
+            $this->atHit($sha256, $StringLength, '', \sprintf(
                 $this->Loader->L10N->getString('grammar_exclamation_mark'),
                 $this->Loader->L10N->getString('response.Missing filename')
             ), 2, $Depth);
@@ -1283,13 +1283,13 @@ class Scanner
         }
 
         /** Needed for hash caching plus some other checks. */
-        $AtInstanceLookupKey = sprintf('%s:%d:%s', $sha256, $StringLength, $OriginalFilename);
+        $AtInstanceLookupKey = \sprintf('%s:%d:%s', $sha256, $StringLength, $OriginalFilename);
 
         /** $fourcc: First four bytes of the scan target in hexadecimal notation. */
-        $fourcc = strtolower(bin2hex(substr($str, 0, 4)));
+        $fourcc = \strtolower(\bin2hex(\substr($str, 0, 4)));
 
         /** $twocc: First two bytes of the scan target in hexadecimal notation. */
-        $twocc = substr($fourcc, 0, 4);
+        $twocc = \substr($fourcc, 0, 4);
 
         /**
          * $CoExMeta: Contains metadata pertaining to the scan target, intended to
@@ -1309,13 +1309,13 @@ class Scanner
          */
         if (
             $this->Loader->Configuration['core']['scan_cache_expiry'] > 0 &&
-            ($HashCacheID = $sha256 . hash('sha256', $OriginalFilename)) &&
+            ($HashCacheID = $sha256 . \hash('sha256', $OriginalFilename)) &&
             ($HashCacheEntry = $this->Loader->Cache->getEntry($HashCacheID)) &&
-            preg_match('~^\[\-?\d,".*"\]$~', $HashCacheEntry)
+            \preg_match('~^\[\-?\d,".*"\]$~', $HashCacheEntry)
         ) {
             /** 0: (int) {-5...2}; 1: Text. */
-            if (($HashCacheEntry = json_decode($HashCacheEntry, true, 2)) === false) {
-                $this->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
+            if (($HashCacheEntry = \json_decode($HashCacheEntry, true, 2)) === false) {
+                $this->atHit($sha256, $StringLength, $OriginalFilename, \sprintf(
                     $this->Loader->L10N->getString('grammar_exclamation_mark'),
                     $this->Loader->L10N->getString('Invalid data')
                 ), -2, $Depth);
@@ -1371,7 +1371,7 @@ class Scanner
             $StringLength > $ScannableThreshold
         ) {
             $StringLength = $ScannableThreshold;
-            $str = substr($str, 0, $StringLength);
+            $str = \substr($str, 0, $StringLength);
             $str_cut = 1;
         } else {
             $str_cut = 0;
@@ -1413,23 +1413,23 @@ class Scanner
         $CoExMeta .= '$xt:' . $xt . ';$xts:' . $xts . ';';
 
         /** Input ($str) as hexadecimal data. */
-        $str_hex = bin2hex($str);
+        $str_hex = \bin2hex($str);
         $str_hex_len = $StringLength * 2;
 
         /** Input ($str) normalised. */
         $str_norm = $this->normalise($str, false, $decode_or_not);
-        $str_norm_len = strlen($str_norm);
+        $str_norm_len = \strlen($str_norm);
 
         /** Normalised input ($str_norm) as hexadecimal data. */
-        $str_hex_norm = bin2hex($str_norm);
+        $str_hex_norm = \bin2hex($str_norm);
         $str_hex_norm_len = $str_norm_len * 2;
 
         /** Input ($str) normalised for HTML. */
         $str_html = $this->normalise($str, true, $decode_or_not);
-        $str_html_len = strlen($str_html);
+        $str_html_len = \strlen($str_html);
 
         /** HTML normalised input ($str_html) as hexadecimal data. */
-        $str_hex_html = bin2hex($str_html);
+        $str_hex_html = \bin2hex($str_html);
         $str_hex_html_len = $str_html_len * 2;
 
         /** Shannon entropy. */
@@ -1439,30 +1439,30 @@ class Scanner
         $is_elf = ($fourcc === '7f454c46' || $xt === 'elf');
 
         /** Look for potential graphics/image indicators. */
-        $is_graphics = empty($str) ? false : $this->imageIndicators($xt, substr($str_hex, 0, 32));
+        $is_graphics = empty($str) ? false : $this->imageIndicators($xt, \substr($str_hex, 0, 32));
 
         /** Look for potential HTML indicators. */
-        $is_html = (strpos(
+        $is_html = (\strpos(
             ',asp*,dht*,eml*,hta*,htm*,jsp*,php*,sht*,',
             ',' . $xts . ','
-        ) !== false || preg_match(
+        ) !== false || \preg_match(
             '/3c(?:21646f6374797065|6(?:120|26f6479|8656164|8746d6c|96672616d65|96d67|f626a656374)|7(?:36372697074|461626c65|469746c65))/i',
             $str_hex_norm
-        ) || preg_match(
+        ) || \preg_match(
             '/(?:6(?:26f6479|8656164|8746d6c)|7(?:36372697074|461626c65|469746c65))3e/i',
             $str_hex_norm
         ));
 
         /** Look for potential email indicators. */
-        $is_email = (strpos(
+        $is_email = (\strpos(
             ',htm*,ema*,eml*,',
             ',' . $xts . ','
-        ) !== false || preg_match(
+        ) !== false || \preg_match(
             '/0a(?:4(?:36f6e74656e742d54797065|4617465|6726f6d|d6573736167652d4944|d4' .
             '94d452d56657273696f6e)|5(?:265706c792d546f|2657475726e2d50617468|3656e64' .
             '6572|375626a656374|46f|82d4d61696c6572))3a20/i',
             $str_hex
-        ) || preg_match('/0a2d2d.{32}(?:2d2d)?(?:0d)?0a/i', $str_hex));
+        ) || \preg_match('/0a2d2d.{32}(?:2d2d)?(?:0d)?0a/i', $str_hex));
 
         /** "Asciiable"? Used by all ASCII signatures. */
         $asciiable = (bool)$str_hex_norm_len;
@@ -1470,7 +1470,7 @@ class Scanner
         /** Used to identify whether to check against OLE signatures. */
         $is_ole = !empty($this->Loader->InstanceCache['file_is_ole']) && (
             !empty($this->Loader->InstanceCache['file_is_macro']) ||
-            strpos(',bin,ole,xml,rels,', ',' . $xt . ',') !== false
+            \strpos(',bin,ole,xml,rels,', ',' . $xt . ',') !== false
         );
 
         if (!empty($this->Loader->InstanceCache['sf'])) {
@@ -1479,7 +1479,7 @@ class Scanner
             } else {
                 $this->Loader->InstanceCache['Print after CLI scan'] .= "\n";
             }
-            $this->Loader->InstanceCache['Print after CLI scan'] .= sprintf($this->Loader->L10N->getString('label.Flags set by the switch file while scanning %s'), $OriginalFilename) . "\n";
+            $this->Loader->InstanceCache['Print after CLI scan'] .= \sprintf($this->Loader->L10N->getString('label.Flags set by the switch file while scanning %s'), $OriginalFilename) . "\n";
         }
 
         /** Process the switch file. */
@@ -1487,14 +1487,14 @@ class Scanner
             $this->Loader->InstanceCache['switch.dat'] = $this->Loader->readFileAsArray($this->AssetsPath . 'switch.dat', FILE_IGNORE_NEW_LINES);
         }
         foreach ($this->Loader->InstanceCache['switch.dat'] as $ThisRule) {
-            if ($ThisRule === '' || substr($ThisRule, 0, 1) === '#') {
+            if ($ThisRule === '' || \substr($ThisRule, 0, 1) === '#') {
                 continue;
             }
-            $Switch = (strpos($ThisRule, ';') === false) ? $ThisRule : $this->Loader->substrAfterLast($ThisRule, ';');
-            if (strpos($Switch, '=') === false) {
+            $Switch = (\strpos($ThisRule, ';') === false) ? $ThisRule : $this->Loader->substrAfterLast($ThisRule, ';');
+            if (\strpos($Switch, '=') === false) {
                 continue;
             }
-            $Switch = explode('=', preg_replace('/[^\x20-\xFF]/', '', $Switch), 2);
+            $Switch = \explode('=', \preg_replace('/[^\x20-\xFF]/', '', $Switch), 2);
             if (empty($Switch[0])) {
                 continue;
             }
@@ -1502,18 +1502,18 @@ class Scanner
                 $Switch[1] = false;
             }
             $theSwitch = $Switch[0];
-            $ThisRule = (strpos($ThisRule, ';') === false) ? [] : explode(';', $this->Loader->substrBeforeLast($ThisRule, ';'));
+            $ThisRule = (\strpos($ThisRule, ';') === false) ? [] : \explode(';', $this->Loader->substrBeforeLast($ThisRule, ';'));
             foreach ($ThisRule as $Fragment) {
-                $Fragment = (strpos($Fragment, ':') === false) ? [] : $this->splitSigParts($Fragment, 7);
+                $Fragment = (\strpos($Fragment, ':') === false) ? [] : $this->splitSigParts($Fragment, 7);
                 if (empty($Fragment[0])) {
                     continue 2;
                 }
                 if ($Fragment[0] === 'LV') {
-                    if (!isset($Fragment[1]) || substr($Fragment[1], 0, 1) !== '$') {
+                    if (!isset($Fragment[1]) || \substr($Fragment[1], 0, 1) !== '$') {
                         continue 2;
                     }
-                    $lv_haystack = substr($Fragment[1], 1);
-                    if (!isset($$lv_haystack) || is_array($$lv_haystack)) {
+                    $lv_haystack = \substr($Fragment[1], 1);
+                    if (!isset($$lv_haystack) || \is_array($$lv_haystack)) {
                         continue 2;
                     }
                     $lv_haystack = $$lv_haystack;
@@ -1529,35 +1529,35 @@ class Scanner
                     if (isset($Fragment[3])) {
                         if ($Fragment[2] === 'A') {
                             if (
-                                strpos(',FD,FD-RX,FD-NORM,FD-NORM-RX,', ',' . $Fragment[0] . ',') === false || (
+                                \strpos(',FD,FD-RX,FD-NORM,FD-NORM-RX,', ',' . $Fragment[0] . ',') === false || (
                                     $Fragment[0] === 'FD' &&
-                                    strpos("\1" . substr($str_hex, 0, $Fragment[3] * 2), "\1" . $Fragment[1]) === false
+                                    \strpos("\1" . \substr($str_hex, 0, $Fragment[3] * 2), "\1" . $Fragment[1]) === false
                                 ) || (
                                     $Fragment[0] === 'FD-RX' &&
-                                    !preg_match('/\A(?:' . $Fragment[1] . ')/i', substr($str_hex, 0, $Fragment[3] * 2))
+                                    !\preg_match('/\A(?:' . $Fragment[1] . ')/i', \substr($str_hex, 0, $Fragment[3] * 2))
                                 ) || (
                                     $Fragment[0] === 'FD-NORM' &&
-                                    strpos("\1" . substr($str_hex_norm, 0, $Fragment[3] * 2), "\1" . $Fragment[1]) === false
+                                    \strpos("\1" . \substr($str_hex_norm, 0, $Fragment[3] * 2), "\1" . $Fragment[1]) === false
                                 ) || (
                                     $Fragment[0] === 'FD-NORM-RX' &&
-                                    !preg_match('/\A(?:' . $Fragment[1] . ')/i', substr($str_hex_norm, 0, $Fragment[3] * 2))
+                                    !\preg_match('/\A(?:' . $Fragment[1] . ')/i', \substr($str_hex_norm, 0, $Fragment[3] * 2))
                                 )
                             ) {
                                 continue 2;
                             }
                         } elseif (
-                            strpos(',FD,FD-RX,FD-NORM,FD-NORM-RX,', ',' . $Fragment[0] . ',') === false || (
+                            \strpos(',FD,FD-RX,FD-NORM,FD-NORM-RX,', ',' . $Fragment[0] . ',') === false || (
                                 $Fragment[0] === 'FD' &&
-                                strpos(substr($str_hex, $Fragment[2] * 2, $Fragment[3] * 2), $Fragment[1]) === false
+                                \strpos(\substr($str_hex, $Fragment[2] * 2, $Fragment[3] * 2), $Fragment[1]) === false
                             ) || (
                                 $Fragment[0] === 'FD-RX' &&
-                                !preg_match('/(?:' . $Fragment[1] . ')/i', substr($str_hex, $Fragment[2] * 2, $Fragment[3] * 2))
+                                !\preg_match('/(?:' . $Fragment[1] . ')/i', \substr($str_hex, $Fragment[2] * 2, $Fragment[3] * 2))
                             ) || (
                                 $Fragment[0] === 'FD-NORM' &&
-                                strpos(substr($str_hex_norm, $Fragment[2] * 2, $Fragment[3] * 2), $Fragment[1]) === false
+                                \strpos(\substr($str_hex_norm, $Fragment[2] * 2, $Fragment[3] * 2), $Fragment[1]) === false
                             ) || (
                                 $Fragment[0] === 'FD-NORM-RX' &&
-                                !preg_match('/(?:' . $Fragment[1] . ')/i', substr($str_hex_norm, $Fragment[2] * 2, $Fragment[3] * 2))
+                                !\preg_match('/(?:' . $Fragment[1] . ')/i', \substr($str_hex_norm, $Fragment[2] * 2, $Fragment[3] * 2))
                             )
                         ) {
                             continue 2;
@@ -1565,72 +1565,72 @@ class Scanner
                     } else {
                         if ($Fragment[2] === 'A') {
                             if (
-                                strpos(',FN,FD,FD-RX,FD-NORM,FD-NORM-RX,', ',' . $Fragment[0] . ',') === false || (
+                                \strpos(',FN,FD,FD-RX,FD-NORM,FD-NORM-RX,', ',' . $Fragment[0] . ',') === false || (
                                     $Fragment[0] === 'FN' &&
-                                    !preg_match('/\A(?:' . $Fragment[1] . ')/i', $OriginalFilename)
+                                    !\preg_match('/\A(?:' . $Fragment[1] . ')/i', $OriginalFilename)
                                 ) || (
                                     $Fragment[0] === 'FD' &&
-                                    strpos("\1" . $str_hex, "\1" . $Fragment[1]) === false
+                                    \strpos("\1" . $str_hex, "\1" . $Fragment[1]) === false
                                 ) || (
                                     $Fragment[0] === 'FD-RX' &&
-                                    !preg_match('/\A(?:' . $Fragment[1] . ')/i', $str_hex)
+                                    !\preg_match('/\A(?:' . $Fragment[1] . ')/i', $str_hex)
                                 ) || (
                                     $Fragment[0] === 'FD-NORM' &&
-                                    strpos("\1" . $str_hex_norm, "\1" . $Fragment[1]) === false
+                                    \strpos("\1" . $str_hex_norm, "\1" . $Fragment[1]) === false
                                 ) || (
                                     $Fragment[0] === 'FD-NORM-RX' &&
-                                    !preg_match('/\A(?:' . $Fragment[1] . ')/i', $str_hex_norm)
+                                    !\preg_match('/\A(?:' . $Fragment[1] . ')/i', $str_hex_norm)
                                 )
                             ) {
                                 continue 2;
                             }
                         } elseif (
-                            strpos(',FD,FD-RX,FD-NORM,FD-NORM-RX,', ',' . $Fragment[0] . ',') === false || (
+                            \strpos(',FD,FD-RX,FD-NORM,FD-NORM-RX,', ',' . $Fragment[0] . ',') === false || (
                                 $Fragment[0] === 'FD' &&
-                                strpos(substr($str_hex, $Fragment[2] * 2), $Fragment[1]) === false
+                                \strpos(\substr($str_hex, $Fragment[2] * 2), $Fragment[1]) === false
                             ) || (
                                 $Fragment[0] === 'FD-RX' &&
-                                !preg_match('/(?:' . $Fragment[1] . ')/i', substr($str_hex, $Fragment[2] * 2))
+                                !\preg_match('/(?:' . $Fragment[1] . ')/i', \substr($str_hex, $Fragment[2] * 2))
                             ) || (
                                 $Fragment[0] === 'FD-NORM' &&
-                                strpos(substr($str_hex_norm, $Fragment[2] * 2), $Fragment[1]) === false
+                                \strpos(\substr($str_hex_norm, $Fragment[2] * 2), $Fragment[1]) === false
                             ) || (
                                 $Fragment[0] === 'FD-NORM-RX' &&
-                                !preg_match('/(?:' . $Fragment[1] . ')/i', substr($str_hex_norm, $Fragment[2] * 2))
+                                !\preg_match('/(?:' . $Fragment[1] . ')/i', \substr($str_hex_norm, $Fragment[2] * 2))
                             )
                         ) {
                             continue 2;
                         }
                     }
                 } elseif (isset($Fragment[1]) && (
-                    ($Fragment[0] === 'FN' && !preg_match('/(?:' . $Fragment[1] . ')/i', $OriginalFilename)) ||
+                    ($Fragment[0] === 'FN' && !\preg_match('/(?:' . $Fragment[1] . ')/i', $OriginalFilename)) ||
                     ($Fragment[0] === 'FS-MIN' && $StringLength < $Fragment[1]) ||
                     ($Fragment[0] === 'FS-MAX' && $StringLength > $Fragment[1]) ||
-                    ($Fragment[0] === 'FD' && strpos($str_hex, $Fragment[1]) === false) ||
-                    ($Fragment[0] === 'FD-RX' && !preg_match('/(?:' . $Fragment[1] . ')/i', $str_hex)) ||
-                    ($Fragment[0] === 'FD-NORM' && strpos($str_hex_norm, $Fragment[1]) === false) ||
-                    ($Fragment[0] === 'FD-NORM-RX' && !preg_match('/(?:' . $Fragment[1] . ')/i', $str_hex_norm)) ||
+                    ($Fragment[0] === 'FD' && \strpos($str_hex, $Fragment[1]) === false) ||
+                    ($Fragment[0] === 'FD-RX' && !\preg_match('/(?:' . $Fragment[1] . ')/i', $str_hex)) ||
+                    ($Fragment[0] === 'FD-NORM' && \strpos($str_hex_norm, $Fragment[1]) === false) ||
+                    ($Fragment[0] === 'FD-NORM-RX' && !\preg_match('/(?:' . $Fragment[1] . ')/i', $str_hex_norm)) ||
                     ($Fragment[0] === 'ISSET' && !isset(${$Fragment[1]})) ||
                     ($Fragment[0] === '!ISSET' && isset(${$Fragment[1]}))
                 )) {
                     continue 2;
-                } elseif (substr($Fragment[0], 0, 1) === '$') {
-                    $VarInSigFile = substr($Fragment[0], 1);
-                    if (!isset($$VarInSigFile) || is_array($$VarInSigFile) || $$VarInSigFile != $Fragment[1]) {
+                } elseif (\substr($Fragment[0], 0, 1) === '$') {
+                    $VarInSigFile = \substr($Fragment[0], 1);
+                    if (!isset($$VarInSigFile) || \is_array($$VarInSigFile) || $$VarInSigFile != $Fragment[1]) {
                         continue 2;
                     }
-                } elseif (substr($Fragment[0], 0, 2) === '!$') {
-                    $VarInSigFile = substr($Fragment[0], 2);
-                    if (isset($$VarInSigFile) && !is_array($$VarInSigFile) && $$VarInSigFile == $Fragment[1]) {
+                } elseif (\substr($Fragment[0], 0, 2) === '!$') {
+                    $VarInSigFile = \substr($Fragment[0], 2);
+                    if (isset($$VarInSigFile) && !\is_array($$VarInSigFile) && $$VarInSigFile == $Fragment[1]) {
                         continue 2;
                     }
-                } elseif (strpos(',FN,FS-MIN,FS-MAX,FD,FD-RX,FD-NORM,FD-NORM-RX,ISSET,!ISSET,', ',' . $Fragment[0] . ',') === false) {
+                } elseif (\strpos(',FN,FS-MIN,FS-MAX,FD,FD-RX,FD-NORM,FD-NORM-RX,ISSET,!ISSET,', ',' . $Fragment[0] . ',') === false) {
                     continue 2;
                 }
             }
             if (count($Switch) > 1) {
                 if (!empty($this->Loader->InstanceCache['sf'])) {
-                    $this->Loader->InstanceCache['Print after CLI scan'] .= sprintf("\$%s = %s\n", $theSwitch, $Switch[1]);
+                    $this->Loader->InstanceCache['Print after CLI scan'] .= \sprintf("\$%s = %s\n", $theSwitch, $Switch[1]);
                 }
                 if ($Switch[1] === 'true') {
                     $$theSwitch = true;
@@ -1643,7 +1643,7 @@ class Scanner
                 $$theSwitch = $Switch[1];
             } else {
                 if (!empty($this->Loader->InstanceCache['sf'])) {
-                    $this->Loader->InstanceCache['Print after CLI scan'] .= sprintf("\$%s = %s\n", $theSwitch, !isset($$theSwitch) || !$$theSwitch ? 'true' : 'false');
+                    $this->Loader->InstanceCache['Print after CLI scan'] .= \sprintf("\$%s = %s\n", $theSwitch, !isset($$theSwitch) || !$$theSwitch ? 'true' : 'false');
                 }
                 if (!isset($$theSwitch)) {
                     $$theSwitch = true;
@@ -1677,7 +1677,7 @@ class Scanner
         ) {
             $PEArr = ['SectionArr' => []];
             if ($twocc === '4d5a') {
-                $PEArr['Offset'] = $this->Loader->unpackSafe('S', substr($str, 60, 4));
+                $PEArr['Offset'] = $this->Loader->unpackSafe('S', \substr($str, 60, 4));
                 $PEArr['Offset'] = isset($PEArr['Offset'][1]) ? $PEArr['Offset'][1] : 0;
                 while (true) {
                     $PEArr['DoScan'] = true;
@@ -1685,18 +1685,18 @@ class Scanner
                         $PEArr['DoScan'] = false;
                         break;
                     }
-                    $PEArr['Magic'] = substr($str, $PEArr['Offset'], 2);
+                    $PEArr['Magic'] = \substr($str, $PEArr['Offset'], 2);
                     if ($PEArr['Magic'] !== 'PE') {
                         $PEArr['DoScan'] = false;
                         break;
                     }
-                    $PEArr['Proc'] = $this->Loader->unpackSafe('S', substr($str, $PEArr['Offset'] + 4, 2));
+                    $PEArr['Proc'] = $this->Loader->unpackSafe('S', \substr($str, $PEArr['Offset'] + 4, 2));
                     $PEArr['Proc'] = $PEArr['Proc'][1];
                     if ($PEArr['Proc'] != 0x14c && $PEArr['Proc'] != 0x8664) {
                         $PEArr['DoScan'] = false;
                         break;
                     }
-                    $PEArr['NumOfSections'] = $this->Loader->unpackSafe('S', substr($str, $PEArr['Offset'] + 6, 2));
+                    $PEArr['NumOfSections'] = $this->Loader->unpackSafe('S', \substr($str, $PEArr['Offset'] + 6, 2));
                     $NumOfSections = $PEArr['NumOfSections'] = $PEArr['NumOfSections'][1];
                     $CoExMeta .= 'PE_Offset:' . $PEArr['Offset'] . ';PE_Proc:' . $PEArr['Proc'] . ';NumOfSections:' . $NumOfSections . ';';
                     if ($NumOfSections < 1 || $NumOfSections > 40) {
@@ -1706,7 +1706,7 @@ class Scanner
                 }
                 if (!$PEArr['DoScan']) {
                     if ($this->Loader->Configuration['files']['corrupted_exe']) {
-                        $this->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
+                        $this->atHit($sha256, $StringLength, $OriginalFilename, \sprintf(
                             $this->Loader->L10N->getString('grammar_exclamation_mark'),
                             $this->Loader->L10N->getString('response.Detected corrupted PE')
                         ), 2, $Depth);
@@ -1714,36 +1714,36 @@ class Scanner
                 } else {
                     $is_pe = true;
                     $asciiable = false;
-                    $PEArr['OptHdrSize'] = $this->Loader->unpackSafe('S', substr($str, $PEArr['Offset'] + 20, 2));
+                    $PEArr['OptHdrSize'] = $this->Loader->unpackSafe('S', \substr($str, $PEArr['Offset'] + 20, 2));
                     $PEArr['OptHdrSize'] = $PEArr['OptHdrSize'][1];
                     for ($PEArr['k'] = 0; $PEArr['k'] < $NumOfSections; $PEArr['k']++) {
                         $PEArr['SectionArr'][$PEArr['k']] = [
-                            'SectionHead' => substr($str, $PEArr['Offset'] + 24 + $PEArr['OptHdrSize'] + ($PEArr['k'] * 40), $NumOfSections * 40)
+                            'SectionHead' => \substr($str, $PEArr['Offset'] + 24 + $PEArr['OptHdrSize'] + ($PEArr['k'] * 40), $NumOfSections * 40)
                         ];
                         $PEArr['SectionArr'][$PEArr['k']]['SectionName'] =
-                            str_ireplace("\0", '', substr($PEArr['SectionArr'][$PEArr['k']]['SectionHead'], 0, 8));
+                            \str_ireplace("\0", '', \substr($PEArr['SectionArr'][$PEArr['k']]['SectionHead'], 0, 8));
                         $PEArr['SectionArr'][$PEArr['k']]['VirtualSize'] =
-                            $this->Loader->unpackSafe('S', substr($PEArr['SectionArr'][$PEArr['k']]['SectionHead'], 8, 4));
+                            $this->Loader->unpackSafe('S', \substr($PEArr['SectionArr'][$PEArr['k']]['SectionHead'], 8, 4));
                         $PEArr['SectionArr'][$PEArr['k']]['VirtualSize'] =
                             $PEArr['SectionArr'][$PEArr['k']]['VirtualSize'][1];
                         $PEArr['SectionArr'][$PEArr['k']]['VirtualAddress'] =
-                            $this->Loader->unpackSafe('S', substr($PEArr['SectionArr'][$PEArr['k']]['SectionHead'], 12, 4));
+                            $this->Loader->unpackSafe('S', \substr($PEArr['SectionArr'][$PEArr['k']]['SectionHead'], 12, 4));
                         $PEArr['SectionArr'][$PEArr['k']]['VirtualAddress'] =
                             $PEArr['SectionArr'][$PEArr['k']]['VirtualAddress'][1];
-                        $SizeOfRawData = $this->Loader->unpackSafe('S', substr($PEArr['SectionArr'][$PEArr['k']]['SectionHead'], 16, 4));
+                        $SizeOfRawData = $this->Loader->unpackSafe('S', \substr($PEArr['SectionArr'][$PEArr['k']]['SectionHead'], 16, 4));
                         $SizeOfRawData = $SizeOfRawData[1];
-                        $PointerToRawData = $this->Loader->unpackSafe('S', substr($PEArr['SectionArr'][$PEArr['k']]['SectionHead'], 20, 4));
+                        $PointerToRawData = $this->Loader->unpackSafe('S', \substr($PEArr['SectionArr'][$PEArr['k']]['SectionHead'], 20, 4));
                         $PointerToRawData = $PointerToRawData[1];
-                        $PEArr['SectionArr'][$PEArr['k']]['SectionData'] = substr($str, $PointerToRawData, $SizeOfRawData);
+                        $PEArr['SectionArr'][$PEArr['k']]['SectionData'] = \substr($str, $PointerToRawData, $SizeOfRawData);
                         $SectionOffsets[$PEArr['k']] = [$PointerToRawData, $SizeOfRawData];
                         foreach (['md5', 'sha1', 'sha256'] as $TryHash) {
-                            $PEArr['SectionArr'][$PEArr['k']][$TryHash] = hash($TryHash, $PEArr['SectionArr'][$PEArr['k']]['SectionData']);
+                            $PEArr['SectionArr'][$PEArr['k']][$TryHash] = \hash($TryHash, $PEArr['SectionArr'][$PEArr['k']]['SectionData']);
                         }
                         $this->Loader->PEData .=
                             $SizeOfRawData . ':' .
                             $PEArr['SectionArr'][$PEArr['k']]['sha256'] . ':' . $OriginalFilename . '-' .
                             $PEArr['SectionArr'][$PEArr['k']]['SectionName'] . "\n";
-                        $CoExMeta .= sprintf(
+                        $CoExMeta .= \sprintf(
                             'SectionName:%s;VirtualSize:%s;VirtualAddress:%s;SizeOfRawData:%s;SHA256:%s;',
                             $PEArr['SectionArr'][$PEArr['k']]['SectionName'],
                             $PEArr['SectionArr'][$PEArr['k']]['VirtualSize'],
@@ -1757,7 +1757,7 @@ class Scanner
                             $SizeOfRawData . ':' . $PEArr['SectionArr'][$PEArr['k']]['sha256'] . ':'
                         ];
                     }
-                    if (strpos($str, "V\0a\0r\0F\0i\0l\0e\0I\0n\0f\0o\0\0\0\0\0\x24") !== false) {
+                    if (\strpos($str, "V\0a\0r\0F\0i\0l\0e\0I\0n\0f\0o\0\0\0\0\0\x24") !== false) {
                         $PEArr['Parts'] = $this->Loader->substrAfterLast($str, "V\0a\0r\0F\0i\0l\0e\0I\0n\0f\0o\0\0\0\0\0\x24");
                         $PEArr['FINFO'] = [];
                         foreach ([
@@ -1769,18 +1769,18 @@ class Scanner
                             ["O\0r\0i\0g\0i\0n\0a\0l\0F\0i\0l\0e\0n\0a\0m\0e\0\0\0", 'PEOriginalFilename'],
                             ["C\0o\0m\0p\0a\0n\0y\0N\0a\0m\0e\0\0\0", 'PECompanyName'],
                         ] as $PEVars) {
-                            if (strpos($PEArr['Parts'], $PEVars[0]) !== false && (
-                                ${$PEVars[1]} = trim(str_ireplace("\0", '', $this->Loader->substrBeforeFirst(
+                            if (\strpos($PEArr['Parts'], $PEVars[0]) !== false && (
+                                ${$PEVars[1]} = \trim(\str_ireplace("\0", '', $this->Loader->substrBeforeFirst(
                                     $this->Loader->substrAfterLast($PEArr['Parts'], $PEVars[0]),
                                     "\0\0\0"
                                 )))
                             )) {
                                 foreach (['md5', 'sha1', 'sha256'] as $TryHash) {
-                                    $PEArr['FINFO'][] = sprintf(
+                                    $PEArr['FINFO'][] = \sprintf(
                                         '$%s:%s:%d:',
                                         $PEVars[1],
-                                        $TryHash = hash($TryHash, ${$PEVars[1]}),
-                                        strlen(${$PEVars[1]})
+                                        $TryHash = \hash($TryHash, ${$PEVars[1]}),
+                                        \strlen(${$PEVars[1]})
                                     );
                                 }
                             }
@@ -1797,11 +1797,11 @@ class Scanner
 
         /** Look for potential indicators of not being PHP. */
         $is_not_php = ((
-            strpos(',phar,', ',' . $xt . ',') === false &&
-            strpos(',php*,', ',' . $xts . ',') === false &&
-            strpos(',phar,', ',' . $gzxt . ',') === false &&
-            strpos(',php*,', ',' . $gzxts . ',') === false &&
-            strpos($str_hex_norm, '3c3f706870') === false
+            \strpos(',phar,', ',' . $xt . ',') === false &&
+            \strpos(',php*,', ',' . $xts . ',') === false &&
+            \strpos(',phar,', ',' . $gzxt . ',') === false &&
+            \strpos(',php*,', ',' . $gzxts . ',') === false &&
+            \strpos($str_hex_norm, '3c3f706870') === false
         ) || $is_pe || $fileswitch === 'mp4');
 
         /** Set debug values, if this has been enabled. */
@@ -1857,7 +1857,7 @@ class Scanner
         ) {
             $this->Loader->InstanceCache['LookupCount'] = 0;
             $URLScanner = [
-                'FixedSource' => preg_replace('~(data|f(ile|tps?)|https?|sftp):~i', "\x01\\1:", str_replace('\\', '/', $str_norm)) . "\1",
+                'FixedSource' => \preg_replace('~(data|f(ile|tps?)|https?|sftp):~i', "\x01\\1:", \str_replace('\\', '/', $str_norm)) . "\1",
                 'DomainsNoLookup' => [],
                 'DomainsCount' => 0,
                 'Domains' => [],
@@ -1873,79 +1873,79 @@ class Scanner
                 'Iterable' => 0,
                 'Matches' => []
             ];
-            if (preg_match_all(
+            if (\preg_match_all(
                 '~(?:data|f(?:ile|tps?)|https?|sftp)://(?:www\d{0,3}\.)?([\da-z.-]{1,512})[^\da-z.-]~i',
                 $URLScanner['FixedSource'],
                 $URLScanner['Matches']
             )) {
                 foreach ($URLScanner['Matches'][1] as $ThisURL) {
                     $URLScanner['DomainParts'][$URLScanner['Iterable']] = $ThisURL;
-                    if (strpos($URLScanner['DomainParts'][$URLScanner['Iterable']], '.') !== false) {
+                    if (\strpos($URLScanner['DomainParts'][$URLScanner['Iterable']], '.') !== false) {
                         $URLScanner['TLDs'][$URLScanner['Iterable']] = 'TLD:' . $this->Loader->substrAfterLast(
                             $URLScanner['DomainParts'][$URLScanner['Iterable']],
                             '.'
                         ) . ':';
                     }
-                    $ThisURL = hash('md5', $ThisURL) . ':' . strlen($ThisURL) . ':';
+                    $ThisURL = \hash('md5', $ThisURL) . ':' . \strlen($ThisURL) . ':';
                     $URLScanner['Domains'][$URLScanner['Iterable']] = 'DOMAIN:' . $ThisURL;
                     $URLScanner['DomainsNoLookup'][$URLScanner['Iterable']] = 'DOMAIN-NOLOOKUP:' . $ThisURL;
                     $URLScanner['Iterable']++;
                 }
             }
-            $URLScanner['DomainsNoLookup'] = array_unique($URLScanner['DomainsNoLookup']);
-            $URLScanner['Domains'] = array_unique($URLScanner['Domains']);
-            $URLScanner['DomainParts'] = array_unique($URLScanner['DomainParts']);
-            $URLScanner['TLDs'] = array_unique($URLScanner['TLDs']);
-            sort($URLScanner['DomainsNoLookup']);
-            sort($URLScanner['Domains']);
-            sort($URLScanner['DomainParts']);
-            sort($URLScanner['TLDs']);
+            $URLScanner['DomainsNoLookup'] = \array_unique($URLScanner['DomainsNoLookup']);
+            $URLScanner['Domains'] = \array_unique($URLScanner['Domains']);
+            $URLScanner['DomainParts'] = \array_unique($URLScanner['DomainParts']);
+            $URLScanner['TLDs'] = \array_unique($URLScanner['TLDs']);
+            \sort($URLScanner['DomainsNoLookup']);
+            \sort($URLScanner['Domains']);
+            \sort($URLScanner['DomainParts']);
+            \sort($URLScanner['TLDs']);
             $URLScanner['Iterable'] = 0;
             $URLScanner['Matches'] = '';
-            if (preg_match_all(
+            if (\preg_match_all(
                 '~(?:data|f(?:ile|tps?)|https?|sftp)://(?:www\d{0,3}\.)?([!#$&-;=?@-\[\]_a-z\~]+)[^!#$&-;=?@-\[\]_a-z\~]~i',
                 $URLScanner['FixedSource'],
                 $URLScanner['Matches']
             )) {
                 foreach ($URLScanner['Matches'][1] as $ThisURL) {
-                    if (strlen($ThisURL) > 4096) {
-                        $ThisURL = substr($ThisURL, 0, 4096);
+                    if (\strlen($ThisURL) > 4096) {
+                        $ThisURL = \substr($ThisURL, 0, 4096);
                     }
-                    $URLHash = hash('md5', $ThisURL) . ':' . strlen($ThisURL) . ':';
+                    $URLHash = \hash('md5', $ThisURL) . ':' . \strlen($ThisURL) . ':';
                     $URLScanner['URLsNoLookup'][$URLScanner['Iterable']] = 'URL-NOLOOKUP:' . $URLHash;
                     $URLScanner['URLParts'][$URLScanner['Iterable']] = $ThisURL;
                     $URLScanner['URLs'][$URLScanner['Iterable']] = 'URL:' . $URLHash;
                     $URLScanner['Iterable']++;
-                    if (preg_match('/[^\da-z.-]$/i', $ThisURL)) {
-                        $URLScanner['x'] = preg_replace('/[^\da-z.-]+$/i', '', $ThisURL);
-                        $URLHash = hash('md5', $URLScanner['x']) . ':' . strlen($URLScanner['x']) . ':';
+                    if (\preg_match('/[^\da-z.-]$/i', $ThisURL)) {
+                        $URLScanner['x'] = \preg_replace('/[^\da-z.-]+$/i', '', $ThisURL);
+                        $URLHash = \hash('md5', $URLScanner['x']) . ':' . \strlen($URLScanner['x']) . ':';
                         $URLScanner['URLsNoLookup'][$URLScanner['Iterable']] = 'URL-NOLOOKUP:' . $URLHash;
                         $URLScanner['URLParts'][$URLScanner['Iterable']] = $URLScanner['x'];
                         $URLScanner['URLs'][$URLScanner['Iterable']] = 'URL:' . $URLHash;
                         $URLScanner['Iterable']++;
                     }
-                    if (strpos($ThisURL, '?') !== false) {
+                    if (\strpos($ThisURL, '?') !== false) {
                         $URLScanner['x'] = $this->Loader->substrBeforeFirst($ThisURL, '?');
-                        $URLHash = hash('md5', $URLScanner['x']) . ':' . strlen($URLScanner['x']) . ':';
+                        $URLHash = \hash('md5', $URLScanner['x']) . ':' . \strlen($URLScanner['x']) . ':';
                         $URLScanner['URLsNoLookup'][$URLScanner['Iterable']] = 'URL-NOLOOKUP:' . $URLHash;
                         $URLScanner['URLParts'][$URLScanner['Iterable']] = $URLScanner['x'];
                         $URLScanner['URLs'][$URLScanner['Iterable']] = 'URL:' . $URLHash;
                         $URLScanner['x'] = $this->Loader->substrAfterFirst($ThisURL, '?');
-                        $URLScanner['Queries'][$URLScanner['Iterable']] = 'QUERY:' . hash('md5', $URLScanner['x']) . ':' . strlen($URLScanner['x']) . ':';
+                        $URLScanner['Queries'][$URLScanner['Iterable']] = 'QUERY:' . \hash('md5', $URLScanner['x']) . ':' . \strlen($URLScanner['x']) . ':';
                         $URLScanner['Iterable']++;
                     }
                 }
                 unset($URLScanner['x'], $URLHash);
             }
             unset($ThisURL, $URLScanner['Matches']);
-            $URLScanner['URLsNoLookup'] = array_unique($URLScanner['URLsNoLookup']);
-            $URLScanner['URLs'] = array_unique($URLScanner['URLs']);
-            $URLScanner['URLParts'] = array_unique($URLScanner['URLParts']);
-            $URLScanner['Queries'] = array_unique($URLScanner['Queries']);
-            sort($URLScanner['URLsNoLookup']);
-            sort($URLScanner['URLs']);
-            sort($URLScanner['URLParts']);
-            sort($URLScanner['Queries']);
+            $URLScanner['URLsNoLookup'] = \array_unique($URLScanner['URLsNoLookup']);
+            $URLScanner['URLs'] = \array_unique($URLScanner['URLs']);
+            $URLScanner['URLParts'] = \array_unique($URLScanner['URLParts']);
+            $URLScanner['Queries'] = \array_unique($URLScanner['Queries']);
+            \sort($URLScanner['URLsNoLookup']);
+            \sort($URLScanner['URLs']);
+            \sort($URLScanner['URLParts']);
+            \sort($URLScanner['Queries']);
         }
 
         /** Process non-mappable signatures. */
@@ -1960,7 +1960,7 @@ class Scanner
             /** Fire event: "beforeSigFiles". */
             $this->Loader->Events->fireEvent('beforeSigFiles');
 
-            $SigFiles = isset($this->Loader->InstanceCache[$ThisConf[0]]) ? explode(',', $this->Loader->InstanceCache[$ThisConf[0]]) : [];
+            $SigFiles = isset($this->Loader->InstanceCache[$ThisConf[0]]) ? \explode(',', $this->Loader->InstanceCache[$ThisConf[0]]) : [];
             foreach ($SigFiles as $SigFile) {
                 if ($SigFile === '' || $this->Loader->isReserved($SigFile)) {
                     continue;
@@ -1975,9 +1975,9 @@ class Scanner
                 if (empty($this->Loader->InstanceCache[$SigFile])) {
                     $this->Loader->InstanceCache['ScanErrors']++;
                     if (!$this->Loader->Configuration['signatures']['fail_silently']) {
-                        $this->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
+                        $this->atHit($sha256, $StringLength, $OriginalFilename, \sprintf(
                             $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                            sprintf(
+                            \sprintf(
                                 $this->Loader->L10N->getString('grammar_brackets'),
                                 $this->Loader->L10N->getString('response.Signature file missing'),
                                 $SigFile
@@ -1986,13 +1986,13 @@ class Scanner
                         return;
                     }
                 } elseif ($ThisConf[1] === 0) {
-                    if (substr($this->Loader->InstanceCache[$SigFile], 0, 9) === 'phpMussel') {
-                        $this->Loader->InstanceCache[$SigFile] = substr($this->Loader->InstanceCache[$SigFile], 11, -1);
+                    if (\substr($this->Loader->InstanceCache[$SigFile], 0, 9) === 'phpMussel') {
+                        $this->Loader->InstanceCache[$SigFile] = \substr($this->Loader->InstanceCache[$SigFile], 11, -1);
                     }
-                    $ArrayCSV = explode(',', $this->Loader->InstanceCache[$SigFile]);
+                    $ArrayCSV = \explode(',', $this->Loader->InstanceCache[$SigFile]);
                     foreach ($ArrayCSV as $ItemCSV) {
-                        if (strpos($str_hex_norm, $ItemCSV) !== false) {
-                            $this->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
+                        if (\strpos($str_hex_norm, $ItemCSV) !== false) {
+                            $this->atHit($sha256, $StringLength, $OriginalFilename, \sprintf(
                                 $this->Loader->L10N->getString('grammar_exclamation_mark'),
                                 $this->Loader->L10N->getString('response.Command injection attempt detected')
                             ), 2, $Depth);
@@ -2001,14 +2001,14 @@ class Scanner
                     unset($ItemCSV, $ArrayCSV);
                 } elseif ($ThisConf[1] === 1) {
                     foreach ([$md5, $sha1, $sha256] as $CheckThisHash) {
-                        if (strpos($this->Loader->InstanceCache[$SigFile], "\n" . $CheckThisHash . ':' . $StringLength . ':') !== false) {
+                        if (\strpos($this->Loader->InstanceCache[$SigFile], "\n" . $CheckThisHash . ':' . $StringLength . ':') !== false) {
                             $xSig = $this->Loader->substrAfterFirst($this->Loader->InstanceCache[$SigFile], "\n" . $CheckThisHash . ':' . $StringLength . ':');
-                            if (strpos($xSig, "\n") !== false) {
+                            if (\strpos($xSig, "\n") !== false) {
                                 $xSig = $this->Loader->substrBeforeFirst($xSig, "\n");
                             }
                             $xSig = $this->getShorthand($xSig);
                             if (
-                                strpos($this->Loader->InstanceCache['Greylist'], ',' . $xSig . ',') === false &&
+                                \strpos($this->Loader->InstanceCache['Greylist'], ',' . $xSig . ',') === false &&
                                 empty($this->Loader->InstanceCache['ignoreme'])
                             ) {
                                 $this->detected($xSig, $OriginalFilename, $sha256, $StringLength, $Depth);
@@ -2017,18 +2017,18 @@ class Scanner
                     }
                 } elseif ($ThisConf[1] === 2) {
                     for ($PEArr['k'] = 0; $PEArr['k'] < $NumOfSections; $PEArr['k']++) {
-                        if (!isset($PEArr['SectionArr'][$PEArr['k']]) || !is_array($PEArr['SectionArr'][$PEArr['k']])) {
+                        if (!isset($PEArr['SectionArr'][$PEArr['k']]) || !\is_array($PEArr['SectionArr'][$PEArr['k']])) {
                             continue;
                         }
                         foreach ($PEArr['SectionArr'][$PEArr['k']] as $TryThis) {
-                            if (strpos($this->Loader->InstanceCache[$SigFile], $TryThis) !== false) {
+                            if (\strpos($this->Loader->InstanceCache[$SigFile], $TryThis) !== false) {
                                 $xSig = $this->Loader->substrAfterFirst($this->Loader->InstanceCache[$SigFile], $TryThis);
-                                if (strpos($xSig, "\n") !== false) {
+                                if (\strpos($xSig, "\n") !== false) {
                                     $xSig = $this->Loader->substrBeforeFirst($xSig, "\n");
                                 }
                                 $xSig = $this->getShorthand($xSig);
                                 if (
-                                    strpos($this->Loader->InstanceCache['Greylist'], ',' . $xSig . ',') === false &&
+                                    \strpos($this->Loader->InstanceCache['Greylist'], ',' . $xSig . ',') === false &&
                                     empty($this->Loader->InstanceCache['ignoreme'])
                                 ) {
                                     $this->detected($xSig, $OriginalFilename, $sha256, $StringLength, $Depth);
@@ -2039,14 +2039,14 @@ class Scanner
                 } elseif ($ThisConf[1] === 3) {
                     if (!empty($PEArr['FINFO'])) {
                         foreach ($PEArr['FINFO'] as $PEArr['ThisPart']) {
-                            if (substr_count($this->Loader->InstanceCache[$SigFile], $PEArr['ThisPart'])) {
+                            if (\substr_count($this->Loader->InstanceCache[$SigFile], $PEArr['ThisPart'])) {
                                 $xSig = $this->Loader->substrAfterFirst($this->Loader->InstanceCache[$SigFile], $PEArr['ThisPart']);
-                                if (strpos($xSig, "\n") !== false) {
+                                if (\strpos($xSig, "\n") !== false) {
                                     $xSig = $this->Loader->substrBeforeFirst($xSig, "\n");
                                 }
                                 $xSig = $this->getShorthand($xSig);
                                 if (
-                                    !substr_count($this->Loader->InstanceCache['Greylist'], ',' . $xSig . ',') &&
+                                    !\substr_count($this->Loader->InstanceCache['Greylist'], ',' . $xSig . ',') &&
                                     empty($this->Loader->InstanceCache['ignoreme'])
                                 ) {
                                     $this->detected($xSig, $OriginalFilename, $sha256, $StringLength, $Depth);
@@ -2057,12 +2057,12 @@ class Scanner
                 } elseif ($ThisConf[1] === 4) {
                     foreach ([$URLScanner['DomainsNoLookup'], $URLScanner['URLsNoLookup']] as $URLScanner['ThisArr']) {
                         foreach ($URLScanner['ThisArr'] as $URLHash) {
-                            if (strpos($this->Loader->InstanceCache[$SigFile], $URLHash) !== false) {
+                            if (\strpos($this->Loader->InstanceCache[$SigFile], $URLHash) !== false) {
                                 $xSig = $this->Loader->substrAfterFirst($this->Loader->InstanceCache[$SigFile], $URLHash);
-                                if (strpos($xSig, "\n") !== false) {
+                                if (\strpos($xSig, "\n") !== false) {
                                     $xSig = $this->Loader->substrBeforeFirst($xSig, "\n");
                                 }
-                                if (substr($URLHash, 0, 15) === 'DOMAIN-NOLOOKUP') {
+                                if (\substr($URLHash, 0, 15) === 'DOMAIN-NOLOOKUP') {
                                     $URLScanner['DomainPartsNoLookup'][$xSig] = true;
                                     continue;
                                 }
@@ -2077,14 +2077,14 @@ class Scanner
                         $URLScanner['Queries']
                     ] as $URLScanner['ThisArr']) {
                         foreach ($URLScanner['ThisArr'] as $URLHash) {
-                            if (substr_count($this->Loader->InstanceCache[$SigFile], $URLHash)) {
+                            if (\substr_count($this->Loader->InstanceCache[$SigFile], $URLHash)) {
                                 $xSig = $this->Loader->substrAfterFirst($this->Loader->InstanceCache[$SigFile], $URLHash);
-                                if (strpos($xSig, "\n") !== false) {
+                                if (\strpos($xSig, "\n") !== false) {
                                     $xSig = $this->Loader->substrBeforeFirst($xSig, "\n");
                                 }
                                 if (
                                     ($xSig = $this->getShorthand($xSig)) &&
-                                    !substr_count($this->Loader->InstanceCache['Greylist'], ',' . $xSig . ',') &&
+                                    !\substr_count($this->Loader->InstanceCache['Greylist'], ',' . $xSig . ',') &&
                                     empty($this->Loader->InstanceCache['ignoreme'])
                                 ) {
                                     $this->detected($xSig, $OriginalFilename, $sha256, $StringLength, $Depth);
@@ -2131,27 +2131,27 @@ class Scanner
                             continue;
                         }
                         $ThisCheckValue = "\n$" . $ThisCheckFor . ':' . (
-                            substr($ThisCheckFor, 0, 3) !== 'is_' ? $$ThisCheckFor : ($$ThisCheckFor ? '1' : '0')
+                            \substr($ThisCheckFor, 0, 3) !== 'is_' ? $$ThisCheckFor : ($$ThisCheckFor ? '1' : '0')
                         ) . ';';
-                        if (strpos($this->Loader->InstanceCache[$SigFile], $ThisCheckValue) === false) {
+                        if (\strpos($this->Loader->InstanceCache[$SigFile], $ThisCheckValue) === false) {
                             continue;
                         }
-                        $xSig = explode($ThisCheckValue, $this->Loader->InstanceCache[$SigFile]);
+                        $xSig = \explode($ThisCheckValue, $this->Loader->InstanceCache[$SigFile]);
                         $xSigCount = count($xSig);
                         if (isset($xSig[0])) {
                             $xSig[0] = '';
                         }
                         if ($xSigCount > 0) {
                             for ($xIter = 1; $xIter < $xSigCount; $xIter++) {
-                                if (strpos($xSig[$xIter], "\n") !== false) {
+                                if (\strpos($xSig[$xIter], "\n") !== false) {
                                     $xSig[$xIter] = $this->Loader->substrBeforeFirst($xSig[$xIter], "\n");
                                 }
-                                if (strpos($xSig[$xIter], ';') !== false) {
-                                    if (strpos($xSig[$xIter], ':') === false) {
+                                if (\strpos($xSig[$xIter], ';') !== false) {
+                                    if (\strpos($xSig[$xIter], ':') === false) {
                                         continue;
                                     }
                                     $SigName = $this->getShorthand($this->Loader->substrAfterLast($xSig[$xIter], ';'));
-                                    $xSig[$xIter] = explode(';', $this->Loader->substrBeforeLast($xSig[$xIter], ';'));
+                                    $xSig[$xIter] = \explode(';', $this->Loader->substrBeforeLast($xSig[$xIter], ';'));
                                 } else {
                                     $SigName = $this->getShorthand($xSig[$xIter]);
                                     $xSig[$xIter] = [];
@@ -2162,11 +2162,11 @@ class Scanner
                                     }
                                     $ThisSigPart = $this->splitSigParts($ThisSigPart, 7);
                                     if ($ThisSigPart[0] === 'LV') {
-                                        if (!isset($ThisSigPart[1]) || substr($ThisSigPart[1], 0, 1) !== '$') {
+                                        if (!isset($ThisSigPart[1]) || \substr($ThisSigPart[1], 0, 1) !== '$') {
                                             continue 2;
                                         }
-                                        $lv_haystack = substr($ThisSigPart[1], 1);
-                                        if (!isset($$lv_haystack) || is_array($$lv_haystack)) {
+                                        $lv_haystack = \substr($ThisSigPart[1], 1);
+                                        if (!isset($$lv_haystack) || \is_array($$lv_haystack)) {
                                             continue 2;
                                         }
                                         $lv_haystack = $$lv_haystack;
@@ -2183,85 +2183,85 @@ class Scanner
                                     if (isset($ThisSigPart[2])) {
                                         if (isset($ThisSigPart[3])) {
                                             if ($ThisSigPart[2] === 'A') {
-                                                if (strpos(',FD,FD-RX,FD-NORM,FD-NORM-RX,META,', ',' . $ThisSigPart[0] . ',') === false || (
+                                                if (\strpos(',FD,FD-RX,FD-NORM,FD-NORM-RX,META,', ',' . $ThisSigPart[0] . ',') === false || (
                                                     $ThisSigPart[0] === 'FD' &&
-                                                    strpos("\1" . substr($str_hex, 0, $ThisSigPart[3] * 2), "\1" . $ThisSigPart[1]) === false
+                                                    \strpos("\1" . \substr($str_hex, 0, $ThisSigPart[3] * 2), "\1" . $ThisSigPart[1]) === false
                                                 ) || (
                                                     $ThisSigPart[0] === 'FD-RX' &&
-                                                    !preg_match('/\A(?:' . $ThisSigPart[1] . ')/i', substr($str_hex, 0, $ThisSigPart[3] * 2))
+                                                    !\preg_match('/\A(?:' . $ThisSigPart[1] . ')/i', \substr($str_hex, 0, $ThisSigPart[3] * 2))
                                                 ) || (
                                                     $ThisSigPart[0] === 'FD-NORM' &&
-                                                    strpos("\1" . substr($str_hex_norm, 0, $ThisSigPart[3] * 2), "\1" . $ThisSigPart[1]) === false
+                                                    \strpos("\1" . \substr($str_hex_norm, 0, $ThisSigPart[3] * 2), "\1" . $ThisSigPart[1]) === false
                                                 ) || (
                                                     $ThisSigPart[0] === 'FD-NORM-RX' &&
-                                                    !preg_match('/\A(?:' . $ThisSigPart[1] . ')/i', substr($str_hex_norm, 0, $ThisSigPart[3] * 2))
+                                                    !\preg_match('/\A(?:' . $ThisSigPart[1] . ')/i', \substr($str_hex_norm, 0, $ThisSigPart[3] * 2))
                                                 ) || (
                                                     $ThisSigPart[0] === 'META' &&
-                                                    !preg_match('/\A(?:' . $ThisSigPart[1] . ')/i', substr($CoExMeta, 0, $ThisSigPart[3] * 2))
+                                                    !\preg_match('/\A(?:' . $ThisSigPart[1] . ')/i', \substr($CoExMeta, 0, $ThisSigPart[3] * 2))
                                                 )) {
                                                     continue 2;
                                                 }
                                                 continue;
                                             }
-                                            if (strpos(',FD,FD-RX,FD-NORM,FD-NORM-RX,META,', ',' . $ThisSigPart[0] . ',') === false || (
+                                            if (\strpos(',FD,FD-RX,FD-NORM,FD-NORM-RX,META,', ',' . $ThisSigPart[0] . ',') === false || (
                                                 $ThisSigPart[0] === 'FD' &&
-                                                strpos(substr($str_hex, $ThisSigPart[2] * 2, $ThisSigPart[3] * 2), $ThisSigPart[1]) === false
+                                                \strpos(\substr($str_hex, $ThisSigPart[2] * 2, $ThisSigPart[3] * 2), $ThisSigPart[1]) === false
                                             ) || (
                                                 $ThisSigPart[0] === 'FD-RX' &&
-                                                !preg_match('/(?:' . $ThisSigPart[1] . ')/i', substr($str_hex, $ThisSigPart[2] * 2, $ThisSigPart[3] * 2))
+                                                !\preg_match('/(?:' . $ThisSigPart[1] . ')/i', \substr($str_hex, $ThisSigPart[2] * 2, $ThisSigPart[3] * 2))
                                             ) || (
                                                 $ThisSigPart[0] === 'FD-NORM' &&
-                                                strpos(substr($str_hex_norm, $ThisSigPart[2] * 2, $ThisSigPart[3] * 2), $ThisSigPart[1]) === false
+                                                \strpos(\substr($str_hex_norm, $ThisSigPart[2] * 2, $ThisSigPart[3] * 2), $ThisSigPart[1]) === false
                                             ) || (
                                                 $ThisSigPart[0] === 'FD-NORM-RX' &&
-                                                !preg_match('/(?:' . $ThisSigPart[1] . ')/i', substr($str_hex_norm, $ThisSigPart[2] * 2, $ThisSigPart[3] * 2))
+                                                !\preg_match('/(?:' . $ThisSigPart[1] . ')/i', \substr($str_hex_norm, $ThisSigPart[2] * 2, $ThisSigPart[3] * 2))
                                             ) || (
                                                 $ThisSigPart[0] === 'META' &&
-                                                !preg_match('/(?:' . $ThisSigPart[1] . ')/i', substr($CoExMeta, $ThisSigPart[2] * 2, $ThisSigPart[3] * 2))
+                                                !\preg_match('/(?:' . $ThisSigPart[1] . ')/i', \substr($CoExMeta, $ThisSigPart[2] * 2, $ThisSigPart[3] * 2))
                                             )) {
                                                 continue 2;
                                             }
                                             continue;
                                         }
                                         if ($ThisSigPart[2] === 'A') {
-                                            if (strpos(',FN,FD,FD-RX,FD-NORM,FD-NORM-RX,META,', ',' . $ThisSigPart[0] . ',') === false || (
+                                            if (\strpos(',FN,FD,FD-RX,FD-NORM,FD-NORM-RX,META,', ',' . $ThisSigPart[0] . ',') === false || (
                                                 $ThisSigPart[0] === 'FN' &&
-                                                !preg_match('/\A(?:' . $ThisSigPart[1] . ')/i', $OriginalFilename)
+                                                !\preg_match('/\A(?:' . $ThisSigPart[1] . ')/i', $OriginalFilename)
                                             ) || (
                                                 $ThisSigPart[0] === 'FD' &&
-                                                strpos("\1" . $str_hex, "\1" . $ThisSigPart[1]) === false
+                                                \strpos("\1" . $str_hex, "\1" . $ThisSigPart[1]) === false
                                             ) || (
                                                 $ThisSigPart[0] === 'FD-RX' &&
-                                                !preg_match('/\A(?:' . $ThisSigPart[1] . ')/i', $str_hex)
+                                                !\preg_match('/\A(?:' . $ThisSigPart[1] . ')/i', $str_hex)
                                             ) || (
                                                 $ThisSigPart[0] === 'FD-NORM' &&
-                                                strpos("\1" . $str_hex_norm, "\1" . $ThisSigPart[1]) === false
+                                                \strpos("\1" . $str_hex_norm, "\1" . $ThisSigPart[1]) === false
                                             ) || (
                                                 $ThisSigPart[0] === 'FD-NORM-RX' &&
-                                                !preg_match('/\A(?:' . $ThisSigPart[1] . ')/i', $str_hex_norm)
+                                                !\preg_match('/\A(?:' . $ThisSigPart[1] . ')/i', $str_hex_norm)
                                             ) || (
                                                 $ThisSigPart[0] === 'META' &&
-                                                !preg_match('/\A(?:' . $ThisSigPart[1] . ')/i', $CoExMeta)
+                                                !\preg_match('/\A(?:' . $ThisSigPart[1] . ')/i', $CoExMeta)
                                             )) {
                                                 continue 2;
                                             }
                                             continue;
                                         }
-                                        if (strpos(',FD,FD-RX,FD-NORM,FD-NORM-RX,META,', ',' . $ThisSigPart[0] . ',') === false || (
+                                        if (\strpos(',FD,FD-RX,FD-NORM,FD-NORM-RX,META,', ',' . $ThisSigPart[0] . ',') === false || (
                                             $ThisSigPart[0] === 'FD' &&
-                                            strpos(substr($str_hex, $ThisSigPart[2] * 2), $ThisSigPart[1]) === false
+                                            \strpos(\substr($str_hex, $ThisSigPart[2] * 2), $ThisSigPart[1]) === false
                                         ) || (
                                             $ThisSigPart[0] === 'FD-RX' &&
-                                            !preg_match('/(?:' . $ThisSigPart[1] . ')/i', substr($str_hex, $ThisSigPart[2] * 2))
+                                            !\preg_match('/(?:' . $ThisSigPart[1] . ')/i', \substr($str_hex, $ThisSigPart[2] * 2))
                                         ) || (
                                             $ThisSigPart[0] === 'FD-NORM' &&
-                                            strpos(substr($str_hex_norm, $ThisSigPart[2] * 2), $ThisSigPart[1]) === false
+                                            \strpos(\substr($str_hex_norm, $ThisSigPart[2] * 2), $ThisSigPart[1]) === false
                                         ) || (
                                             $ThisSigPart[0] === 'FD-NORM-RX' &&
-                                            !preg_match('/(?:' . $ThisSigPart[1] . ')/i', substr($str_hex_norm, $ThisSigPart[2] * 2))
+                                            !\preg_match('/(?:' . $ThisSigPart[1] . ')/i', \substr($str_hex_norm, $ThisSigPart[2] * 2))
                                         ) || (
                                             $ThisSigPart[0] === 'META' &&
-                                            !preg_match('/(?:' . $ThisSigPart[1] . ')/i', substr($CoExMeta, $ThisSigPart[2] * 2))
+                                            !\preg_match('/(?:' . $ThisSigPart[1] . ')/i', \substr($CoExMeta, $ThisSigPart[2] * 2))
                                         )) {
                                             continue 2;
                                         }
@@ -2269,7 +2269,7 @@ class Scanner
                                     }
                                     if ((
                                         $ThisSigPart[0] === 'FN' &&
-                                        !preg_match('/(?:' . $ThisSigPart[1] . ')/i', $OriginalFilename)
+                                        !\preg_match('/(?:' . $ThisSigPart[1] . ')/i', $OriginalFilename)
                                     ) || (
                                         $ThisSigPart[0] === 'FS-MIN' &&
                                         $StringLength < $ThisSigPart[1]
@@ -2278,43 +2278,43 @@ class Scanner
                                         $StringLength > $ThisSigPart[1]
                                     ) || (
                                         $ThisSigPart[0] === 'FD' &&
-                                        strpos($str_hex, $ThisSigPart[1]) === false
+                                        \strpos($str_hex, $ThisSigPart[1]) === false
                                     ) || (
                                         $ThisSigPart[0] === 'FD-RX' &&
-                                        !preg_match('/(?:' . $ThisSigPart[1] . ')/i', $str_hex)
+                                        !\preg_match('/(?:' . $ThisSigPart[1] . ')/i', $str_hex)
                                     ) || (
                                         $ThisSigPart[0] === 'FD-NORM' &&
-                                        strpos($str_hex_norm, $ThisSigPart[1]) === false
+                                        \strpos($str_hex_norm, $ThisSigPart[1]) === false
                                     ) || (
                                         $ThisSigPart[0] === 'FD-NORM-RX' &&
-                                        !preg_match('/(?:' . $ThisSigPart[1] . ')/i', $str_hex_norm)
+                                        !\preg_match('/(?:' . $ThisSigPart[1] . ')/i', $str_hex_norm)
                                     ) || (
                                         $ThisSigPart[0] === 'META' &&
-                                        !preg_match('/(?:' . $ThisSigPart[1] . ')/i', $CoExMeta)
+                                        !\preg_match('/(?:' . $ThisSigPart[1] . ')/i', $CoExMeta)
                                     )) {
                                         continue 2;
                                     }
-                                    if (substr($ThisSigPart[0], 0, 1) === '$') {
-                                        $VarInSigFile = substr($ThisSigPart[0], 1);
-                                        if (!isset($$VarInSigFile) || is_array($$VarInSigFile) || $$VarInSigFile != $ThisSigPart[1]) {
+                                    if (\substr($ThisSigPart[0], 0, 1) === '$') {
+                                        $VarInSigFile = \substr($ThisSigPart[0], 1);
+                                        if (!isset($$VarInSigFile) || \is_array($$VarInSigFile) || $$VarInSigFile != $ThisSigPart[1]) {
                                             continue 2;
                                         }
                                         continue;
                                     }
-                                    if (substr($ThisSigPart[0], 0, 2) === '!$') {
-                                        $VarInSigFile = substr($ThisSigPart[0], 2);
-                                        if (!isset($$VarInSigFile) || is_array($$VarInSigFile) || $$VarInSigFile == $ThisSigPart[1]) {
+                                    if (\substr($ThisSigPart[0], 0, 2) === '!$') {
+                                        $VarInSigFile = \substr($ThisSigPart[0], 2);
+                                        if (!isset($$VarInSigFile) || \is_array($$VarInSigFile) || $$VarInSigFile == $ThisSigPart[1]) {
                                             continue 2;
                                         }
                                         continue;
                                     }
-                                    if (strpos(',FN,FS-MIN,FS-MAX,FD,FD-RX,FD-NORM,FD-NORM-RX,META,', ',' . $ThisSigPart[0] . ',') === false) {
+                                    if (\strpos(',FN,FS-MIN,FS-MAX,FD,FD-RX,FD-NORM,FD-NORM-RX,META,', ',' . $ThisSigPart[0] . ',') === false) {
                                         continue 2;
                                     }
                                 }
                                 if (
                                     $SigName &&
-                                    strpos($this->Loader->InstanceCache['Greylist'], ',' . $SigName . ',') === false &&
+                                    \strpos($this->Loader->InstanceCache['Greylist'], ',' . $SigName . ',') === false &&
                                     empty($this->Loader->InstanceCache['ignoreme'])
                                 ) {
                                     $this->detected($SigName, $OriginalFilename, $sha256, $StringLength, $Depth);
@@ -2354,7 +2354,7 @@ class Scanner
             /** Fire event: "beforeSigFiles". */
             $this->Loader->Events->fireEvent('beforeSigFiles');
 
-            $SigFiles = isset($this->Loader->InstanceCache[$ThisConf[0]]) ? explode(',', $this->Loader->InstanceCache[$ThisConf[0]]) : [];
+            $SigFiles = isset($this->Loader->InstanceCache[$ThisConf[0]]) ? \explode(',', $this->Loader->InstanceCache[$ThisConf[0]]) : [];
             foreach ($SigFiles as $SigFile) {
                 if ($SigFile === '' || $this->Loader->isReserved($SigFile)) {
                     continue;
@@ -2369,9 +2369,9 @@ class Scanner
                 if (empty($this->Loader->InstanceCache[$SigFile])) {
                     $this->Loader->InstanceCache['ScanErrors']++;
                     if (!$this->Loader->Configuration['signatures']['fail_silently']) {
-                        $this->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
+                        $this->atHit($sha256, $StringLength, $OriginalFilename, \sprintf(
                             $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                            sprintf(
+                            \sprintf(
                                 $this->Loader->L10N->getString('grammar_brackets'),
                                 $this->Loader->L10N->getString('response.Signature file missing'),
                                 $SigFile
@@ -2386,14 +2386,14 @@ class Scanner
                     if (!$ThisSig = $this->Loader->InstanceCache[$SigFile][$SigNum]) {
                         continue;
                     }
-                    if (substr($ThisSig, 0, 1) === '>') {
-                        $ThisSig = explode('>', $ThisSig, 4);
+                    if (\substr($ThisSig, 0, 1) === '>') {
+                        $ThisSig = \explode('>', $ThisSig, 4);
                         if (!isset($ThisSig[1], $ThisSig[2], $ThisSig[3])) {
                             break;
                         }
                         $ThisSig[3] = (int)$ThisSig[3];
                         if ($ThisSig[1] === 'FN') {
-                            if (!preg_match('/(?:' . $ThisSig[2] . ')/i', $OriginalFilename)) {
+                            if (!\preg_match('/(?:' . $ThisSig[2] . ')/i', $OriginalFilename)) {
                                 if ($ThisSig[3] <= $SigNum) {
                                     break;
                                 }
@@ -2414,22 +2414,22 @@ class Scanner
                                 $SigNum = $ThisSig[3] - 1;
                             }
                         } elseif ($ThisSig[1] === 'FD') {
-                            if (strpos($$DataSource, $ThisSig[2]) === false) {
+                            if (\strpos($$DataSource, $ThisSig[2]) === false) {
                                 if ($ThisSig[3] <= $SigNum) {
                                     break;
                                 }
                                 $SigNum = $ThisSig[3] - 1;
                             }
                         } elseif ($ThisSig[1] === 'FD-RX') {
-                            if (!preg_match('/(?:' . $ThisSig[2] . ')/i', $$DataSource)) {
+                            if (!\preg_match('/(?:' . $ThisSig[2] . ')/i', $$DataSource)) {
                                 if ($ThisSig[3] <= $SigNum) {
                                     break;
                                 }
                                 $SigNum = $ThisSig[3] - 1;
                             }
-                        } elseif (substr($ThisSig[1], 0, 1) === '$') {
-                            $VarInSigFile = substr($ThisSig[1], 1);
-                            if (isset($$VarInSigFile) && is_scalar($$VarInSigFile)) {
+                        } elseif (\substr($ThisSig[1], 0, 1) === '$') {
+                            $VarInSigFile = \substr($ThisSig[1], 1);
+                            if (isset($$VarInSigFile) && \is_scalar($$VarInSigFile)) {
                                 if (!$this->matchVarInSigFile($ThisSig[2], $$VarInSigFile)) {
                                     if ($ThisSig[3] <= $SigNum) {
                                         break;
@@ -2442,9 +2442,9 @@ class Scanner
                                 break;
                             }
                             $SigNum = $ThisSig[3] - 1;
-                        } elseif (substr($ThisSig[1], 0, 2) === '!$') {
-                            $VarInSigFile = substr($ThisSig[1], 2);
-                            if (isset($$VarInSigFile) && is_scalar($$VarInSigFile)) {
+                        } elseif (\substr($ThisSig[1], 0, 2) === '!$') {
+                            $VarInSigFile = \substr($ThisSig[1], 2);
+                            if (isset($$VarInSigFile) && \is_scalar($$VarInSigFile)) {
                                 if ($this->matchVarInSigFile($ThisSig[2], $$VarInSigFile)) {
                                     if ($ThisSig[3] <= $SigNum) {
                                         break;
@@ -2462,50 +2462,50 @@ class Scanner
                         }
                         continue;
                     }
-                    if (strpos($ThisSig, ':') !== false) {
+                    if (\strpos($ThisSig, ':') !== false) {
                         $VN = $this->splitSigParts($ThisSig);
                         if (!isset($VN[1]) || $VN[1] === '') {
                             continue;
                         }
                         if ($ThisConf[3] === 2) {
-                            $ThisSig = preg_split('/[\x00-\x1F]+/', $VN[1], -1, PREG_SPLIT_NO_EMPTY);
-                            $ThisSig = ($ThisSig === false) ? '' : implode('', $ThisSig);
+                            $ThisSig = \preg_split('/[\x00-\x1F]+/', $VN[1], -1, PREG_SPLIT_NO_EMPTY);
+                            $ThisSig = ($ThisSig === false) ? '' : \implode('', $ThisSig);
                             $VN = $this->getShorthand($VN[0]);
                             if (
                                 $ThisSig &&
-                                strpos($this->Loader->InstanceCache['Greylist'], ',' . $VN . ',') === false &&
+                                \strpos($this->Loader->InstanceCache['Greylist'], ',' . $VN . ',') === false &&
                                 empty($this->Loader->InstanceCache['ignoreme'])
                             ) {
-                                if (preg_match('/(?:' . $ThisSig . ')/i', $OriginalFilename)) {
+                                if (\preg_match('/(?:' . $ThisSig . ')/i', $OriginalFilename)) {
                                     $this->detected($VN, $OriginalFilename, $sha256, $StringLength, $Depth);
                                 }
                             }
                         } elseif ($ThisConf[3] === 0 || $ThisConf[3] === 1) {
-                            $ThisSig = preg_split((
+                            $ThisSig = \preg_split((
                                 $ThisConf[3] === 0 ? '/[^\da-f>]+/i' : '/[\x00-\x1F]+/'
                             ), $VN[1], -1, PREG_SPLIT_NO_EMPTY);
-                            $ThisSig = ($ThisSig === false ? '' : implode('', $ThisSig));
-                            $ThisSigLen = strlen($ThisSig);
+                            $ThisSig = ($ThisSig === false ? '' : \implode('', $ThisSig));
+                            $ThisSigLen = \strlen($ThisSig);
                             if ($this->confineLength($ThisSigLen)) {
                                 continue;
                             }
                             $xstrf = $VN[2] ?? '*';
                             $xstrt = $VN[3] ?? '*';
                             $VN = $this->getShorthand($VN[0]);
-                            $VNLC = strtolower($VN);
+                            $VNLC = \strtolower($VN);
                             if (($is_not_php && (
-                                strpos($VNLC, '-php') !== false || strpos($VNLC, '.php') !== false
+                                \strpos($VNLC, '-php') !== false || \strpos($VNLC, '.php') !== false
                             )) || ($is_not_html && (
-                                strpos($VNLC, '-htm') !== false || strpos($VNLC, '.htm') !== false
+                                \strpos($VNLC, '-htm') !== false || \strpos($VNLC, '.htm') !== false
                             ))) {
                                 continue;
                             }
                             if (
-                                strpos($this->Loader->InstanceCache['Greylist'], ',' . $VN . ',') === false &&
+                                \strpos($this->Loader->InstanceCache['Greylist'], ',' . $VN . ',') === false &&
                                 empty($this->Loader->InstanceCache['ignoreme'])
                             ) {
                                 if ($ThisConf[3] === 0) {
-                                    $ThisSig = strpos($ThisSig, '>') !== false ? explode('>', $ThisSig) : [$ThisSig];
+                                    $ThisSig = \strpos($ThisSig, '>') !== false ? \explode('>', $ThisSig) : [$ThisSig];
                                     $ThisSigCount = count($ThisSig);
                                     $ThisString = $$DataSource;
                                     $this->dataConfineByOffsets($ThisString, $xstrf, $xstrt, $SectionOffsets);
@@ -2518,10 +2518,10 @@ class Scanner
                                         $ThisSig[$ThisSigCount - 1] .= "\1";
                                     }
                                     for ($ThisSigi = 0; $ThisSigi < $ThisSigCount; $ThisSigi++) {
-                                        if (strpos($ThisString, $ThisSig[$ThisSigi]) === false) {
+                                        if (\strpos($ThisString, $ThisSig[$ThisSigi]) === false) {
                                             continue 2;
                                         }
-                                        if ($ThisSigCount > 1 && strpos($ThisString, $ThisSig[$ThisSigi]) !== false) {
+                                        if ($ThisSigCount > 1 && \strpos($ThisString, $ThisSig[$ThisSigi]) !== false) {
                                             $ThisString = $this->Loader->substrAfterFirst($ThisString, $ThisSig[$ThisSigi]);
                                         }
                                     }
@@ -2530,18 +2530,18 @@ class Scanner
                                     $this->dataConfineByOffsets($ThisString, $xstrf, $xstrt, $SectionOffsets);
                                     if ($xstrf === 'A') {
                                         if ($xstrt === 'Z') {
-                                            if (!preg_match('/\A(?:' . $ThisSig . ')$/i', $ThisString)) {
+                                            if (!\preg_match('/\A(?:' . $ThisSig . ')$/i', $ThisString)) {
                                                 continue;
                                             }
-                                        } elseif (!preg_match('/\A(?:' . $ThisSig . ')/i', $ThisString)) {
+                                        } elseif (!\preg_match('/\A(?:' . $ThisSig . ')/i', $ThisString)) {
                                             continue;
                                         }
                                     } else {
                                         if ($xstrt === 'Z') {
-                                            if (!preg_match('/(?:' . $ThisSig . ')$/i', $ThisString)) {
+                                            if (!\preg_match('/(?:' . $ThisSig . ')$/i', $ThisString)) {
                                                 continue;
                                             }
-                                        } elseif (!preg_match('/(?:' . $ThisSig . ')/i', $ThisString)) {
+                                        } elseif (!\preg_match('/(?:' . $ThisSig . ')/i', $ThisString)) {
                                             continue;
                                         }
                                     }
@@ -2573,7 +2573,7 @@ class Scanner
                         $this->Loader->InstanceCache['LookupCount'] > $this->Loader->Configuration['urlscanner']['maximum_api_lookups']
                     ) {
                         if ($this->Loader->Configuration['urlscanner']['maximum_api_lookups_response']) {
-                            $this->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
+                            $this->atHit($sha256, $StringLength, $OriginalFilename, \sprintf(
                                 $this->Loader->L10N->getString('grammar_exclamation_mark'),
                                 $this->Loader->L10N->getString('response.Too many URLs')
                             ), 2, $Depth);
@@ -2590,7 +2590,7 @@ class Scanner
 
                     /** Bad URLs found; Flag accordingly. */
                     if ($URLScanner['SafeBrowseLookup'] !== 204) {
-                        $this->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
+                        $this->atHit($sha256, $StringLength, $OriginalFilename, \sprintf(
                             $this->Loader->L10N->getString('grammar_exclamation_mark'),
                             $this->Loader->L10N->getString('SafeBrowseLookup.' . $URLScanner['SafeBrowseLookup']) ?:
                                 $this->Loader->L10N->getString('SafeBrowseLookup.999')
@@ -2616,9 +2616,9 @@ class Scanner
 
         /** Chameleon attack bypasses for Mac OS X thumbnails and screenshots. */
         $ThumbnailBypass = (
-            substr($OriginalFilename, 0, 2) === '._' &&
-            !preg_match('~[^\x00-\x1F]~', substr($str, 0, 8)) &&
-            substr($str, 8, 8) === 'Mac OS X'
+            \substr($OriginalFilename, 0, 2) === '._' &&
+            !\preg_match('~[^\x00-\x1F]~', \substr($str, 0, 8)) &&
+            \substr($str, 8, 8) === 'Mac OS X'
         );
 
         /** PHP chameleon attack detection. */
@@ -2626,10 +2626,10 @@ class Scanner
             if ($this->containsMustAssert([
                 $this->Loader->Configuration['files']['can_contain_php_file_extensions'],
                 $this->Loader->Configuration['files']['archive_file_extensions']
-            ], [$xts, $gzxts, $xt, $gzxt]) && strpos($str_hex_norm, '3c3f706870') !== false) {
-                $this->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
+            ], [$xts, $gzxts, $xt, $gzxt]) && \strpos($str_hex_norm, '3c3f706870') !== false) {
+                $this->atHit($sha256, $StringLength, $OriginalFilename, \sprintf(
                     $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                    sprintf($this->Loader->L10N->getString('response.%s chameleon attack detected'), 'PHP')
+                    \sprintf($this->Loader->L10N->getString('response.%s chameleon attack detected'), 'PHP')
                 ), 2, $Depth);
             }
         }
@@ -2637,7 +2637,7 @@ class Scanner
         /** Executable chameleon attack detection. */
         if ($this->Loader->Configuration['files']['chameleon_from_exe']) {
             $Chameleon = '';
-            if (strpos(',acm,ax,com,cpl,dll,drv,exe,ocx,rs,scr,sys,', ',' . $xt . ',') !== false) {
+            if (\strpos(',acm,ax,com,cpl,dll,drv,exe,ocx,rs,scr,sys,', ',' . $xt . ',') !== false) {
                 if ($twocc !== '4d5a') {
                     $Chameleon = 'EXE';
                 }
@@ -2652,19 +2652,19 @@ class Scanner
                 $Chameleon = 'ELF';
             }
             if ($xt === 'lnk') {
-                if (substr($str_hex, 0, 16) !== '4c00000001140200') {
+                if (\substr($str_hex, 0, 16) !== '4c00000001140200') {
                     $Chameleon = 'LNK';
                 }
-            } elseif (substr($str_hex, 0, 16) === '4c00000001140200') {
+            } elseif (\substr($str_hex, 0, 16) === '4c00000001140200') {
                 $Chameleon = 'LNK';
             }
-            if ($xt === 'msi' && substr($str_hex, 0, 16) !== 'd0cf11e0a1b11ae1') {
+            if ($xt === 'msi' && \substr($str_hex, 0, 16) !== 'd0cf11e0a1b11ae1') {
                 $Chameleon = 'MSI';
             }
             if ($Chameleon) {
-                $this->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
+                $this->atHit($sha256, $StringLength, $OriginalFilename, \sprintf(
                     $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                    sprintf($this->Loader->L10N->getString('response.%s chameleon attack detected'), $Chameleon)
+                    \sprintf($this->Loader->L10N->getString('response.%s chameleon attack detected'), $Chameleon)
                 ), 2, $Depth);
             }
         }
@@ -2678,24 +2678,24 @@ class Scanner
                 $Chameleon = 'Rar';
             } elseif ($xt === 'gz' && $twocc !== '1f8b') {
                 $Chameleon = 'Gzip';
-            } elseif ($xt === 'bz2' && substr($str_hex, 0, 6) !== '425a68') {
+            } elseif ($xt === 'bz2' && \substr($str_hex, 0, 6) !== '425a68') {
                 $Chameleon = 'Bzip2';
             }
             if ($Chameleon) {
-                $this->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
+                $this->atHit($sha256, $StringLength, $OriginalFilename, \sprintf(
                     $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                    sprintf($this->Loader->L10N->getString('response.%s chameleon attack detected'), $Chameleon)
+                    \sprintf($this->Loader->L10N->getString('response.%s chameleon attack detected'), $Chameleon)
                 ), 2, $Depth);
             }
         }
 
         /** Office document chameleon attack detection. */
         if ($this->Loader->Configuration['files']['chameleon_to_doc']) {
-            if (strpos(',doc,dot,pps,ppt,xla,xls,wiz,', ',' . $xt . ',') !== false) {
+            if (\strpos(',doc,dot,pps,ppt,xla,xls,wiz,', ',' . $xt . ',') !== false) {
                 if ($fourcc !== 'd0cf11e0') {
-                    $this->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
+                    $this->atHit($sha256, $StringLength, $OriginalFilename, \sprintf(
                         $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                        sprintf($this->Loader->L10N->getString('response.%s chameleon attack detected'), 'Office')
+                        \sprintf($this->Loader->L10N->getString('response.%s chameleon attack detected'), 'Office')
                     ), 2, $Depth);
                 }
             }
@@ -2706,17 +2706,17 @@ class Scanner
             $Chameleon = '';
             if (
                 (($xt === 'bmp' || $xt === 'dib') && $twocc !== '424d') ||
-                ($xt === 'gif' && (substr($str_hex, 0, 12) !== '474946383761' && substr($str_hex, 0, 12) !== '474946383961')) ||
-                (preg_match('~j(?:fif?|if|peg?|pg)~', $xt) && substr($str_hex, 0, 6) !== 'ffd8ff') ||
-                ($xt === 'jp2' && substr($str_hex, 0, 16) !== '0000000c6a502020') ||
+                ($xt === 'gif' && (\substr($str_hex, 0, 12) !== '474946383761' && \substr($str_hex, 0, 12) !== '474946383961')) ||
+                (\preg_match('~j(?:fif?|if|peg?|pg)~', $xt) && \substr($str_hex, 0, 6) !== 'ffd8ff') ||
+                ($xt === 'jp2' && \substr($str_hex, 0, 16) !== '0000000c6a502020') ||
                 (($xt === 'pdd' || $xt === 'psd') && $fourcc !== '38425053') ||
                 ($xt === 'png' && $fourcc !== '89504e47') ||
-                ($xt === 'webp' && ($fourcc !== '52494646' || substr($str, 8, 4) !== 'WEBP')) ||
-                ($xt === 'xcf' && substr($str, 0, 8) !== 'gimp xcf')
+                ($xt === 'webp' && ($fourcc !== '52494646' || \substr($str, 8, 4) !== 'WEBP')) ||
+                ($xt === 'xcf' && \substr($str, 0, 8) !== 'gimp xcf')
             ) {
-                $this->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
+                $this->atHit($sha256, $StringLength, $OriginalFilename, \sprintf(
                     $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                    sprintf($this->Loader->L10N->getString('response.%s chameleon attack detected'), $this->Loader->L10N->getString('response.Image'))
+                    \sprintf($this->Loader->L10N->getString('response.%s chameleon attack detected'), $this->Loader->L10N->getString('response.Image'))
                 ), 2, $Depth);
             }
         }
@@ -2724,9 +2724,9 @@ class Scanner
         /** PDF chameleon attack detection. */
         if ($this->Loader->Configuration['files']['chameleon_to_pdf']) {
             if ($xt === 'pdf' && !$pdf_magic) {
-                $this->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
+                $this->atHit($sha256, $StringLength, $OriginalFilename, \sprintf(
                     $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                    sprintf($this->Loader->L10N->getString('response.%s chameleon attack detected'), 'PDF')
+                    \sprintf($this->Loader->L10N->getString('response.%s chameleon attack detected'), 'PDF')
                 ), 2, $Depth);
             }
         }
@@ -2736,10 +2736,10 @@ class Scanner
 
         /** Control character detection. */
         if ($this->Loader->Configuration['files']['block_control_characters']) {
-            if (preg_match('/[\x00-\x08\x0B\x0C\x0E\x1F\x7F]/i', $str)) {
-                $this->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
+            if (\preg_match('/[\x00-\x08\x0B\x0C\x0E\x1F\x7F]/i', $str)) {
+                $this->atHit($sha256, $StringLength, $OriginalFilename, \sprintf(
                     $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                    sprintf(
+                    \sprintf(
                         $this->Loader->L10N->getString('grammar_brackets'),
                         $this->Loader->L10N->getString('response.Detected control characters'),
                         $OriginalFilename
@@ -2758,7 +2758,7 @@ class Scanner
         ) {
             $DoScan = ($this->HeuristicCount > 0 || $this->Loader->Configuration['virustotal']['vt_suspicion_level'] > 1);
             if (!$DoScan && $this->Loader->Configuration['virustotal']['vt_suspicion_level'] === 1) {
-                $DoScan = ($is_pe || in_array($fileswitch, ['chrome', 'docfile', 'java', 'vt_interest'], true));
+                $DoScan = ($is_pe || \in_array($fileswitch, ['chrome', 'docfile', 'java', 'vt_interest'], true));
             }
             if ($DoScan) {
                 $VTWeight = ['weight' => 0, 'cli' => '', 'web' => ''];
@@ -2767,7 +2767,7 @@ class Scanner
                 }
                 $VTLookups = 0;
                 if (!empty($this->Loader->InstanceCache['vt_quota'])) {
-                    $this->Loader->InstanceCache['vt_quota'] = explode(';', $this->Loader->InstanceCache['vt_quota']);
+                    $this->Loader->InstanceCache['vt_quota'] = \explode(';', $this->Loader->InstanceCache['vt_quota']);
                     foreach ($this->Loader->InstanceCache['vt_quota'] as &$Quota) {
                         if ($Quota > $this->Loader->Time) {
                             $VTLookups++;
@@ -2777,7 +2777,7 @@ class Scanner
                     }
                     unset($Quota);
                     $this->Loader->InstanceCache['vt_quota'] =
-                        implode(';', $this->Loader->InstanceCache['vt_quota']);
+                        \implode(';', $this->Loader->InstanceCache['vt_quota']);
                 }
                 if ($VTLookups < $this->Loader->Configuration['virustotal']['vt_quota_rate']) {
                     $VTParams = [
@@ -2786,16 +2786,16 @@ class Scanner
                     ];
                     $VTRequest = $this->Loader->Request->request(
                         'https://www.virustotal.com/vtapi/v2/file/report?apikey=' .
-                        urlencode($this->Loader->Configuration['virustotal']['vt_public_api_key']) .
+                        \urlencode($this->Loader->Configuration['virustotal']['vt_public_api_key']) .
                         '&resource=' . $md5,
                         $VTParams,
                         12
                     );
-                    $VTJSON = json_decode($VTRequest, true);
+                    $VTJSON = \json_decode($VTRequest, true);
                     $VTCacheTime = $this->Loader->Configuration['virustotal']['vt_quota_time'] * 60;
                     $this->Loader->InstanceCache['vt_quota'] .= ($this->Loader->Time + $VTCacheTime) . ';';
-                    while (substr_count($this->Loader->InstanceCache['vt_quota'], ';;')) {
-                        $this->Loader->InstanceCache['vt_quota'] = str_ireplace(';;', ';', $this->Loader->InstanceCache['vt_quota']);
+                    while (\substr_count($this->Loader->InstanceCache['vt_quota'], ';;')) {
+                        $this->Loader->InstanceCache['vt_quota'] = \str_ireplace(';;', ';', $this->Loader->InstanceCache['vt_quota']);
                     }
                     $this->Loader->Cache->setEntry('vt_quota', $this->Loader->InstanceCache['vt_quota'], $VTCacheTime + 60);
                     if (isset($VTJSON['response.code'])) {
@@ -2803,13 +2803,13 @@ class Scanner
                         if (
                             isset($VTJSON['scans']) &&
                             $VTJSON['response.code'] === 1 &&
-                            is_array($VTJSON['scans'])
+                            \is_array($VTJSON['scans'])
                         ) {
                             foreach ($VTJSON['scans'] as $VTKey => $VTValue) {
                                 if ($VTValue['detected'] && $VTValue['result']) {
                                     $VN = $VTKey . '(VirusTotal)-' . $VTValue['result'];
                                     if (
-                                        strpos($this->Loader->InstanceCache['Greylist'], ',' . $VN . ',') === false &&
+                                        \strpos($this->Loader->InstanceCache['Greylist'], ',' . $VN . ',') === false &&
                                         empty($this->Loader->InstanceCache['ignoreme'])
                                     ) {
                                         if ($this->Loader->Configuration['virustotal']['vt_weighting'] > 0) {
@@ -2818,11 +2818,11 @@ class Scanner
                                                 $this->Loader->InstanceCache['VTCount'] >= $this->Loader->Configuration['virustotal']['vt_weighting']
                                             ) {
                                                 foreach ($this->Loader->InstanceCache['VTVNs'] as $VTVN) {
-                                                    $this->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
+                                                    $this->atHit($sha256, $StringLength, $OriginalFilename, \sprintf(
                                                         $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                                                        sprintf(
+                                                        \sprintf(
                                                             $this->Loader->L10N->getString('grammar_brackets'),
-                                                            sprintf($this->Loader->L10N->getString('response.Detected %s'), $VTVN),
+                                                            \sprintf($this->Loader->L10N->getString('response.Detected %s'), $VTVN),
                                                             $OriginalFilename
                                                         )
                                                     ), 2, $Depth);
@@ -2837,11 +2837,11 @@ class Scanner
                                             }
                                             continue;
                                         }
-                                        $this->atHit($sha256, $StringLength, $OriginalFilename, sprintf(
+                                        $this->atHit($sha256, $StringLength, $OriginalFilename, \sprintf(
                                             $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                                            sprintf(
+                                            \sprintf(
                                                 $this->Loader->L10N->getString('grammar_brackets'),
-                                                sprintf($this->Loader->L10N->getString('response.Detected %s'), $VN),
+                                                \sprintf($this->Loader->L10N->getString('response.Detected %s'), $VN),
                                                 $OriginalFilename
                                             )
                                         ), 2, $Depth);
@@ -2860,7 +2860,7 @@ class Scanner
         /** Add hash cache entry. */
         if (empty($this->Loader->InstanceCache['wc']) && !empty($HashCacheID)) {
             /** 0: (int) {-5...2}; 1: Text. */
-            $HashCacheEntry = json_encode([
+            $HashCacheEntry = \json_encode([
                 $this->Loader->ScanResultsIntegers[$AtInstanceLookupKey] ?? 1,
                 $this->Loader->ScanResultsText[$AtInstanceLookupKey] ?? ''
             ]);
@@ -2908,7 +2908,7 @@ class Scanner
         $ScanDepth++;
 
         /** Used for CLI and logging. */
-        $Indent = str_pad('> ', $ScanDepth + 1, '-', STR_PAD_LEFT);
+        $Indent = \str_pad('> ', $ScanDepth + 1, '-', STR_PAD_LEFT);
 
         /** Reset container definition. */
         $this->Loader->InstanceCache['container'] = 'none';
@@ -2929,7 +2929,7 @@ class Scanner
         [$xt, $xts, $gzxt, $gzxts] = $this->fetchExtension($ItemRef);
 
         /** Set appropriate container definitions and specify handler class. */
-        if (substr($Data, 0, 2) === 'PK') {
+        if (\substr($Data, 0, 2) === 'PK') {
             $Handler = 'ZipHandler';
             if ($xt === 'ole') {
                 $ConType = 'OLE';
@@ -2941,17 +2941,17 @@ class Scanner
                 $ConType = 'XPInstall';
             } elseif ($xts === 'app*') {
                 $ConType = 'App';
-            } elseif (strpos(
+            } elseif (\strpos(
                 ',docm,docx,dotm,dotx,potm,potx,ppam,ppsm,ppsx,pptm,pptx,xlam,xlsb,xlsm,xlsx,xltm,xltx,',
                 ',' . $xt . ','
             ) !== false) {
                 $ConType = 'OpenXML';
-            } elseif (strpos(
+            } elseif (\strpos(
                 ',odc,odf,odg,odm,odp,ods,odt,otg,oth,otp,ots,ott,',
                 ',' . $xt . ','
             ) !== false || $xts === 'fod*') {
                 $ConType = 'OpenDocument';
-            } elseif (strpos(',opf,epub,', ',' . $xt . ',') !== false) {
+            } elseif (\strpos(',opf,epub,', ',' . $xt . ',') !== false) {
                 $ConType = 'EPUB';
             } else {
                 $ConType = 'ZIP';
@@ -2962,17 +2962,17 @@ class Scanner
                 $this->Loader->InstanceCache['container'] = 'pkfile';
             }
         } elseif (
-            substr($Data, 257, 6) === "ustar\0" ||
-            strpos(',tar,tgz,tbz,tlz,tz,', ',' . $xt . ',') !== false
+            \substr($Data, 257, 6) === "ustar\0" ||
+            \strpos(',tar,tgz,tbz,tlz,tz,', ',' . $xt . ',') !== false
         ) {
             $Handler = 'TarHandler';
             $ConType = 'TarFile';
             $this->Loader->InstanceCache['container'] = 'tarfile';
-        } elseif (substr($Data, 0, 4) === 'Rar!' || substr($Data, 0, 4) === 'RE~^') {
+        } elseif (\substr($Data, 0, 4) === 'Rar!' || \substr($Data, 0, 4) === 'RE~^') {
             $Handler = 'RarHandler';
             $ConType = 'RarFile';
             $this->Loader->InstanceCache['container'] = 'rarfile';
-        } elseif (substr($Data, 0, 4) === "\x25PDF") {
+        } elseif (\substr($Data, 0, 4) === "\x25PDF") {
             $Handler = 'PdfHandler';
             $ConType = 'PdfFile';
             $this->Loader->InstanceCache['container'] = 'pdffile';
@@ -2984,10 +2984,10 @@ class Scanner
         }
 
         /** Hash the current input data. */
-        $DataHash = hash('sha256', $Data);
+        $DataHash = \hash('sha256', $Data);
 
         /** Fetch length of current input data. */
-        $DataLen = strlen($Data);
+        $DataLen = \strlen($Data);
 
         /** Handle zip files. */
         if ($Handler === 'ZipHandler') {
@@ -2996,11 +2996,11 @@ class Scanner
              * @link https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT
              */
             if ($this->Loader->Configuration['files']['block_encrypted_archives']) {
-                $Bits = $this->explodeBits(substr($Data, 6, 1));
-                if ($Bits !== '' && substr($Bits, 7, 1) === '1') {
-                    $this->atHit($DataHash, $DataLen, $ItemRef, sprintf(
+                $Bits = $this->explodeBits(\substr($Data, 6, 1));
+                if ($Bits !== '' && \substr($Bits, 7, 1) === '1') {
+                    $this->atHit($DataHash, $DataLen, $ItemRef, \sprintf(
                         $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                        sprintf(
+                        \sprintf(
                             $this->Loader->L10N->getString('grammar_brackets'),
                             $this->Loader->L10N->getString('response.Detected encrypted archive'),
                             $ItemRef
@@ -3011,7 +3011,7 @@ class Scanner
             }
 
             /** Guard. */
-            if (!class_exists('\ZipArchive')) {
+            if (!\class_exists('\ZipArchive')) {
                 if (!$this->Loader->Configuration['signatures']['fail_extensions_silently']) {
                     $this->atHit($DataHash, $DataLen, $ItemRef, $this->Loader->L10N->getString('response.Failed (missing required extensions)'), -1, $ScanDepth);
                     return;
@@ -3019,7 +3019,7 @@ class Scanner
             }
 
             /** ZipHandler needs a file pointer. */
-            if (!$File || !is_readable($File)) {
+            if (!$File || !\is_readable($File)) {
                 /**
                  * File pointer not available. Probably already inside an
                  * archive. Let's create a temporary file for this.
@@ -3047,7 +3047,7 @@ class Scanner
         /** Handle rar files. */
         if ($Handler === 'RarHandler') {
             /** Guard. */
-            if (!class_exists('\RarArchive') || !class_exists('\RarEntry')) {
+            if (!\class_exists('\RarArchive') || !\class_exists('\RarEntry')) {
                 if (!$this->Loader->Configuration['signatures']['fail_extensions_silently']) {
                     $this->atHit($DataHash, $DataLen, $ItemRef, $this->Loader->L10N->getString('response.Failed (missing required extensions)'), -1, $ScanDepth);
                     return;
@@ -3055,7 +3055,7 @@ class Scanner
             }
 
             /** RarHandler needs a file pointer. */
-            if (!$File || !is_readable($File)) {
+            if (!$File || !\is_readable($File)) {
                 /**
                  * File pointer not available. Probably already inside an
                  * archive. Let's create a temporary file for this.
@@ -3078,10 +3078,10 @@ class Scanner
         if ($Handler === 'PdfHandler') {
             /** Encryption guard. */
             if ($this->Loader->Configuration['files']['block_encrypted_archives']) {
-                if (($XPos = strrpos($Data, "\nxref")) !== false && strpos($Data, "\n/Encrypt", $XPos + 5) !== false) {
-                    $this->atHit($DataHash, $DataLen, $ItemRef, sprintf(
+                if (($XPos = \strrpos($Data, "\nxref")) !== false && \strpos($Data, "\n/Encrypt", $XPos + 5) !== false) {
+                    $this->atHit($DataHash, $DataLen, $ItemRef, \sprintf(
                         $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                        sprintf(
+                        \sprintf(
                             $this->Loader->L10N->getString('grammar_brackets'),
                             $this->Loader->L10N->getString('response.Detected encrypted archive'),
                             $ItemRef
@@ -3096,7 +3096,7 @@ class Scanner
         }
 
         /** Archive object has been instantiated. Let's proceed. */
-        if (isset($ArchiveObject) && is_object($ArchiveObject)) {
+        if (isset($ArchiveObject) && \is_object($ArchiveObject)) {
             /** No errors reported. Let's try checking its contents. */
             if ($ArchiveObject->ErrorState === 0) {
                 /** Used to count the number of entries processed. */
@@ -3114,9 +3114,9 @@ class Scanner
                         $this->Loader->Configuration['files']['max_files_in_archives'] > 0 &&
                         $Processed > $this->Loader->Configuration['files']['max_files_in_archives']
                     ) {
-                        $this->atHit($DataHash, $DataLen, $ItemRef, sprintf(
+                        $this->atHit($DataHash, $DataLen, $ItemRef, \sprintf(
                             $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                            sprintf(
+                            \sprintf(
                                 $this->Loader->L10N->getString('grammar_brackets'),
                                 $this->Loader->L10N->getString('response.Too many files in the archive'),
                                 $ItemRef
@@ -3130,7 +3130,7 @@ class Scanner
 
                     /** Encryption guard. */
                     if ($this->Loader->Configuration['files']['block_encrypted_archives'] && $ArchiveObject->EntryIsEncrypted()) {
-                        $this->atHit($DataHash, $DataLen, $ItemRef, sprintf(
+                        $this->atHit($DataHash, $DataLen, $ItemRef, \sprintf(
                             $this->Loader->L10N->getString('grammar_brackets'),
                             $this->Loader->L10N->getString('response.Detected encrypted archive'),
                             $ItemRef
@@ -3141,7 +3141,7 @@ class Scanner
 
                     /** Fetch and prepare filename. */
                     if ($Filename = $ArchiveObject->EntryName()) {
-                        while (strpos($Filename, '\\') !== false || strpos($Filename, '/') !== false) {
+                        while (\strpos($Filename, '\\') !== false || \strpos($Filename, '/') !== false) {
                             $Filename = $this->Loader->substrAfterLast($Filename, '\\');
                             $Filename = $this->Loader->substrAfterLast($Filename, '/');
                         }
@@ -3152,19 +3152,19 @@ class Scanner
 
                     /** Fetch content and build hashes. */
                     $Content = $ArchiveObject->EntryRead($Filesize);
-                    $Hash = hash('sha256', $Content);
-                    $DataCRC32 = hash('crc32b', $Content);
+                    $Hash = \hash('sha256', $Content);
+                    $DataCRC32 = \hash('crc32b', $Content);
                     $InternalCRC = $ArchiveObject->EntryCRC();
-                    $ThisItemRef = $ItemRef . '→' . preg_replace(['~[\x00-\x1F]~', '~^[\\\\/]~'], '', $Filename);
+                    $ThisItemRef = $ItemRef . '→' . \preg_replace(['~[\x00-\x1F]~', '~^[\\\\/]~'], '', $Filename);
 
                     /** Verify filesize, integrity, etc. Exit early in case of problems. */
-                    if ($Filesize !== strlen($Content) || (
+                    if ($Filesize !== \strlen($Content) || (
                         $InternalCRC &&
-                        preg_replace('~^0+~', '', $DataCRC32) !== preg_replace('~^0+~', '', $InternalCRC)
+                        \preg_replace('~^0+~', '', $DataCRC32) !== \preg_replace('~^0+~', '', $InternalCRC)
                     )) {
-                        $this->atHit($Hash, $Filesize, $ThisItemRef, sprintf(
+                        $this->atHit($Hash, $Filesize, $ThisItemRef, \sprintf(
                             $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                            sprintf(
+                            \sprintf(
                                 $this->Loader->L10N->getString('grammar_brackets'),
                                 $this->Loader->L10N->getString('response.Detected potentially dangerous file tampering'),
                                 $ThisItemRef
@@ -3176,9 +3176,9 @@ class Scanner
 
                     /** Executed if the recursion depth limit has been exceeded. */
                     if ($ScanDepth > $this->Loader->Configuration['files']['max_recursion']) {
-                        $this->atHit($Hash, $Filesize, $ThisItemRef, sprintf(
+                        $this->atHit($Hash, $Filesize, $ThisItemRef, \sprintf(
                             $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                            sprintf(
+                            \sprintf(
                                 $this->Loader->L10N->getString('grammar_brackets'),
                                 $this->Loader->L10N->getString('response.Recursion depth limit exceeded'),
                                 $ThisItemRef
@@ -3190,11 +3190,11 @@ class Scanner
 
                     /** Quine detection. */
                     if ($this->quineDetector($ScanDepth, $DataHash, $DataLen, $Hash, $Filesize)) {
-                        $this->atHit($Hash, $Filesize, $ThisItemRef, sprintf(
+                        $this->atHit($Hash, $Filesize, $ThisItemRef, \sprintf(
                             $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                            sprintf(
+                            \sprintf(
                                 $this->Loader->L10N->getString('grammar_brackets'),
-                                sprintf($this->Loader->L10N->getString('response.Detected %s'), 'Quine'),
+                                \sprintf($this->Loader->L10N->getString('response.Detected %s'), 'Quine'),
                                 $ThisItemRef
                             )
                         ), 2, $ScanDepth + 1);
@@ -3255,15 +3255,15 @@ class Scanner
             'URL_Scanner'
         ];
 
-        foreach (explode(',', $this->Loader->Configuration['signatures']['active']) as $File) {
-            $File = (strpos($File, ':') === false) ? $File : substr($File, strpos($File, ':') + 1);
-            $Handle = fopen($this->Loader->SignaturesPath . $File, 'rb');
-            if (fread($Handle, 9) !== 'phpMussel') {
-                fclose($Handle);
+        foreach (\explode(',', $this->Loader->Configuration['signatures']['active']) as $File) {
+            $File = (\strpos($File, ':') === false) ? $File : \substr($File, \strpos($File, ':') + 1);
+            $Handle = \fopen($this->Loader->SignaturesPath . $File, 'rb');
+            if (\fread($Handle, 9) !== 'phpMussel') {
+                \fclose($Handle);
                 continue;
             }
-            $Class = fread($Handle, 1);
-            fclose($Handle);
+            $Class = \fread($Handle, 1);
+            \fclose($Handle);
             $Nibbles = $this->splitNibble($Class);
             if (!empty($Classes[$Nibbles[0]])) {
                 if (!isset($this->Loader->InstanceCache[$Classes[$Nibbles[0]]])) {
@@ -3282,7 +3282,7 @@ class Scanner
      */
     private function prescanDecode(string $str): string
     {
-        $nstr = html_entity_decode(urldecode(str_ireplace('&amp;#', '&#', str_ireplace('&amp;amp;', '&amp;', $str))));
+        $nstr = \html_entity_decode(\urldecode(\str_ireplace('&amp;#', '&#', \str_ireplace('&amp;amp;', '&amp;', $str))));
         if ($nstr !== $str) {
             $nstr = $this->prescanDecode($nstr);
         }
@@ -3297,19 +3297,19 @@ class Scanner
      */
     private function fetchExtension(string $OriginalFilename): array
     {
-        $decPos = strrpos($OriginalFilename, '.');
-        $OriginalFilenameLen = strlen($OriginalFilename);
+        $decPos = \strrpos($OriginalFilename, '.');
+        $OriginalFilenameLen = \strlen($OriginalFilename);
         if ($decPos === false || $decPos === ($OriginalFilenameLen - 1)) {
             return ['-', '-', '-', '-'];
         }
-        $xt = strtolower(substr($OriginalFilename, ($decPos + 1)));
-        $xts = substr($xt, 0, 3) . '*';
-        if (strtolower(substr($OriginalFilename, -3)) === '.gz') {
-            $OriginalFilenameNoGZ = substr($OriginalFilename, 0, ($OriginalFilenameLen - 3));
-            $decPosNoGZ = strrpos($OriginalFilenameNoGZ, '.');
-            if ($decPosNoGZ !== false && $decPosNoGZ !== (strlen($OriginalFilenameNoGZ) - 1)) {
-                $gzxt = strtolower(substr($OriginalFilenameNoGZ, ($decPosNoGZ + 1)));
-                $gzxts = substr($gzxt, 0, 3) . '*';
+        $xt = \strtolower(\substr($OriginalFilename, ($decPos + 1)));
+        $xts = \substr($xt, 0, 3) . '*';
+        if (\strtolower(\substr($OriginalFilename, -3)) === '.gz') {
+            $OriginalFilenameNoGZ = \substr($OriginalFilename, 0, ($OriginalFilenameLen - 3));
+            $decPosNoGZ = \strrpos($OriginalFilenameNoGZ, '.');
+            if ($decPosNoGZ !== false && $decPosNoGZ !== (\strlen($OriginalFilenameNoGZ) - 1)) {
+                $gzxt = \strtolower(\substr($OriginalFilenameNoGZ, ($decPosNoGZ + 1)));
+                $gzxts = \substr($gzxt, 0, 3) . '*';
             }
         } else {
             $gzxts = $gzxt = '-';
@@ -3334,12 +3334,12 @@ class Scanner
             foreach ($Needles as $Needle) {
                 $Needle = $Padding . $Needle . $Padding;
                 if (!$Mode) {
-                    if (!is_bool(strpos($Haystack, $Needle)) !== $AssertState) {
+                    if (!\is_bool(\strpos($Haystack, $Needle)) !== $AssertState) {
                         return false;
                     }
                     continue;
                 }
-                if (!is_bool(strpos($Haystack, $Needle)) === $AssertState) {
+                if (!\is_bool(\strpos($Haystack, $Needle)) === $AssertState) {
                     return true;
                 }
             }
@@ -3357,13 +3357,13 @@ class Scanner
     private function imageIndicators(string $Ext, string $Head): bool
     {
         return (
-            preg_match(
+            \preg_match(
                 '/^(?:bm[2p]|cd5|cgm|d(?:ib|w[fg]|xf)|ecw|fits|gif|img|j(?:f?if?|p[2s' .
                 ']|pe?g?2?|xr)|p(?:bm|cx|dd|gm|ic|n[gms]|pm|s[dp])|s(?:id|v[ag])|tga|' .
                 'w(?:bmp?|ebp|mp)|xcf|xbmp)$/',
                 $Ext
             ) ||
-            preg_match(
+            \preg_match(
                 '/^(?:0000000c6a502020|38425053|424d|474946383[79]61|57454250|67696d7020786366|89504e47|ffd8ff)/',
                 $Head
             )
@@ -3379,7 +3379,7 @@ class Scanner
      */
     private function dropTrailingCompressionExtension(string $Filename): string
     {
-        return preg_replace(['~\.t[gbl]?z[\da-z]?$~i', '~\.(?:bz2?|gz|lha|lz[fhowx])$~i'], ['.tar', ''], $Filename);
+        return \preg_replace(['~\.t[gbl]?z[\da-z]?$~i', '~\.(?:bz2?|gz|lha|lz[fhowx])$~i'], ['.tar', ''], $Filename);
     }
 
     /**
@@ -3398,22 +3398,22 @@ class Scanner
      */
     private function memoryUse(string $Path, int $Delete = 0, int $DeleteFiles = 0): array
     {
-        $Offset = strlen($Path);
+        $Offset = \strlen($Path);
         $Files = [];
         $List = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($Path, \RecursiveDirectoryIterator::SKIP_DOTS), \RecursiveIteratorIterator::SELF_FIRST);
         foreach ($List as $Item => $List) {
-            $File = str_replace('\\', '/', substr($Item, $Offset));
-            if ($File && strtolower(substr($Item, -4)) === '.qfu' && is_file($Item) && !is_link($Item) && is_readable($Item)) {
-                $Files[$File] = filemtime($Item);
+            $File = \str_replace('\\', '/', \substr($Item, $Offset));
+            if ($File && \strtolower(\substr($Item, -4)) === '.qfu' && \is_file($Item) && !is_link($Item) && \is_readable($Item)) {
+                $Files[$File] = \filemtime($Item);
             }
         }
         unset($Item, $List, $Offset);
         $Arr = ['Size' => 0, 'Count' => 0];
-        asort($Files, SORT_NUMERIC);
+        \asort($Files, SORT_NUMERIC);
         foreach ($Files as $File => $Modified) {
             $File = $Path . $File;
-            $Size = filesize($File);
-            if (($Delete > 0 || $DeleteFiles > 0) && unlink($File)) {
+            $Size = \filesize($File);
+            if (($Delete > 0 || $DeleteFiles > 0) && \unlink($File)) {
                 $DeleteFiles--;
                 $Delete -= $Size;
                 continue;
@@ -3470,15 +3470,15 @@ class Scanner
         /** Populate vendor name. */
         if (
             !empty($this->Loader->InstanceCache['shorthand.yml']['Vendor Shorthand'][$Nibbles[0]]) &&
-            is_array($this->Loader->InstanceCache['shorthand.yml']['Vendor Shorthand'][$Nibbles[0]]) &&
+            \is_array($this->Loader->InstanceCache['shorthand.yml']['Vendor Shorthand'][$Nibbles[0]]) &&
             !empty($this->Loader->InstanceCache['shorthand.yml']['Vendor Shorthand'][$Nibbles[0]][$Nibbles[1]]) &&
-            is_string($this->Loader->InstanceCache['shorthand.yml']['Vendor Shorthand'][$Nibbles[0]][$Nibbles[1]])
+            \is_string($this->Loader->InstanceCache['shorthand.yml']['Vendor Shorthand'][$Nibbles[0]][$Nibbles[1]])
         ) {
             $SkipMeta = true;
             $Out .= $this->Loader->InstanceCache['shorthand.yml']['Vendor Shorthand'][$Nibbles[0]][$Nibbles[1]] . '-';
         } elseif (
             !empty($this->Loader->InstanceCache['shorthand.yml']['Vendor Shorthand'][$Nibbles[0]]) &&
-            is_string($this->Loader->InstanceCache['shorthand.yml']['Vendor Shorthand'][$Nibbles[0]])
+            \is_string($this->Loader->InstanceCache['shorthand.yml']['Vendor Shorthand'][$Nibbles[0]])
         ) {
             $Out .= $this->Loader->InstanceCache['shorthand.yml']['Vendor Shorthand'][$Nibbles[0]] . '-';
         }
@@ -3524,7 +3524,7 @@ class Scanner
         }
 
         /** Return the signature name and exit the method. */
-        return $Out . substr($VN, 4);
+        return $Out . \substr($VN, 4);
     }
 
     /**
@@ -3554,17 +3554,17 @@ class Scanner
         }
 
         for ($Iterant = 0; $Iterant < $Count; $Iterant++) {
-            $Domain = (strpos($URLs[$Iterant], '/') !== false) ? $this->Loader->substrBeforeFirst($URLs[$Iterant], '/') : $URLs[$Iterant];
+            $Domain = (\strpos($URLs[$Iterant], '/') !== false) ? $this->Loader->substrBeforeFirst($URLs[$Iterant], '/') : $URLs[$Iterant];
             if (!empty($URLsNoLookup[$URLs[$Iterant]]) || !empty($DomainsNoLookup[$Domain])) {
                 unset($URLs[$Iterant]);
                 continue;
             }
             $URLs[$Iterant] = ['url' => $URLs[$Iterant]];
         }
-        sort($URLs);
+        \sort($URLs);
 
         /** After preparing URLs, prepare JSON array. */
-        $Arr = json_encode([
+        $Arr = \json_encode([
             'client' => [
                 'clientId' => 'phpMussel',
                 'clientVersion' => $this->Loader->ScriptVersion
@@ -3589,14 +3589,14 @@ class Scanner
         }
 
         /** Generate a reference for the cache entry for this lookup. */
-        $cacheRef = hash('sha256', $Arr) . ':' . $Count . ':' . strlen($Arr) . ':';
+        $cacheRef = \hash('sha256', $Arr) . ':' . $Count . ':' . \strlen($Arr) . ':';
 
         /** Check if this lookup has already been performed. */
-        while (strpos($this->Loader->InstanceCache['urlscanner_google'], $cacheRef) !== false) {
+        while (\strpos($this->Loader->InstanceCache['urlscanner_google'], $cacheRef) !== false) {
             $Response = $this->Loader->substrBeforeFirst($this->Loader->substrAfterLast($this->Loader->InstanceCache['urlscanner_google'], $cacheRef), ';');
 
             /** Safety mechanism. */
-            if (!$Response || strpos($this->Loader->InstanceCache['urlscanner_google'], $cacheRef . $Response . ';') === false) {
+            if (!$Response || \strpos($this->Loader->InstanceCache['urlscanner_google'], $cacheRef . $Response . ';') === false) {
                 $Response = '';
                 break;
             }
@@ -3606,7 +3606,7 @@ class Scanner
                 $Response = $this->Loader->substrAfterFirst($Response, ':');
                 break;
             }
-            $this->Loader->InstanceCache['urlscanner_google'] = str_ireplace(
+            $this->Loader->InstanceCache['urlscanner_google'] = \str_ireplace(
                 $cacheRef . $Response . ';',
                 '',
                 $this->Loader->InstanceCache['urlscanner_google']
@@ -3660,7 +3660,7 @@ class Scanner
         $newExpiry = $this->Loader->Configuration['urlscanner']['cache_time'];
 
         /** Potentially harmful URL detected. */
-        if (strpos($Response, '"matches":') !== false) {
+        if (\strpos($Response, '"matches":') !== false) {
             $returnVal = 200;
         } else {
             /**
@@ -3739,9 +3739,9 @@ class Scanner
     private function detected(string $VN, string $OriginalFilename, string $Checksum, int $StringLength, int $Depth): void
     {
         /** Prepare detection text. */
-        $Text = sprintf($this->Loader->L10N->getString('grammar_exclamation_mark'), sprintf(
+        $Text = \sprintf($this->Loader->L10N->getString('grammar_exclamation_mark'), \sprintf(
             $this->Loader->L10N->getString('grammar_brackets'),
-            sprintf($this->Loader->L10N->getString('response.Detected %s'), $VN),
+            \sprintf($this->Loader->L10N->getString('response.Detected %s'), $VN),
             $OriginalFilename
         ));
 
@@ -3778,50 +3778,50 @@ class Scanner
             return;
         }
 
-        if (substr($Initial, 0, 2) === 'SE') {
-            $SectionNum = (int)substr($Initial, 2);
+        if (\substr($Initial, 0, 2) === 'SE') {
+            $SectionNum = (int)\substr($Initial, 2);
             $Initial = '*';
             $Terminal = '*';
             if (isset($SectionOffsets[$SectionNum][0])) {
-                $Data = substr($Data, $SectionOffsets[$SectionNum][0] * 2);
+                $Data = \substr($Data, $SectionOffsets[$SectionNum][0] * 2);
             }
             if (isset($SectionOffsets[$SectionNum][1])) {
-                $Data = substr($Data, 0, $SectionOffsets[$SectionNum][1] * 2);
+                $Data = \substr($Data, 0, $SectionOffsets[$SectionNum][1] * 2);
             }
-        } elseif (substr($Initial, 0, 2) === 'SL') {
-            $Remainder = strlen($Initial) > 3 && substr($Initial, 2, 1) === '+' ? (substr($Initial, 3) ?: 0) : 0;
+        } elseif (\substr($Initial, 0, 2) === 'SL') {
+            $Remainder = \strlen($Initial) > 3 && \substr($Initial, 2, 1) === '+' ? (\substr($Initial, 3) ?: 0) : 0;
             $Initial = '*';
             $Final = count($SectionOffsets);
             if ($Final > 0 && isset($SectionOffsets[$Final - 1][0])) {
-                $Data = substr($Data, ($SectionOffsets[$Final - 1][0] + $Remainder) * 2);
+                $Data = \substr($Data, ($SectionOffsets[$Final - 1][0] + $Remainder) * 2);
             }
             if ($Terminal !== '*' && $Terminal !== 'Z') {
-                $Data = substr($Data, 0, $Terminal * 2);
+                $Data = \substr($Data, 0, $Terminal * 2);
                 $Terminal = '*';
             }
-        } elseif (substr($Initial, 0, 1) === 'S') {
-            if (($PlusPos = strpos($Initial, '+')) !== false) {
-                $SectionNum = substr($Initial, 1, $PlusPos - 1) ?: 0;
-                $Remainder = substr($Initial, $PlusPos + 1) ?: 0;
+        } elseif (\substr($Initial, 0, 1) === 'S') {
+            if (($PlusPos = \strpos($Initial, '+')) !== false) {
+                $SectionNum = \substr($Initial, 1, $PlusPos - 1) ?: 0;
+                $Remainder = \substr($Initial, $PlusPos + 1) ?: 0;
             } else {
-                $SectionNum = substr($Initial, 1) ?: 0;
+                $SectionNum = \substr($Initial, 1) ?: 0;
                 $Remainder = 0;
             }
             $Initial = '*';
             if (isset($SectionOffsets[$SectionNum][0])) {
-                $Data = substr($Data, ($SectionOffsets[$SectionNum][0] + $Remainder) * 2);
+                $Data = \substr($Data, ($SectionOffsets[$SectionNum][0] + $Remainder) * 2);
             }
             if ($Terminal !== '*' && $Terminal !== 'Z') {
-                $Data = substr($Data, 0, $Terminal * 2);
+                $Data = \substr($Data, 0, $Terminal * 2);
                 $Terminal = '*';
             }
         } else {
             if ($Initial !== '*' && $Initial !== 'A') {
-                $Data = substr($Data, $Initial * 2);
+                $Data = \substr($Data, $Initial * 2);
                 $Initial = '*';
             }
             if ($Terminal !== '*' && $Terminal !== 'Z') {
-                $Data = substr($Data, 0, $Terminal * 2);
+                $Data = \substr($Data, 0, $Terminal * 2);
                 $Terminal = '*';
             }
         }
@@ -3837,7 +3837,7 @@ class Scanner
      */
     private function matchVarInSigFile($Actual, $Expected): bool
     {
-        $LCActual = strtolower($Actual);
+        $LCActual = \strtolower($Actual);
         if ($LCActual === '0' || $LCActual === 'false') {
             if ($Expected === 0 || $Expected === false) {
                 return true;
@@ -3862,7 +3862,7 @@ class Scanner
      */
     private function splitSigParts(string $Sig, int $Max = -1): array
     {
-        return preg_split('~(?<!\?|\<):~', $Sig, $Max, PREG_SPLIT_NO_EMPTY);
+        return \preg_split('~(?<!\?|\<):~', $Sig, $Max, PREG_SPLIT_NO_EMPTY);
     }
 
     /**
@@ -3887,7 +3887,7 @@ class Scanner
         $this->Loader->Events->fireEvent('atStartOf_metaDataScan');
 
         /** Data is empty. Nothing to scan. Exit early. */
-        if (!$Filesize = strlen($Data)) {
+        if (!$Filesize = \strlen($Data)) {
             return;
         }
 
@@ -3901,9 +3901,9 @@ class Scanner
                 $this->atHit($Checksum, $Filesize, $ItemRef, '', 1, $Depth);
                 return;
             }
-            $this->atHit($Checksum, $Filesize, $ItemRef, sprintf(
+            $this->atHit($Checksum, $Filesize, $ItemRef, \sprintf(
                 $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                sprintf(
+                \sprintf(
                     $this->Loader->L10N->getString('grammar_brackets'),
                     $this->Loader->L10N->getString('response.Filesize limit exceeded'),
                     $ItemRef
@@ -3924,9 +3924,9 @@ class Scanner
                 $this->containsMustAssert([$this->Loader->Configuration['files']['filetype_greylist']], [$xt, $xts])
             )) {
                 $this->Loader->InstanceCache['blacklist_triggered'] = true;
-                $this->atHit($Checksum, $Filesize, $ItemRef, sprintf(
+                $this->atHit($Checksum, $Filesize, $ItemRef, \sprintf(
                     $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                    sprintf(
+                    \sprintf(
                         $this->Loader->L10N->getString('grammar_brackets'),
                         $this->Loader->L10N->getString('response.Filetype blacklisted'),
                         $ItemRef
@@ -3938,15 +3938,15 @@ class Scanner
 
         /** Determine whether the file being scanned is a macro. */
         $this->Loader->InstanceCache['file_is_macro'] = (
-            strtolower(substr($Filename, -14)) === 'vbaproject.bin' ||
-            preg_match('~^\xD0\xCF|\x00Attribut|\x01CompObj|\x05Document~', $Data)
+            \strtolower(\substr($Filename, -14)) === 'vbaproject.bin' ||
+            \preg_match('~^\xD0\xCF|\x00Attribut|\x01CompObj|\x05Document~', $Data)
         );
 
         /** Handle macro detection and blocking. */
         if ($this->Loader->Configuration['files']['block_macros'] && $this->Loader->InstanceCache['file_is_macro']) {
-            $this->atHit($Checksum, $Filesize, $ItemRef, sprintf(
+            $this->atHit($Checksum, $Filesize, $ItemRef, \sprintf(
                 $this->Loader->L10N->getString('grammar_exclamation_mark'),
-                sprintf(
+                \sprintf(
                     $this->Loader->L10N->getString('grammar_brackets'),
                     $this->Loader->L10N->getString('response.Macros aren_t permitted'),
                     $ItemRef
@@ -4020,18 +4020,18 @@ class Scanner
      */
     private function convertCrx(string &$Data): bool
     {
-        if (substr($Data, 0, 4) !== 'Cr24' || strlen($Data) <= 16) {
+        if (\substr($Data, 0, 4) !== 'Cr24' || \strlen($Data) <= 16) {
             return false;
         }
-        $Crx = ['Version' => unpack('i*', substr($Data, 4, 4))];
+        $Crx = ['Version' => \unpack('i*', \substr($Data, 4, 4))];
         if ($Crx['Version'][1] === 2) {
-            $Crx['PubKeyLen'] = unpack('i*', substr($Data, 8, 4));
-            $Crx['SigLen'] = unpack('i*', substr($Data, 12, 4));
+            $Crx['PubKeyLen'] = \unpack('i*', \substr($Data, 8, 4));
+            $Crx['SigLen'] = \unpack('i*', \substr($Data, 12, 4));
             $ZipBegin = 16 + $Crx['PubKeyLen'][1] + $Crx['SigLen'][1];
-            if (substr($Data, $ZipBegin, 2) === 'PK') {
-                $this->CrxPubKey = bin2hex(substr($Data, 16, $Crx['PubKeyLen'][1]));
-                $this->CrxSignature = bin2hex(substr($Data, 16 + $Crx['PubKeyLen'][1], $Crx['SigLen'][1]));
-                $Data = substr($Data, $ZipBegin);
+            if (\substr($Data, $ZipBegin, 2) === 'PK') {
+                $this->CrxPubKey = \bin2hex(\substr($Data, 16, $Crx['PubKeyLen'][1]));
+                $this->CrxSignature = \bin2hex(\substr($Data, 16 + $Crx['PubKeyLen'][1], $Crx['SigLen'][1]));
+                $Data = \substr($Data, $ZipBegin);
                 return true;
             }
         }

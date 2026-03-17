@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: Compression handler (last modified: 2023.09.25).
+ * This file: Compression handler (last modified: 2026.03.17).
  */
 
 namespace phpMussel\Core;
@@ -39,7 +39,7 @@ class CompressionHandler
     public function TryGz(): int
     {
         /** Guard. */
-        if (substr($this->Data, 0, 2) !== "\x1f\x8b") {
+        if (\substr($this->Data, 0, 2) !== "\x1f\x8b") {
             return 2;
         }
 
@@ -55,7 +55,7 @@ class CompressionHandler
     public function TryBz(): int
     {
         /** Guard. */
-        if (substr($this->Data, 0, 3) !== "\x42\x5a\x68") {
+        if (\substr($this->Data, 0, 3) !== "\x42\x5a\x68") {
             return 2;
         }
 
@@ -135,7 +135,7 @@ class CompressionHandler
         $Try = $Using($this->Data);
 
         /** Success. */
-        if ($Try !== false && is_string($Try)) {
+        if ($Try !== false && \is_string($Try)) {
             $this->Data = $Try;
             return 0;
         }

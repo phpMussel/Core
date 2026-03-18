@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: Pdf handler (last modified: 2026.03.17).
+ * This file: Pdf handler (last modified: 2026.03.18).
  */
 
 namespace phpMussel\Core;
@@ -65,7 +65,7 @@ class PdfHandler extends ArchiveHandler
         $Tree = [];
         $Check = \preg_match_all('~\n(\d+) (\d+) obj ?(?:\r?\n|\r\n?)(.+?) ?(?:\r?\n|\r\n?)endobj ?(?:\r?\n|\r\n?)~s', $File, $Matches);
         if ($Check && isset($Matches, $Matches[0], $Matches[0][0])) {
-            $Count = count($Matches[0]);
+            $Count = \count($Matches[0]);
             for ($Iterator = 0; $Iterator < $Count; $Iterator++) {
                 $Tree[$Iterator] = [
                     'Object Number' => $Matches[1][$Iterator],
@@ -212,7 +212,7 @@ class PdfHandler extends ArchiveHandler
                         }
                         if (\substr($Params['Filter'], 0, 10) === '/LZWDecode') {
                             $Params['Filter'] = \trim(\substr($Params['Filter'], 10));
-                            if (function_exists('lzf_decompress')) {
+                            if (\function_exists('lzf_decompress')) {
                                 $Try = lzf_decompress($Tree[$Iterator]['Stream']);
                                 if ($Try !== false) {
                                     $Tree[$Iterator]['Stream'] = $Try;
@@ -236,7 +236,7 @@ class PdfHandler extends ArchiveHandler
                         if (!$Len || \preg_match('/[^\da-f]/i', $Bytes) || ($Len % 2)) {
                             break;
                         }
-                        $Params['Type'] = \substr($Params['Type'], 0, $HPos) . chr(\hexdec($Bytes)) . \substr($Params['Type'], $HPos + 3);
+                        $Params['Type'] = \substr($Params['Type'], 0, $HPos) . \chr(\hexdec($Bytes)) . \substr($Params['Type'], $HPos + 3);
                     }
                 }
 
@@ -245,7 +245,7 @@ class PdfHandler extends ArchiveHandler
         }
 
         /** Total objects. */
-        $Counts = count($Tree);
+        $Counts = \count($Tree);
 
         /** Build references. */
         for ($Iterator = 0; $Iterator < $Counts; $Iterator++) {

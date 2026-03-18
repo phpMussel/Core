@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2026.03.17).
+ * This file: The scanner (last modified: 2026.03.18).
  */
 
 namespace phpMussel\Core;
@@ -29,7 +29,7 @@ class Scanner
     /**
      * @var string The path to the core asset files.
      */
-    private $AssetsPath = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR;
+    private $AssetsPath = __DIR__ . \DIRECTORY_SEPARATOR . '..' . \DIRECTORY_SEPARATOR . 'assets' . \DIRECTORY_SEPARATOR;
 
     /**
      * @var string Crx public key (only populated if the scanned file is Crx).
@@ -97,13 +97,13 @@ class Scanner
             }
 
             /** Get detections. */
-            if (count($this->Loader->ScanResultsText)) {
+            if (\count($this->Loader->ScanResultsText)) {
                 $Detections = \implode($this->Loader->L10N->getString('grammar_spacer'), $this->Loader->ScanResultsText);
             } else {
                 $Detections = $this->Loader->L10N->getString('response.Data not available');
             }
 
-            $Data = serialize([
+            $Data = \serialize([
                 'StartTime' => $this->Loader->InstanceCache['StartTime'] ?? '-',
                 'EndTime' => $this->Loader->InstanceCache['EndTime'] ?? '-',
                 'Origin' => $Origin,
@@ -265,7 +265,7 @@ class Scanner
         if (!empty($this->Loader->InstanceCache['StatisticsModified'])) {
             $this->Loader->InstanceCache['Statistics'] = $this->Loader->Cache->setEntry(
                 'Statistics',
-                serialize($this->Loader->InstanceCache['Statistics']),
+                \serialize($this->Loader->InstanceCache['Statistics']),
                 0
             );
         }
@@ -319,7 +319,7 @@ class Scanner
         $this->Loader->InstanceCache['StatisticsModified'] = false;
         if ($this->Loader->InstanceCache['Statistics'] = ($this->Loader->Cache->getEntry('Statistics') ?: [])) {
             if (\is_string($this->Loader->InstanceCache['Statistics'])) {
-                unserialize($this->Loader->InstanceCache['Statistics']) ?: [];
+                \unserialize($this->Loader->InstanceCache['Statistics']) ?: [];
             }
         }
         if (empty($this->Loader->InstanceCache['Statistics']['Other-Since'])) {
@@ -473,7 +473,7 @@ class Scanner
         }
         $Trail = \substr($this->Loader->QuarantinePath, -1);
         if ($Trail !== '/' && $Trail !== '\\') {
-            $ID .= DIRECTORY_SEPARATOR;
+            $ID .= \DIRECTORY_SEPARATOR;
         }
         $Handle = \fopen($this->Loader->QuarantinePath . $ID . '.qfu', 'ab');
         \fwrite($Handle, $Out);
@@ -579,7 +579,7 @@ class Scanner
         $Out = '';
         $Len = \strlen($Input);
         for ($Byte = 0; $Byte < $Len; $Byte++) {
-            $Out .= \str_pad(decbin(ord($Input[$Byte])), 8, '0', STR_PAD_LEFT);
+            $Out .= \str_pad(\decbin(\ord($Input[$Byte])), 8, '0', \STR_PAD_LEFT);
         }
         return $Out;
     }
@@ -592,10 +592,10 @@ class Scanner
      */
     public function implodeBits(string $Input): string
     {
-        $Chunks = str_split($Input, 8);
-        $Count = count($Chunks);
+        $Chunks = \str_split($Input, 8);
+        $Count = \count($Chunks);
         for ($Out = '', $Chunk = 0; $Chunk < $Count; $Chunk++) {
-            $Out .= chr(bindec($Chunks[$Chunk]));
+            $Out .= \chr(\bindec($Chunks[$Chunk]));
         }
         return $Out;
     }
@@ -683,7 +683,7 @@ class Scanner
         }
 
         /** Indenting to apply for the formatted scan results . */
-        $Indent = \str_pad('→ ', ($Depth < 1 ? 4 : ($Depth * 3) + 4), '─', STR_PAD_LEFT);
+        $Indent = \str_pad('→ ', ($Depth < 1 ? 4 : ($Depth * 3) + 4), '─', \STR_PAD_LEFT);
 
         /** Fallback for missing text for formatted text. */
         if ($TextLength === 0) {
@@ -870,7 +870,7 @@ class Scanner
          * Otherwise, discern the data source and original name of the scan target.
          */
         if (\is_array($Files)) {
-            $SizeOfDir = count($Files);
+            $SizeOfDir = \count($Files);
             if ($SizeOfDir === 1) {
                 $Key = \key($Files);
                 $OriginalFilename = $this->prescanDecode($Key);
@@ -910,13 +910,13 @@ class Scanner
                 ), -5, $Depth);
             }
             $Dir = $this->directoryRecursiveList($Files);
-            $SizeOfDir = count($Dir);
+            $SizeOfDir = \count($Dir);
             if ($this->Loader->InstanceCache['ThisScanTotal'] === 0) {
                 $this->Loader->InstanceCache['ThisScanTotal'] = $SizeOfDir;
             }
             $this->Loader->Events->fireEvent('countersChanged');
             foreach ($Dir as &$Sub) {
-                $this->recursor([$Sub => $Files . DIRECTORY_SEPARATOR . $Sub], $Depth);
+                $this->recursor([$Sub => $Files . \DIRECTORY_SEPARATOR . $Sub], $Depth);
             }
             return;
         }
@@ -934,7 +934,7 @@ class Scanner
         $OriginalFilenameClean = \preg_replace(['~[\x00-\x1F]~', '~^[\\\\/]~'], '', $OriginalFilename);
 
         /** Indenting to apply for "checking" . */
-        $Indent = \str_pad('→ ', ($Depth < 1 ? 4 : ($Depth * 3) + 4), '─', STR_PAD_LEFT);
+        $Indent = \str_pad('→ ', ($Depth < 1 ? 4 : ($Depth * 3) + 4), '─', \STR_PAD_LEFT);
 
         /** Notify that we've began checking a scan target to the formatted text. */
         $this->Loader->ScanResultsFormatted .= $Indent . \sprintf($this->Loader->L10N->getString('response.Checking %s'), $OriginalFilenameClean) . "\n";
@@ -1324,7 +1324,7 @@ class Scanner
 
             /** Set debug values, if this has been enabled. */
             if (isset($this->Loader->InstanceCache['DebugArr'])) {
-                $this->Loader->InstanceCache['DebugArrKey'] = count($this->Loader->InstanceCache['DebugArr']);
+                $this->Loader->InstanceCache['DebugArrKey'] = \count($this->Loader->InstanceCache['DebugArr']);
                 $this->Loader->InstanceCache['DebugArr'][$this->Loader->InstanceCache['DebugArrKey']] = [
                     'Filename' => $OriginalFilename,
                     'FromCache' => true,
@@ -1628,7 +1628,7 @@ class Scanner
                     continue 2;
                 }
             }
-            if (count($Switch) > 1) {
+            if (\count($Switch) > 1) {
                 if (!empty($this->Loader->InstanceCache['sf'])) {
                     $this->Loader->InstanceCache['Print after CLI scan'] .= \sprintf("\$%s = %s\n", $theSwitch, $Switch[1]);
                 }
@@ -1806,7 +1806,7 @@ class Scanner
 
         /** Set debug values, if this has been enabled. */
         if (isset($this->Loader->InstanceCache['DebugArr'])) {
-            $this->Loader->InstanceCache['DebugArrKey'] = count($this->Loader->InstanceCache['DebugArr']);
+            $this->Loader->InstanceCache['DebugArrKey'] = \count($this->Loader->InstanceCache['DebugArr']);
             $this->Loader->InstanceCache['DebugArr'][$this->Loader->InstanceCache['DebugArrKey']] = [
                 'Filename' => $OriginalFilename,
                 'FromCache' => false,
@@ -2137,7 +2137,7 @@ class Scanner
                             continue;
                         }
                         $xSig = \explode($ThisCheckValue, $this->Loader->InstanceCache[$SigFile]);
-                        $xSigCount = count($xSig);
+                        $xSigCount = \count($xSig);
                         if (isset($xSig[0])) {
                             $xSig[0] = '';
                         }
@@ -2381,7 +2381,7 @@ class Scanner
                     }
                     continue;
                 }
-                $NumSigs = count($this->Loader->InstanceCache[$SigFile]);
+                $NumSigs = \count($this->Loader->InstanceCache[$SigFile]);
                 for ($SigNum = 0; $SigNum < $NumSigs; $SigNum++) {
                     if (!$ThisSig = $this->Loader->InstanceCache[$SigFile][$SigNum]) {
                         continue;
@@ -2468,7 +2468,7 @@ class Scanner
                             continue;
                         }
                         if ($ThisConf[3] === 2) {
-                            $ThisSig = \preg_split('/[\x00-\x1F]+/', $VN[1], -1, PREG_SPLIT_NO_EMPTY);
+                            $ThisSig = \preg_split('/[\x00-\x1F]+/', $VN[1], -1, \PREG_SPLIT_NO_EMPTY);
                             $ThisSig = ($ThisSig === false) ? '' : \implode('', $ThisSig);
                             $VN = $this->getShorthand($VN[0]);
                             if (
@@ -2483,7 +2483,7 @@ class Scanner
                         } elseif ($ThisConf[3] === 0 || $ThisConf[3] === 1) {
                             $ThisSig = \preg_split((
                                 $ThisConf[3] === 0 ? '/[^\da-f>]+/i' : '/[\x00-\x1F]+/'
-                            ), $VN[1], -1, PREG_SPLIT_NO_EMPTY);
+                            ), $VN[1], -1, \PREG_SPLIT_NO_EMPTY);
                             $ThisSig = ($ThisSig === false ? '' : \implode('', $ThisSig));
                             $ThisSigLen = \strlen($ThisSig);
                             if ($this->confineLength($ThisSigLen)) {
@@ -2506,7 +2506,7 @@ class Scanner
                             ) {
                                 if ($ThisConf[3] === 0) {
                                     $ThisSig = \strpos($ThisSig, '>') !== false ? \explode('>', $ThisSig) : [$ThisSig];
-                                    $ThisSigCount = count($ThisSig);
+                                    $ThisSigCount = \count($ThisSig);
                                     $ThisString = $$DataSource;
                                     $this->dataConfineByOffsets($ThisString, $xstrf, $xstrt, $SectionOffsets);
                                     if ($xstrf === 'A') {
@@ -2556,16 +2556,16 @@ class Scanner
 
         /** Perform API lookups for domains. */
         if (isset($URLScanner) && empty($this->Loader->ScanResultsText[$AtInstanceLookupKey])) {
-            $URLScanner['DomainsCount'] = count($URLScanner['DomainParts']);
+            $URLScanner['DomainsCount'] = \count($URLScanner['DomainParts']);
 
-            $URLScanner['URLsCount'] = count($URLScanner['URLParts']);
+            $URLScanner['URLsCount'] = \count($URLScanner['URLParts']);
 
             /** Codeblock for performing Google Safe Browsing API lookups. */
             if ($this->Loader->Configuration['urlscanner']['google_api_key'] && $URLScanner['URLsCount']) {
                 $URLScanner['URLsChunked'] = (
                     $URLScanner['URLsCount'] > 500
                 ) ? array_chunk($URLScanner['URLParts'], 500) : [$URLScanner['URLParts']];
-                $URLScanner['URLChunks'] = count($URLScanner['URLsChunked']);
+                $URLScanner['URLChunks'] = \count($URLScanner['URLsChunked']);
                 for ($i = 0; $i < $URLScanner['URLChunks']; $i++) {
                     /** Maximum API lookups reached; abort accordingly. */
                     if (
@@ -2908,7 +2908,7 @@ class Scanner
         $ScanDepth++;
 
         /** Used for CLI and logging. */
-        $Indent = \str_pad('> ', $ScanDepth + 1, '-', STR_PAD_LEFT);
+        $Indent = \str_pad('> ', $ScanDepth + 1, '-', \STR_PAD_LEFT);
 
         /** Reset container definition. */
         $this->Loader->InstanceCache['container'] = 'none';
@@ -3409,7 +3409,7 @@ class Scanner
         }
         unset($Item, $List, $Offset);
         $Arr = ['Size' => 0, 'Count' => 0];
-        \asort($Files, SORT_NUMERIC);
+        \asort($Files, \SORT_NUMERIC);
         foreach ($Files as $File => $Modified) {
             $File = $Path . $File;
             $Size = \filesize($File);
@@ -3549,7 +3549,7 @@ class Scanner
         }
 
         /** Count URLs and exit early if there aren't any. */
-        if (!$Count = count($URLs)) {
+        if (!$Count = \count($URLs)) {
             return 400;
         }
 
@@ -3791,7 +3791,7 @@ class Scanner
         } elseif (\substr($Initial, 0, 2) === 'SL') {
             $Remainder = \strlen($Initial) > 3 && \substr($Initial, 2, 1) === '+' ? (\substr($Initial, 3) ?: 0) : 0;
             $Initial = '*';
-            $Final = count($SectionOffsets);
+            $Final = \count($SectionOffsets);
             if ($Final > 0 && isset($SectionOffsets[$Final - 1][0])) {
                 $Data = \substr($Data, ($SectionOffsets[$Final - 1][0] + $Remainder) * 2);
             }
@@ -3862,7 +3862,7 @@ class Scanner
      */
     private function splitSigParts(string $Sig, int $Max = -1): array
     {
-        return \preg_split('~(?<!\?|\<):~', $Sig, $Max, PREG_SPLIT_NO_EMPTY);
+        return \preg_split('~(?<!\?|\<):~', $Sig, $Max, \PREG_SPLIT_NO_EMPTY);
     }
 
     /**

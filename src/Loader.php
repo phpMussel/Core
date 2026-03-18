@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2026.03.17).
+ * This file: The loader (last modified: 2026.03.18).
  */
 
 namespace phpMussel\Core;
@@ -166,12 +166,12 @@ class Loader
     /**
      * @var string The path to the core asset files.
      */
-    private $AssetsPath = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR;
+    private $AssetsPath = __DIR__ . \DIRECTORY_SEPARATOR . '..' . \DIRECTORY_SEPARATOR . 'assets' . \DIRECTORY_SEPARATOR;
 
     /**
      * @var string The path to the core L10N files.
      */
-    private $L10NPath = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'l10n' . DIRECTORY_SEPARATOR;
+    private $L10NPath = __DIR__ . \DIRECTORY_SEPARATOR . '..' . \DIRECTORY_SEPARATOR . 'l10n' . \DIRECTORY_SEPARATOR;
 
     /**
      * @var array Channels information for request.
@@ -221,7 +221,7 @@ class Loader
 
         /** Fallback to try for undefined VendorPath. */
         if (!$VendorPath) {
-            $VendorPath = __DIR__ . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'vendor';
+            $VendorPath = __DIR__ . \DIRECTORY_SEPARATOR . '..' . \DIRECTORY_SEPARATOR . '..' . \DIRECTORY_SEPARATOR . '..' . \DIRECTORY_SEPARATOR . '..' . \DIRECTORY_SEPARATOR . 'vendor';
         }
 
         /** The specified vendor directory doesn't exist or isn't readable. */
@@ -233,7 +233,7 @@ class Loader
 
 
             /** Safeguard for symlinked installations. */
-            $VendorPath = $this->buildPath(\dirname($_SERVER['DOCUMENT_ROOT'] . $_SERVER['SCRIPT_NAME']) . DIRECTORY_SEPARATOR . 'vendor', false);
+            $VendorPath = $this->buildPath(\dirname($_SERVER['DOCUMENT_ROOT'] . $_SERVER['SCRIPT_NAME']) . \DIRECTORY_SEPARATOR . 'vendor', false);
 
             /** Eep.. Still not working. Generate exception. */
             if ($VendorPath === '' || !\is_dir($VendorPath) || !\is_readable($VendorPath)) {
@@ -281,10 +281,10 @@ class Loader
         /** Calculate configuration path. */
         if ($ConfigurationPath && \is_readable($ConfigurationPath)) {
             $this->ConfigurationPath = $ConfigurationPath;
-        } elseif ($VendorPath && \is_readable($VendorPath . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'phpmussel.ini')) {
-            $this->ConfigurationPath = $VendorPath . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'phpmussel.ini';
-        } elseif ($VendorPath && \is_readable($VendorPath . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'phpmussel.yml')) {
-            $this->ConfigurationPath = $VendorPath . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'phpmussel.yml';
+        } elseif ($VendorPath && \is_readable($VendorPath . \DIRECTORY_SEPARATOR . '..' . \DIRECTORY_SEPARATOR . 'phpmussel.ini')) {
+            $this->ConfigurationPath = $VendorPath . \DIRECTORY_SEPARATOR . '..' . \DIRECTORY_SEPARATOR . 'phpmussel.ini';
+        } elseif ($VendorPath && \is_readable($VendorPath . \DIRECTORY_SEPARATOR . '..' . \DIRECTORY_SEPARATOR . 'phpmussel.yml')) {
+            $this->ConfigurationPath = $VendorPath . \DIRECTORY_SEPARATOR . '..' . \DIRECTORY_SEPARATOR . 'phpmussel.yml';
         } else {
             throw new \Exception('Unable to locate phpMussel\'s configuration file.');
         }
@@ -323,13 +323,13 @@ class Loader
                 if (!$VendorPath) {
                     continue;
                 }
-                $$Path = $VendorPath . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'phpmussel-' . \strtolower(\substr($Path, 0, -4));
+                $$Path = $VendorPath . \DIRECTORY_SEPARATOR . '..' . \DIRECTORY_SEPARATOR . 'phpmussel-' . \strtolower(\substr($Path, 0, -4));
             }
             if (!$this->buildPath($$Path, false)) {
                 throw new \Exception(\sprintf('Unable to build the path, "%s".', $$Path));
             }
             if (($End = \substr($$Path, -1)) && $End !== '/' && $End !== '\\') {
-                $$Path .= DIRECTORY_SEPARATOR;
+                $$Path .= \DIRECTORY_SEPARATOR;
             }
             $this->$Path = $$Path;
         }
@@ -811,10 +811,10 @@ class Loader
         $Path = $this->timeFormat($this->Time, $Path);
 
         /** We'll skip is_dir/mkdir calls if open_basedir is populated (to avoid PHP bug #69240). */
-        $Restrictions = \strlen(ini_get('open_basedir')) > 0;
+        $Restrictions = \strlen(\ini_get('open_basedir')) > 0;
 
         /** Split path into steps. */
-        $Steps = \preg_split('~[\\\\/]~', $Path, -1, PREG_SPLIT_NO_EMPTY);
+        $Steps = \preg_split('~[\\\\/]~', $Path, -1, \PREG_SPLIT_NO_EMPTY);
 
         /** Separate file from path. */
         $File = $PointsToFile ? \array_pop($Steps) : '';
@@ -822,9 +822,9 @@ class Loader
         /** Build directories. */
         foreach ($Steps as $Step) {
             if (!isset($Rebuilt)) {
-                $Rebuilt = \preg_match('~^[\\\\/]~', $Path) ? DIRECTORY_SEPARATOR . $Step : $Step;
+                $Rebuilt = \preg_match('~^[\\\\/]~', $Path) ? \DIRECTORY_SEPARATOR . $Step : $Step;
             } else {
-                $Rebuilt .= DIRECTORY_SEPARATOR . $Step;
+                $Rebuilt .= \DIRECTORY_SEPARATOR . $Step;
             }
             if (\preg_match('~^\.+$~', $Step)) {
                 continue;
@@ -846,7 +846,7 @@ class Loader
 
         /** Append file. */
         if ($File) {
-            $Rebuilt .= ($Rebuilt ? DIRECTORY_SEPARATOR : '') . $File;
+            $Rebuilt .= ($Rebuilt ? \DIRECTORY_SEPARATOR : '') . $File;
         }
 
         /** Return the final rebuilt path. */
@@ -1047,8 +1047,8 @@ class Loader
      */
     public function deleteDirectory(string $Dir): void
     {
-        while (\strrpos($Dir, DIRECTORY_SEPARATOR) !== false) {
-            $Dir = \substr($Dir, 0, \strrpos($Dir, DIRECTORY_SEPARATOR));
+        while (\strrpos($Dir, \DIRECTORY_SEPARATOR) !== false) {
+            $Dir = \substr($Dir, 0, \strrpos($Dir, \DIRECTORY_SEPARATOR));
             if (!\is_dir($Dir) || !$this->isDirEmpty($Dir)) {
                 break;
             }
@@ -1085,10 +1085,10 @@ class Loader
                 $Files[$Item] = \filemtime($Item);
             }
         }
-        $Count = count($Files);
+        $Count = \count($Files);
         $Err = 0;
         if ($Count > $Limit) {
-            \asort($Files, SORT_NUMERIC);
+            \asort($Files, \SORT_NUMERIC);
             foreach ($Files as $Item => $Modified) {
                 if ($Action === 'Archive') {
                     $Err += !$this->gZCompressFile($Item);
@@ -1114,22 +1114,22 @@ class Loader
      */
     public function resolvePaths(string $Base, bool $LastIsFile = true, bool $GZ = true): \Generator
     {
-        $Steps = \preg_split('~[\\\\/]~', $Base, -1, PREG_SPLIT_NO_EMPTY);
+        $Steps = \preg_split('~[\\\\/]~', $Base, -1, \PREG_SPLIT_NO_EMPTY);
         $LastStep = $LastIsFile ? \array_pop($Steps) : '';
         $BaseFrom = '';
         $Remainder = '';
         foreach ($Steps as $Step) {
             if (!$Remainder && \strpos($Step, '{') === false && \strpos($Step, '}') === false) {
-                $BaseFrom .= $Step . DIRECTORY_SEPARATOR;
+                $BaseFrom .= $Step . \DIRECTORY_SEPARATOR;
                 continue;
             }
-            $Remainder .= ($Remainder ? DIRECTORY_SEPARATOR : '') . $Step;
+            $Remainder .= ($Remainder ? \DIRECTORY_SEPARATOR : '') . $Step;
         }
         if (!$BaseFrom || !\is_dir($BaseFrom) || !\is_readable($BaseFrom)) {
             return;
         }
         if ($Remainder && $LastStep) {
-            $LastStep = DIRECTORY_SEPARATOR . $LastStep;
+            $LastStep = \DIRECTORY_SEPARATOR . $LastStep;
         }
         $Steps = \preg_replace(
             ['~\\{(?:dd|mm|yy|hh|ii|ss)\\}~i', '~\\{yyyy\\}~i', '~\\{(?:Day|Mon)\\}~i', '~\\{tz\\}~i', '~\\{t:z\\}~i'],
@@ -1309,7 +1309,7 @@ class Loader
             if (($End = \substr($this->CachePath, -1)) === '\\' || $End === '/') {
                 $this->Cache->FFDefault = $this->CachePath . 'cache.dat';
             } else {
-                $this->Cache->FFDefault = $this->CachePath . DIRECTORY_SEPARATOR . 'cache.dat';
+                $this->Cache->FFDefault = $this->CachePath . \DIRECTORY_SEPARATOR . 'cache.dat';
             }
         }
 

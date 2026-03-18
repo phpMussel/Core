@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: Compression handler (last modified: 2026.03.17).
+ * This file: Compression handler (last modified: 2026.03.18).
  */
 
 namespace phpMussel\Core;
@@ -127,7 +127,7 @@ class CompressionHandler
     private function TryX(string $Using): int
     {
         /** Guard. */
-        if (!function_exists($Using)) {
+        if (!\function_exists($Using)) {
             return 1;
         }
 

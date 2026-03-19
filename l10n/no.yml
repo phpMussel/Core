@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Norwegian language data (last modified: 2025.08.20).
+# This file: Norwegian language data (last modified: 2026.03.18).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -34,7 +34,7 @@ error_log_header: "Hvis noen av følgende feil vedvarer, å rapportere dem, elle
 field:
  Date: "Dato"
  Hash signatures reconstruction: "Hash signerer rekonstruksjon"
- IP address: "IP adresse"
+ IP address: "IP-adresse"
  PE sectional signatures reconstruction: "PE-seksjoner signaturer rekonstruksjon"
  Scan results (why flagged): "Skanningsresultater (hvorfor flagget)"
  size:

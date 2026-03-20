@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2026.03.18).
+ * This file: The loader (last modified: 2026.03.20).
  */
 
 namespace phpMussel\Core;
@@ -638,13 +638,26 @@ class Loader
             $Accepted = '';
             foreach ($Try as $Accepted) {
                 $Accepted = \preg_replace(['~;.*$~', '~[^-A-Za-z]|-$~'], '', $Accepted);
+                if (\strpos($Accepted, '-') === false) {
+                    $Main = '';
+                    $Accepted = \strtolower($Accepted);
+                } else {
+                    $Main = \strtolower(\preg_replace('~-.*$~', '', $Accepted));
+                    $Sub = \preg_replace('~^.*-~', '', $Accepted);
+                    $SubLen = \strlen($Sub);
+                    if ($SubLen === 4) {
+                        $Sub = \ucfirst(\strtolower($Sub));
+                    } elseif ($SubLen === 2) {
+                        $Sub = \strtoupper($Sub);
+                    }
+                    $Accepted = $Main . '-' . $Sub;
+                }
                 $Primary = '';
                 $IsSameAs = false;
                 if ($this->L10NAccepted === $Accepted) {
                     $IsSameAs = true;
                     break;
                 }
-                $Main = \strpos($Accepted, '-') === false ? '' : \strtolower(\preg_replace('~-.*$~', '', $Accepted));
                 if (($Primary = $this->readFile($Path . $Accepted . '.yml')) !== '' || ($Primary = $this->readFile($Path . $Main . '.yml')) !== '') {
                     break;
                 }

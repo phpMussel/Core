@@ -196,3 +196,4 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 ### v3.7.2
 
 - [2026.01.09]: Slightly improved the PDF handler's stream detection.
+- [2026.03.20]: Ensure language resolution produces the correct capitalisation (e.g., xx-XX or xx-Xxxx).

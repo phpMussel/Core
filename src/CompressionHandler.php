@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: Compression handler (last modified: 2026.03.18).
+ * This file: Compression handler (last modified: 2026.03.26).
  */
 
 namespace phpMussel\Core;
@@ -90,7 +90,7 @@ class CompressionHandler
          * definitely be useless warnings and notices generated. So, let's
          * silence them.
          */
-        set_error_handler(function ($errno, $errstr, $errfile, $errline) {
+        \set_error_handler(function ($errno, $errstr, $errfile, $errline) {
         });
 
         /** Loop until data state doesn't change anymore. */
@@ -108,7 +108,7 @@ class CompressionHandler
         }
 
         /** We're done guessing, so we'll restore the previous error handler. */
-        restore_error_handler();
+        \restore_error_handler();
 
         /**
          * Compare original data state against current data state, and return

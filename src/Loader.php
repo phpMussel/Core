@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2026.03.20).
+ * This file: The loader (last modified: 2026.03.26).
  */
 
 namespace phpMussel\Core;
@@ -271,7 +271,7 @@ class Loader
          * @return bool True to end further processing; False to defer processing.
          * @return callable
          */
-        set_error_handler(function ($errno, $errstr, $errfile, $errline) use (&$Errors, &$Events) {
+        \set_error_handler(function ($errno, $errstr, $errfile, $errline) use (&$Errors, &$Events) {
             $Errors[] = [$errno, $errstr, $errfile, $errline];
             if ($Events->assigned('error')) {
                 $Events->fireEvent('error', '', $errno, $errstr, $errfile, $errline);
@@ -455,7 +455,7 @@ class Loader
         }
 
         /** Restore default error handler. */
-        restore_error_handler();
+        \restore_error_handler();
     }
 
     /**

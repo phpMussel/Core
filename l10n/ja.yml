@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Japanese language data (last modified: 2025.03.29).
+# This file: Japanese language data (last modified: 2026.05.06).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -30,7 +30,7 @@ SafeBrowseLookup:
  401: "ＡＰＩ認証エラー"
  503: "ＡＰＩサービス利用不可"
  999: "不明なＡＰＩエラー"
-error_log_header: "次のエラーのいずれかが引き続き発生する場合、それらを報告する、またはサポートを求めるには、GitHubのphpMusselイシューズ・ページで新しいイシューを作成してください。​エラーとその他の関連情報を含めますください。​ありがとう。"
+error_log_header: "次のエラーのいずれかが引き続き発生する場合、それらを報告する、またはサポートを求めるには、GitHubのphpMusselイシューズ・ページで新しいイシューを作成してください。 エラーとその他の関連情報を含めますください。 ありがとう。"
 field:
  Date: "日時"
  Hash signatures reconstruction: "ハッシュ・シグネチャの再構築"

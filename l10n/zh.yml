@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Chinese language data (last modified: 2025.09.21).
+# This file: Chinese language data (last modified: 2026.05.06).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -31,8 +31,8 @@ SafeBrowseLookup:
  503: {"zh-Hans": "API服务不可用", "zh-Hant": "API服務不可用"}
  999: {"zh-Hans": "未知API错误", "zh-Hant": "未知API錯誤"}
 error_log_header:
- zh-Hans: "如果以下任何错误继续发生，为了报告他们或寻求支持，有空的时候，请在GitHub的phpMussel issues页面上创建新issue。​包括有问题的错误以及任何其他相关信息。​谢谢。"
- zh-Hant: "如果以下任何錯誤繼續發生，為了報告他們或尋求支持，有空的時候，請在GitHub的phpMussel issues頁面上創建新issue。​包括有問題的錯誤以及任何其他相關信息。​謝謝。"
+ zh-Hans: "如果以下任何错误继续发生，为了报告他们或寻求支持，有空的时候，请在GitHub的phpMussel issues页面上创建新issue。 包括有问题的错误以及任何其他相关信息。 谢谢。"
+ zh-Hant: "如果以下任何錯誤繼續發生，為了報告他們或尋求支持，有空的時候，請在GitHub的phpMussel issues頁面上創建新issue。 包括有問題的錯誤以及任何其他相關信息。 謝謝。"
 field:
  Date: "日期"
  Hash signatures reconstruction: {"zh-Hans": "哈希签名重建", "zh-Hant": "哈希簽名重建"}

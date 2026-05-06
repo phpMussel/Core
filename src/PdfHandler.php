@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: Pdf handler (last modified: 2026.03.18).
+ * This file: Pdf handler (last modified: 2026.03.26).
  */
 
 namespace phpMussel\Core;
@@ -57,7 +57,7 @@ class PdfHandler extends ArchiveHandler
          * risk of non-PDF files or bad data being supplied here, we'll
          * temporarily suppress those errors.
          */
-        set_error_handler(function ($errno, $errstr, $errfile, $errline) {
+        \set_error_handler(function ($errno, $errstr, $errfile, $errline) {
             return;
         });
 
@@ -187,7 +187,7 @@ class PdfHandler extends ArchiveHandler
                         $Changed = false;
                         if (\substr($Params['Filter'], 0, 12) === '/FlateDecode') {
                             $Params['Filter'] = \trim(\substr($Params['Filter'], 12));
-                            $Try = gzuncompress($Tree[$Iterator]['Stream']);
+                            $Try = \gzuncompress($Tree[$Iterator]['Stream']);
                             if ($Try !== false) {
                                 $Tree[$Iterator]['Stream'] = $Try;
                                 $Changed = true;
@@ -213,7 +213,7 @@ class PdfHandler extends ArchiveHandler
                         if (\substr($Params['Filter'], 0, 10) === '/LZWDecode') {
                             $Params['Filter'] = \trim(\substr($Params['Filter'], 10));
                             if (\function_exists('lzf_decompress')) {
-                                $Try = lzf_decompress($Tree[$Iterator]['Stream']);
+                                $Try = \lzf_decompress($Tree[$Iterator]['Stream']);
                                 if ($Try !== false) {
                                     $Tree[$Iterator]['Stream'] = $Try;
                                     $Changed = true;
@@ -293,7 +293,7 @@ class PdfHandler extends ArchiveHandler
         }
 
         /** Restore the previous error handler. */
-        restore_error_handler();
+        \restore_error_handler();
 
         /** All is good. */
         $this->ErrorState = 0;
@@ -318,11 +318,11 @@ class PdfHandler extends ArchiveHandler
         $Out = '';
         while ($Chunk = \substr($In, $Num * 5, 5)) {
             $Char = 0;
-            foreach (unpack('C*', $Chunk) as $ThisChar) {
+            foreach (\unpack('C*', $Chunk) as $ThisChar) {
                 $Char *= 85;
                 $Char += $ThisChar - 33;
             }
-            $Out .= pack('N', $Char);
+            $Out .= \pack('N', $Char);
             $Num++;
         }
         return \substr($Out, 0, \strlen($Out) - $Padding);

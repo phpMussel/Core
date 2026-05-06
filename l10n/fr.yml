@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: French language data (last modified: 2025.03.29).
+# This file: French language data (last modified: 2026.03.26).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -30,7 +30,7 @@ SafeBrowseLookup:
  401: "Erreur d'autorisation de l'API"
  503: "Le service de l'API est indisponible"
  999: "Erreur API inconnue"
-error_log_header: "Si les erreurs suivantes persistent, pour les rapporter ou pour obtenir de l'aide, créer un nouveau issue sur la page des issues pour phpMussel à GitHub lorsque vous avez un moment disponible, avec les erreurs en question ainsi que toute autre information pertinente jointe. Merci."
+error_log_header: "Si les erreurs suivantes persistent, pour les rapporter ou pour obtenir de l'aide, créez un nouveau issue sur la page des issues pour phpMussel sur GitHub lorsque vous avez un moment disponible, avec les erreurs en question ainsi que toute autre information pertinente jointe. Merci."
 field:
  Date: "Date\_"
  Hash signatures reconstruction: "Reconstruction de signatures hachage"

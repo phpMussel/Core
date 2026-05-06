@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: Temporary file handler (last modified: 2026.03.18).
+ * This file: Temporary file handler (last modified: 2026.04.15).
  */
 
 namespace phpMussel\Core;
@@ -60,7 +60,7 @@ class TemporaryFileHandler
     public function __destruct()
     {
         if ($this->Filename && \file_exists($this->Filename)) {
-            unlink($this->Filename);
+            \unlink($this->Filename);
         }
     }
 }

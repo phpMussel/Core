@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2026.03.18).
+ * This file: The scanner (last modified: 2026.04.19).
  */
 
 namespace phpMussel\Core;
@@ -2564,7 +2564,7 @@ class Scanner
             if ($this->Loader->Configuration['urlscanner']['google_api_key'] && $URLScanner['URLsCount']) {
                 $URLScanner['URLsChunked'] = (
                     $URLScanner['URLsCount'] > 500
-                ) ? array_chunk($URLScanner['URLParts'], 500) : [$URLScanner['URLParts']];
+                ) ? \array_chunk($URLScanner['URLParts'], 500) : [$URLScanner['URLParts']];
                 $URLScanner['URLChunks'] = \count($URLScanner['URLsChunked']);
                 for ($i = 0; $i < $URLScanner['URLChunks']; $i++) {
                     /** Maximum API lookups reached; abort accordingly. */
@@ -3403,7 +3403,7 @@ class Scanner
         $List = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($Path, \RecursiveDirectoryIterator::SKIP_DOTS), \RecursiveIteratorIterator::SELF_FIRST);
         foreach ($List as $Item => $List) {
             $File = \str_replace('\\', '/', \substr($Item, $Offset));
-            if ($File && \strtolower(\substr($Item, -4)) === '.qfu' && \is_file($Item) && !is_link($Item) && \is_readable($Item)) {
+            if ($File && \strtolower(\substr($Item, -4)) === '.qfu' && \is_file($Item) && !\is_link($Item) && \is_readable($Item)) {
                 $Files[$File] = \filemtime($Item);
             }
         }

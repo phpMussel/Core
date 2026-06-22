@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2026.04.19).
+ * This file: The scanner (last modified: 2026.06.22).
  */
 
 namespace phpMussel\Core;
@@ -457,7 +457,11 @@ class Scanner
             \str_pad($this->Loader->Time, 18, ' ') .
             "\x7C\n\x7C Uploaded From\x3A " . \str_pad($IP, 22, ' ') .
             " \x7C\n\x5C" . \str_repeat("\x3D", 39) . "\x2F\n\n\n" . $Head . $Out;
-        $UsedMemory = $this->memoryUse($this->Loader->QuarantinePath);
+        try {
+            $UsedMemory = $this->memoryUse($this->Loader->QuarantinePath);
+        } catch (\UnexpectedValueException | \Exception $Exception) {
+            $UsedMemory = ['Size' => 0, 'Count' => 0];
+        }
         $UsedMemory['Size'] += \strlen($Out);
         $UsedMemory['Count']++;
         if ($DeductBytes = $this->Loader->readBytes($this->Loader->Configuration['quarantine']['quarantine_max_usage'])) {
@@ -469,7 +473,11 @@ class Scanner
             $DeductFiles = ($DeductFiles > 0) ? $DeductFiles : 0;
         }
         if ($DeductBytes > 0 || $DeductFiles > 0) {
-            $UsedMemory = $this->memoryUse($this->Loader->QuarantinePath, $DeductBytes, $DeductFiles);
+            try {
+                $UsedMemory = $this->memoryUse($this->Loader->QuarantinePath, $DeductBytes, $DeductFiles);
+            } catch (\UnexpectedValueException | \Exception $Exception) {
+                $UsedMemory = ['Size' => 0, 'Count' => 0];
+            }
         }
         $Trail = \substr($this->Loader->QuarantinePath, -1);
         if ($Trail !== '/' && $Trail !== '\\') {
@@ -909,7 +917,11 @@ class Scanner
                     \sprintf($this->Loader->L10N->getString('response.Failed to access %s'), $OriginalFilename)
                 ), -5, $Depth);
             }
-            $Dir = $this->directoryRecursiveList($Files);
+            try {
+                $Dir = $this->directoryRecursiveList($Files);
+            } catch (\UnexpectedValueException | \Exception $Exception) {
+                $Dir = [];
+            }
             $SizeOfDir = \count($Dir);
             if ($this->Loader->InstanceCache['ThisScanTotal'] === 0) {
                 $this->Loader->InstanceCache['ThisScanTotal'] = $SizeOfDir;

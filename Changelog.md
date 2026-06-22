@@ -197,3 +197,8 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 
 - [2026.01.09]: Slightly improved the PDF handler's stream detection.
 - [2026.03.20]: Ensure language resolution produces the correct capitalisation (e.g., xx-XX or xx-Xxxx).
+
+### v3.7.3
+
+#### Bugs fixed.
+- [2026.06.22]: Some methods which instantiate RecursiveIteratorIterator objects which instantiate RecursiveDirectoryIterator objects could trigger fatal errors due to uncaught UnexpectedValueException exceptions, thus causing execution to end prematurely, when supplied paths to directories which contain subdirectories for which PHP doesn't have sufficient permissions to read; To prevent this in the future, the affected calls have been guarded with try/catch blocks, and where try/catch blocks aren't practical, guarded by appropriate checks.

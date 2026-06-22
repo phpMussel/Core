@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The loader (last modified: 2026.03.26).
+ * This file: The loader (last modified: 2026.06.22).
  */
 
 namespace phpMussel\Core;
@@ -98,7 +98,7 @@ class Loader
     /**
      * @var string phpMussel version number (SemVer).
      */
-    public $ScriptVersion = '3.7.2';
+    public $ScriptVersion = '3.7.3';
 
     /**
      * @var string phpMussel version identifier (complete notation).
@@ -1062,7 +1062,7 @@ class Loader
     {
         while (\strrpos($Dir, \DIRECTORY_SEPARATOR) !== false) {
             $Dir = \substr($Dir, 0, \strrpos($Dir, \DIRECTORY_SEPARATOR));
-            if (!\is_dir($Dir) || !$this->isDirEmpty($Dir)) {
+            if (!\is_dir($Dir) || !\is_readable($Dir) || !$this->isDirEmpty($Dir)) {
                 break;
             }
             \rmdir($Dir);
@@ -1125,7 +1125,7 @@ class Loader
      * @param bool $GZ Whether to append GZ to the pattern.
      * @return \Generator
      */
-    public function resolvePaths(string $Base, bool $LastIsFile = true, bool $GZ = true): \Generator
+    public function resolvePaths(string $Base, bool $LastIsFile = true, bool $GZ = true): ?\Generator
     {
         $Steps = \preg_split('~[\\\\/]~', $Base, -1, \PREG_SPLIT_NO_EMPTY);
         $LastStep = $LastIsFile ? \array_pop($Steps) : '';
@@ -1150,11 +1150,15 @@ class Loader
             \preg_quote($Remainder) . ($LastStep ? \preg_quote($LastStep) . ($GZ ? '(?:\.gz)?' : '') . '$' : '')
         );
         $Pattern = '~^' . \preg_quote($BaseFrom) . $Steps . '~i';
-        $List = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($BaseFrom, \RecursiveDirectoryIterator::SKIP_DOTS), \RecursiveIteratorIterator::SELF_FIRST);
-        foreach ($List as $Name => $SplData) {
-            if (\preg_match($Pattern, $Name) && ($Name = \realpath($Name))) {
-                yield $Name;
+        try {
+            $List = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($BaseFrom, \RecursiveDirectoryIterator::SKIP_DOTS), \RecursiveIteratorIterator::SELF_FIRST);
+            foreach ($List as $Name => $SplData) {
+                if (\preg_match($Pattern, $Name) && ($Name = \realpath($Name))) {
+                    yield $Name;
+                }
             }
+        } catch (\UnexpectedValueException | \Exception $Exception) {
+            return;
         }
     }
 

@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Hindi language data (last modified: 2025.03.29).
+# This file: Hindi language data (last modified: 2026.09.05).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -63,7 +63,7 @@ response:
  Detected potentially dangerous file tampering: "संभावित खतरनाक फाइल छेड़छाड़ की गई"
  Error: "त्रुटि"
  Failed (missing required extensions): "अनुत्तीर्ण होना (आवश्यक एक्सटेंशन लापता)!"
- Failed to access %s: ""%s" तक पहुंचने में विफल!"
+ Failed to access %s: ""%s" तक पहुँचने में विफल!"
  Filename manipulation detected: "फाइलनाम हेरफेर का पता चला"
  Filesize limit exceeded: "फाइल आकार सीमा पार हो गई"
  Filetype blacklisted: "काली सूची पर फाइल प्रकार"

@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2026.06.22).
+ * This file: The scanner (last modified: 2026.09.04).
  */
 
 namespace phpMussel\Core;
@@ -165,7 +165,7 @@ class Scanner
             return true;
         });
 
-        $this->NoColor = !empty(getenv('NO_COLOR'));
+        $this->NoColor = !empty(\getenv('NO_COLOR'));
     }
 
     /**

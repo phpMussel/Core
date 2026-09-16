@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Chinese language data (last modified: 2026.05.06).
+# This file: Chinese language data (last modified: 2026.09.15).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -80,6 +80,6 @@ response:
  Recursion depth limit exceeded: {"zh-Hans": "递归深度超过是限制", "zh-Hant": "遞歸深度超過是限制"}
  Signature file missing: {"zh-Hans": "签名文件是失踪", "zh-Hant": "簽名檔案是失踪"}
  Started: {"zh-Hans": "开始", "zh-Hant": "開始"}
- Task failed because a necessary component is unavailable: {"zh-Hans": "任务失败，因为必要的组件不可用。", "zh-Hant": "任務失敗，因為必要的組件不可用。"}
+ Task failed because a necessary component is unavailable: {"zh-Hans": "因缺少必要组件，任务失败。", "zh-Hant": "缺少必要組件，任務失敗。"}
  Too many URLs: "太多的URL"
  Too many files in the archive: {"zh-Hans": "存档中太多的文件", "zh-Hant": "存檔中太多的檔案"}

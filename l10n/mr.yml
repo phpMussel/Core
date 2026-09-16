@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Marathi language data (last modified: 2025.03.29).
+# This file: Marathi language data (last modified: 2026.09.14).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -30,7 +30,7 @@ SafeBrowseLookup:
  401: "API अधिकृतता त्रुटी"
  503: "API सेवा अनुपलब्ध"
  999: "अज्ञात API त्रुटी"
-error_log_header: "खालीलपैकी कोणतीही त्रुटी कायम राहिल्यास, त्यांची तक्रार करण्यासाठी किंवा समर्थन मिळविण्यासाठी, कृपया तुमच्याकडे मोकळा क्षण असताना GitHub वरील phpMussel समस्या पृष्ठावर एक नवीन समस्या तयार करा, प्रश्नातील त्रुटींसह संलग्न केलेल्या इतर कोणत्याही समर्पक माहितीसह. धन्यवाद."
+error_log_header: "खालीलपैकी कोणतीही त्रुटी कायम राहिल्यास, त्यांची अहवाल करण्यासाठी किंवा समर्थन मिळविण्यासाठी, कृपया तुमच्याकडे मोकळा क्षण असताना GitHub वरील phpMussel समस्या पृष्ठावर एक नवीन समस्या तयार करा, प्रश्नातील त्रुटींसह संलग्न केलेल्या इतर कोणत्याही समर्पक माहितीसह. धन्यवाद."
 field:
  Date: "तारीख"
  Hash signatures reconstruction: "हॅश स्वाक्षरी पुनर्रचना"

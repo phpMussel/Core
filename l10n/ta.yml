@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Tamil language data (last modified: 2025.05.31).
+# This file: Tamil language data (last modified: 2026.10.27).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -52,7 +52,7 @@ grammar_spacer: " "
 response:
  %s chameleon attack detected: "%s பச்சோந்தி தாக்குதல் கண்டறியப்பட்டது"
  %s does not exist: "%s இல்லை"
- Checking %s: ""%s" ஐ சரிபார்க்கிறது."
+ Checking %s: "\"%s"\ ஐ சரிபார்க்கிறது."
  Command injection attempt detected: "கட்டளை ஊசி முயற்சி கண்டறியப்பட்டது"
  Complete: "முடிந்தது"
  Data not available: "தரவு கிடைக்கவில்லை."
@@ -63,7 +63,7 @@ response:
  Detected potentially dangerous file tampering: "ஆபத்தான கோப்பு சேதமடைதல் கண்டறியப்பட்டது"
  Error: "பிழை"
  Failed (missing required extensions): "தோல்வி (தேவையான நீட்டிப்புகளைக் காணவில்லை)!"
- Failed to access %s: ""%s" ஐ அணுகுவதில் தோல்வி!"
+ Failed to access %s: "\"%s"\ ஐ அணுகுவதில் தோல்வி!"
  Filename manipulation detected: "கோப்பு பெயர் கையாளுதல் கண்டறியப்பட்டது"
  Filesize limit exceeded: "கோப்பு அளவு வரம்பை மீறியது"
  Filetype blacklisted: "கோப்பு வகை கருப்புபட்டியலிடப்பட்டுள்ளது"
@@ -75,7 +75,7 @@ response:
  Missing filename: "கோப்பு பெயர் இல்லை"
  No problems found: "எந்த சிக்கலும் காணப்படவில்லை."
  Only image files are permitted: "படக் கோப்புகள் மட்டுமே அனுமதிக்கப்படுகின்றன"
- Quarantined as: ""%s.qfu" என தனிமைப்படுத்தப்பட்டுள்ளது."
+ Quarantined as: "\"%s.qfu\" என தனிமைப்படுத்தப்பட்டுள்ளது."
  Recursion depth limit exceeded: "மறுநிகழ்வு ஆழ வரம்பு மீறியது"
  Signature file missing: "கையொப்ப கோப்பு இல்லை"
  Started: "தொடங்கியது"

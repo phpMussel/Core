@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Czech language data (last modified: 2025.03.29).
+# This file: Czech language data (last modified: 2026.09.24).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -53,7 +53,7 @@ grammar_spacer: " "
 response:
  %s chameleon attack detected: "Zjištěn útok chameleona %s"
  %s does not exist: "%s neexistuje"
- Checking %s: "Kontrolujete "%s"."
+ Checking %s: "Kontrolujete \"%s\"."
  Command injection attempt detected: "Zjištěn pokus o vložení příkazu"
  Complete: "Kompletní"
  Data not available: "Údaje nejsou k dispozici."

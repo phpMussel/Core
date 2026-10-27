@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Malay language data (last modified: 2025.03.29).
+# This file: Malay language data (last modified: 2026.09.24).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -50,7 +50,7 @@ grammar_spacer: " "
 response:
  %s chameleon attack detected: "Serangan bunglon %s dikesan"
  %s does not exist: "%s tidak wujud"
- Checking %s: "Menyemak "%s"."
+ Checking %s: "Menyemak \"%s\"."
  Command injection attempt detected: "Percubaan suntikan arahan dikesan"
  Complete: "Selesai"
  Data not available: "Data tidak tersedia."
@@ -61,7 +61,7 @@ response:
  Detected potentially dangerous file tampering: "Dikesan gangguan fail yang berpotensi berbahaya"
  Error: "Ralat"
  Failed (missing required extensions): "Gagal (tiada sambungan yang diperlukan)!"
- Failed to access %s: "Gagal mengakses "%s"!"
+ Failed to access %s: "Gagal mengakses \"%s\"!"
  Filename manipulation detected: "Manipulasi nama fail dikesan"
  Filesize limit exceeded: "Had saiz fail telah melebihi"
  Filetype blacklisted: "Jenis fail disenaraihitamkan"
@@ -73,7 +73,7 @@ response:
  Missing filename: "Nama fail hilang"
  No problems found: "Tiada masalah ditemui."
  Only image files are permitted: "Hanya fail imej dibenarkan"
- Quarantined as: "Dikuarantin sebagai "%s.qfu"."
+ Quarantined as: "Dikuarantin sebagai \"%s.qfu\"."
  Recursion depth limit exceeded: "Had kedalaman rekursi melebihi"
  Signature file missing: "Fail tandatangan hilang"
  Started: "Bermula"

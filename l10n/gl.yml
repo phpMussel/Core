@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Galician language data (last modified: 2025.03.29).
+# This file: Galician language data (last modified: 2026.09.24).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -48,7 +48,7 @@ grammar_spacer: " "
 response:
  %s chameleon attack detected: "Ataque camaleón %s detectado"
  %s does not exist: "%s non existe"
- Checking %s: "Comprobando "%s"."
+ Checking %s: "Comprobando \"%s\"."
  Command injection attempt detected: "Detectouse un intento de inxección de comandos"
  Complete: "Completa"
  Data not available: "Datos non dispoñibles."
@@ -59,7 +59,7 @@ response:
  Detected potentially dangerous file tampering: "Detectouse unha manipulación de ficheiros potencialmente perigosa"
  Error: "Erro"
  Failed (missing required extensions): "Fallo (faltan as extensións necesarias)!"
- Failed to access %s: "Non se puido acceder a "%s"!"
+ Failed to access %s: "Non se puido acceder a \"%s\"!"
  Filename manipulation detected: "Manipulación de nomes de ficheiro detectada"
  Filesize limit exceeded: "Superouse o límite de tamaño do ficheiro"
  Filetype blacklisted: "Tipo de ficheiro na lista negra"
@@ -71,7 +71,7 @@ response:
  Missing filename: "Falta o nome do ficheiro"
  No problems found: "Non se atopou ningún problema."
  Only image files are permitted: "Só se permiten ficheiros de imaxe"
- Quarantined as: "En corentena como "%s.qfu"."
+ Quarantined as: "En corentena como \"%s.qfu\"."
  Recursion depth limit exceeded: "Superouse o límite de profundidade de recursión"
  Signature file missing: "Falta o ficheiro de sinatura"
  Started: "Comezou"

@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Indonesian language data (last modified: 2025.03.29).
+# This file: Indonesian language data (last modified: 2026.09.24).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -50,7 +50,7 @@ grammar_spacer: " "
 response:
  %s chameleon attack detected: "Serangan bunglon %s terdeteksi"
  %s does not exist: "%s tidak ada"
- Checking %s: "Memeriksa "%s"."
+ Checking %s: "Memeriksa \"%s\"."
  Command injection attempt detected: "Upaya injeksi perintah terdeteksi"
  Complete: "Selesai"
  Data not available: "Data tidak tersedia."
@@ -61,7 +61,7 @@ response:
  Detected potentially dangerous file tampering: "Terdeteksi perubahan berpotensi berbahaya dalam file"
  Error: "Kesalahan"
  Failed (missing required extensions): "Gagal (hilang ekstensi yang dibutuhkan)!"
- Failed to access %s: "Gagal mengakses "%s"!"
+ Failed to access %s: "Gagal mengakses \"%s\"!"
  Filename manipulation detected: "Manipulasi nama file terdeteksi"
  Filesize limit exceeded: "File ukuran batas melebihi"
  Filetype blacklisted: "File jenis pada hitam daftar"
@@ -73,7 +73,7 @@ response:
  Missing filename: "Nama file hilang"
  No problems found: "Tidak ada masalah yang diketahui."
  Only image files are permitted: "Hanya file gambar diizinkan"
- Quarantined as: "Dikarantina sebagai "%s.qfu"."
+ Quarantined as: "Dikarantina sebagai \"%s.qfu\"."
  Recursion depth limit exceeded: "Batas kedalaman rekursi melebihi"
  Signature file missing: "Tanda tangan file hilang"
  Started: "Dimulai"

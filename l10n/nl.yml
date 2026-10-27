@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Dutch language data (last modified: 2025.03.29).
+# This file: Dutch language data (last modified: 2026.10.27).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -48,7 +48,7 @@ grammar_spacer: " "
 response:
  %s chameleon attack detected: "%s kameleon-aanval gedetecteerd"
  %s does not exist: "%s bestaat niet"
- Checking %s: ""%s" aan het verifiëren."
+ Checking %s: "\"%s"\ aan het verifiëren."
  Command injection attempt detected: "Command injectie poging gedetecteerd"
  Complete: "Voltooid"
  Data not available: "Gegevens niet beschikbaar."
@@ -59,7 +59,7 @@ response:
  Detected potentially dangerous file tampering: "Gedetecteerd potentieel gevaarlijke bestandswijziging"
  Error: "Fout"
  Failed (missing required extensions): "Mislukt (ontbrekende vereiste extensies)!"
- Failed to access %s: "Toegang tot "%s" is mislukt!"
+ Failed to access %s: "Toegang tot \"%s"\ is mislukt!"
  Filename manipulation detected: "Bestandsnaam manipulatie ontdekt"
  Filesize limit exceeded: "Bestandsgrootte limiet overschreden"
  Filetype blacklisted: "Bestandstype in zwarte lijst"
@@ -71,7 +71,7 @@ response:
  Missing filename: "Ontbrekende bestandsnaam"
  No problems found: "Geen problemen gevonden."
  Only image files are permitted: "Alleen afbeeldingsbestanden zijn toegestaan"
- Quarantined as: "In quarantaine geplaatst als "%s.qfu"."
+ Quarantined as: "In quarantaine geplaatst als \"%s.qfu\"."
  Recursion depth limit exceeded: "Recursie dieptelimiet overschreden"
  Signature file missing: "Signatuurbestand ontbreekt"
  Started: "Gestart"

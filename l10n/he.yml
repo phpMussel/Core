@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Hebrew language data (last modified: 2025.10.19).
+# This file: Hebrew language data (last modified: 2026.10.27).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -52,7 +52,7 @@ grammar_spacer: " "
 response:
  %s chameleon attack detected: "זוהתה התקפת זיקית %s"
  %s does not exist: "%s לא קיים"
- Checking %s: "כרגע בודק "%s"."
+ Checking %s: "כרגע בודק \"%s\"."
  Command injection attempt detected: "זוהה ניסיון הזרקת פקודה"
  Complete: "הושלם"
  Data not available: "נתונים לא זמינים."
@@ -63,7 +63,7 @@ response:
  Detected potentially dangerous file tampering: "זוהה התעסקות בקבצים שעלולים להיות מסוכנים"
  Error: "שגיאה"
  Failed (missing required extensions): "נכשל (הרחבות נדרשות חסרות)!"
- Failed to access %s: "הגישה ל-"%s" נכשלה!"
+ Failed to access %s: "הגישה ל-\"%s"\ נכשלה!"
  Filename manipulation detected: "זוהתה מניפולציה של שם הקובץ"
  Filesize limit exceeded: "חרגת ממגבלת גודל הקובץ"
  Filetype blacklisted: "סוג הקובץ בblacklist"
@@ -75,7 +75,7 @@ response:
  Missing filename: "שם הקובץ חסר"
  No problems found: "לא נמצאו בעיות."
  Only image files are permitted: "רק קבצי תמונה מותרים"
- Quarantined as: "בהסגר כ"%s.qfu"."
+ Quarantined as: "בהסגר כ\"%s.qfu\"."
  Recursion depth limit exceeded: "חרג ממגבלת עומק הרקורסיה"
  Signature file missing: "קובץ החתימה חסר"
  Started: "התחיל"

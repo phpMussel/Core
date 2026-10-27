@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Punjabi language data (last modified: 2025.03.29).
+# This file: Punjabi language data (last modified: 2026.10.27).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -91,8 +91,8 @@ response:
   pa-IN: "%s ਮੌਜੂਦ ਨਹੀਂ ਹੈ"
   [pa-160, pa-Arab, pa-PK]: "%s موجود نئیں اے"
  Checking %s:
-  pa-IN: ""%s" ਦੀ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ।"
-  [pa-160, pa-Arab, pa-PK]: ""%s" نوں چیک کر رئے آں۔"
+  pa-IN: "\"%s"\ ਦੀ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ।"
+  [pa-160, pa-Arab, pa-PK]: "\"%s"\ نوں چیک کر رئے آں۔"
  Command injection attempt detected:
   pa-IN: "ਕਮਾਂਡ ਟੀਕੇ ਲਗਾਉਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਦਾ ਪਤਾ ਲੱਗਾ"
   [pa-160, pa-Arab, pa-PK]: "کمانڈ انجیکٹ کرن دی کوشش دا پتہ چلیا"
@@ -124,8 +124,8 @@ response:
   pa-IN: "ਅਸਫਲ (ਲੋੜੀਂਦੇ ਐਕਸਟੈਂਸ਼ਨਾਂ ਮੌਜੂਦ ਨਹੀਂ ਹਨ)!"
   [pa-160, pa-Arab, pa-PK]: "ناکام (مطلوبہ ایکسٹینشنز موجود نئیں)!"
  Failed to access %s:
-  pa-IN: ""%s" ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਵਿੱਚ ਅਸਫਲ!"
-  [pa-160, pa-Arab, pa-PK]: ""%s" تک رسائی حاصل کرن وچ ناکام!"
+  pa-IN: "\"%s"\ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਵਿੱਚ ਅਸਫਲ!"
+  [pa-160, pa-Arab, pa-PK]: "\"%s"\ تک رسائی حاصل کرن وچ ناکام!"
  Filename manipulation detected:
   pa-IN: "ਫਾਈਲ ਨਾਮ ਦੀ ਹੇਰਾਫੇਰੀ ਦਾ ਪਤਾ ਲੱਗਾ"
   [pa-160, pa-Arab, pa-PK]: "فائل دے ناں دی ہیرا پھیری دا پتہ چلیا"
@@ -160,8 +160,8 @@ response:
   pa-IN: "ਸਿਰਫ ਚਿੱਤਰ ਫਾਈਲਾਂ ਦੀ ਇਜਾਜ਼ਤ ਹੈ"
   [pa-160, pa-Arab, pa-PK]: "صرف تصویری فائلاں دی اجازت اے"
  Quarantined as:
-  pa-IN: ""%s.qfu" ਵਜੋਂ ਕੁਆਰੰਟੀਨ ਕੀਤਾ ਗਿਆ।"
-  [pa-160, pa-Arab, pa-PK]: ""%s.qfu" دے طور تے قرنطینہ کیتا گیا۔"
+  pa-IN: "\"%s.qfu\" ਵਜੋਂ ਕੁਆਰੰਟੀਨ ਕੀਤਾ ਗਿਆ।"
+  [pa-160, pa-Arab, pa-PK]: "\"%s.qfu\" دے طور تے قرنطینہ کیتا گیا۔"
  Recursion depth limit exceeded:
   pa-IN: "ਆਵਰਤੀ ਡੂੰਘਾਈ ਸੀਮਾ ਵੱਧ ਗਈ"
   [pa-160, pa-Arab, pa-PK]: "بار بار آن آلی گہرائی دی حد توں ودھ گئی"

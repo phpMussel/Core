@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Afrikaans language data (last modified: 2026.03.18).
+# This file: Afrikaans language data (last modified: 2026.10.27).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -50,7 +50,7 @@ grammar_spacer: " "
 response:
  %s chameleon attack detected: "%s verkleurmannetjie aanval is bespeur"
  %s does not exist: "%s bestaan nie"
- Checking %s: "Kontroleer "%s"."
+ Checking %s: "Kontroleer \"%s\"."
  Command injection attempt detected: "Poging om opdragte in te spuit is bespeur"
  Complete: "Het voltooi"
  Data not available: "Data nie beskikbaar nie."
@@ -61,7 +61,7 @@ response:
  Detected potentially dangerous file tampering: "Potensieel gevaarlike lêerpeutering is bespeur"
  Error: "Fout"
  Failed (missing required extensions): "Misluk (ontbreek vereiste uitbreidings)!"
- Failed to access %s: "Kon nie toegang tot "%s" kry nie!"
+ Failed to access %s: "Kon nie toegang tot \"%s"\ kry nie!"
  Filename manipulation detected: "Lêernaammanipulasie is bespeur"
  Filesize limit exceeded: "Lêergroottelimiet is oorskry"
  Filetype blacklisted: "Lêertipe is op die swartlys"
@@ -73,7 +73,7 @@ response:
  Missing filename: "Ontbrekende lêernaam"
  No problems found: "Geen probleme gevind nie."
  Only image files are permitted: "Slegs beeldlêers word toegelaat"
- Quarantined as: "In kwarantyn geplaas as "%s.qfu"."
+ Quarantined as: "In kwarantyn geplaas as \"%s.qfu\"."
  Recursion depth limit exceeded: "Rekursie diepte limiet is oorskry"
  Signature file missing: "Handtekeninglêer ontbreek"
  Started: "Het begin"

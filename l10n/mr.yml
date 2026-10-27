@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Marathi language data (last modified: 2026.09.14).
+# This file: Marathi language data (last modified: 2026.10.27).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -50,7 +50,7 @@ grammar_spacer: " "
 response:
  %s chameleon attack detected: "%s गिरगिटाचा हल्ला आढळला"
  %s does not exist: "%s अस्तित्वात नाही"
- Checking %s: ""%s" तपासत आहे."
+ Checking %s: "\"%s"\ तपासत आहे."
  Command injection attempt detected: "कमांड इंजेक्शनचा प्रयत्न आढळला"
  Complete: "पूर्ण"
  Data not available: "डेटा उपलब्ध नाही."
@@ -61,7 +61,7 @@ response:
  Detected potentially dangerous file tampering: "संभाव्य धोकादायक फाइल छेडछाड आढळली"
  Error: "त्रुटी"
  Failed (missing required extensions): "अयशस्वी (आवश्यक विस्तार गहाळ)!"
- Failed to access %s: ""%s" मध्ये प्रवेश करण्यात अयशस्वी!"
+ Failed to access %s: "\"%s"\ मध्ये प्रवेश करण्यात अयशस्वी!"
  Filename manipulation detected: "फाइलच्या नावात फेरफार आढळला"
  Filesize limit exceeded: "फाइल आकार मर्यादा ओलांडली"
  Filetype blacklisted: "फाइल प्रकार काळ्या यादीत टाकला"
@@ -73,7 +73,7 @@ response:
  Missing filename: "फाइलनाव गहाळ आहे"
  No problems found: "कोणतीही समस्या आढळली नाही."
  Only image files are permitted: "फक्त इमेज फायलींना परवानगी आहे"
- Quarantined as: ""%s.qfu" म्हणून अलग ठेवले."
+ Quarantined as: "\"%s.qfu\" म्हणून अलग ठेवले."
  Recursion depth limit exceeded: "पुनरावृत्ती खोली मर्यादा ओलांडली"
  Signature file missing: "स्वाक्षरी फाइल गहाळ आहे"
  Started: "सुरुवात केली"

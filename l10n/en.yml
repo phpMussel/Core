@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: English language data (last modified: 2025.03.29).
+# This file: English language data (last modified: 2026.09.24).
 ##/
 
 SafeBrowseLookup:
@@ -45,7 +45,7 @@ grammar_spacer: " "
 response:
  %s chameleon attack detected: "%s chameleon attack detected"
  %s does not exist: "%s does not exist"
- Checking %s: "Checking "%s"."
+ Checking %s: "Checking \"%s\"."
  Command injection attempt detected: "Command injection attempt detected"
  Complete: "Complete"
  Data not available: "Data not available."
@@ -56,7 +56,7 @@ response:
  Detected potentially dangerous file tampering: "Detected potentially dangerous file tampering"
  Error: "Error"
  Failed (missing required extensions): "Failed (missing required extensions)!"
- Failed to access %s: "Failed to access "%s"!"
+ Failed to access %s: "Failed to access \"%s\"!"
  Filename manipulation detected: "Filename manipulation detected"
  Filesize limit exceeded: "Filesize limit exceeded"
  Filetype blacklisted: "Filetype blacklisted"
@@ -68,7 +68,7 @@ response:
  Missing filename: "Missing filename"
  No problems found: "No problems found."
  Only image files are permitted: "Only image files are permitted"
- Quarantined as: "Quarantined as "%s.qfu"."
+ Quarantined as: "Quarantined as \"%s.qfu\"."
  Recursion depth limit exceeded: "Recursion depth limit exceeded"
  Signature file missing: "Signature file missing"
  Started: "Started"

@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Catalan language data (last modified: 2025.03.29).
+# This file: Catalan language data (last modified: 2026.09.24).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -48,7 +48,7 @@ grammar_spacer: " "
 response:
  %s chameleon attack detected: "Detectat un atac camaleònic %s"
  %s does not exist: "%s no existeix"
- Checking %s: "Comprovant "%s"."
+ Checking %s: "Comprovant \"%s\"."
  Command injection attempt detected: "Detectat un intent d'injecció d'ordres"
  Complete: "Completa"
  Data not available: "Dades no disponibles."
@@ -59,7 +59,7 @@ response:
  Detected potentially dangerous file tampering: "Detectat una manipulació de fitxers potencialment perillosa"
  Error: "Error"
  Failed (missing required extensions): "Fallat (falten les extensions necessàries)!"
- Failed to access %s: "No s'ha pogut accedir a "%s"!"
+ Failed to access %s: "No s'ha pogut accedir a \"%s\"!"
  Filename manipulation detected: "Detectat manipulació de noms de fitxer"
  Filesize limit exceeded: "S'ha superat el límit de mida del fitxer"
  Filetype blacklisted: "Tipus de fitxer a la llista negra"
@@ -71,7 +71,7 @@ response:
  Missing filename: "Falta el nom del fitxer"
  No problems found: "No s'han trobat problemes."
  Only image files are permitted: "Només es permeten fitxers d'imatge"
- Quarantined as: "En quarantena com a "%s.qfu"."
+ Quarantined as: "En quarantena com a \"%s.qfu\"."
  Recursion depth limit exceeded: "S'ha superat el límit de profunditat de recursivitat"
  Signature file missing: "Falta el fitxer de signatura"
  Started: "Començat"

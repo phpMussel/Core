@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Thai language data (last modified: 2025.03.29).
+# This file: Thai language data (last modified: 2026.09.24).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -50,7 +50,7 @@ grammar_spacer: " "
 response:
  %s chameleon attack detected: "กิ้งก่าโจมตี %s ถูกตรวจพบ"
  %s does not exist: "%s ไม่ได้อยู่"
- Checking %s: "กำลังตรวจสอบ "%s"."
+ Checking %s: "กำลังตรวจสอบ \"%s\"."
  Command injection attempt detected: "ความพยายามที่จะฉีดคำสั่งถูกตรวจพบ"
  Complete: "เสร็จแล้ว"
  Data not available: "ไม่มีข้อมูล."
@@ -61,7 +61,7 @@ response:
  Detected potentially dangerous file tampering: "การปลอมแปลงไฟล์ที่อาจเป็นอันตรายตรวจพบแล้ว"
  Error: "ข้อผิดพลาด"
  Failed (missing required extensions): "ล้มเหลว (ส่วนขยายที่จำเป็นหายไป)!"
- Failed to access %s: "ไม่สามารถเข้าถึง "%s"!"
+ Failed to access %s: "ไม่สามารถเข้าถึง \"%s\"!"
  Filename manipulation detected: "การปลอมแปลงชื่อไฟล์ถูกตรวจพบ"
  Filesize limit exceeded: "จำกัดขนาดไฟล์เกินแล้ว"
  Filetype blacklisted: "ประเภทไฟล์คือในรายการดำ"
@@ -73,7 +73,7 @@ response:
  Missing filename: "ไม่มีชื่อไฟล์"
  No problems found: "ไม่พบปัญหาใด."
  Only image files are permitted: "อนุญาตเพียงไฟล์รูปภาพ"
- Quarantined as: "เป็นกักกันที่ "%s.qfu"."
+ Quarantined as: "เป็นกักกันที่ \"%s.qfu\"."
  Recursion depth limit exceeded: "จำกัดความลึกสำหรับการทับซ้ำเกินแล้ว"
  Signature file missing: "ไฟล์ลายเซ็นหายไป"
  Started: "เริ่มต้นแล้ว"

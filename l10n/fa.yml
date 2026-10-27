@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Farsi language data (last modified: 2025.03.29).
+# This file: Farsi language data (last modified: 2026.10.27).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -55,7 +55,7 @@ grammar_spacer: " "
 response:
  %s chameleon attack detected: "حمله آفتاب پرست %s شناسایی شد"
  %s does not exist: "%s وجود ندارد"
- Checking %s: "بررسی کردن "%s"."
+ Checking %s: "بررسی کردن \"%s\"."
  Command injection attempt detected: "تلاش برای تزریق فرمان شناسایی شد"
  Complete: "کامل"
  Data not available: "داده در دسترس نیست."
@@ -66,7 +66,7 @@ response:
  Detected potentially dangerous file tampering: "دستکاری خطرناک فایلی شناسایی شد"
  Error: "خطا"
  Failed (missing required extensions): "ناموفق (پسوند های مورد نیاز از دست رفته است)!"
- Failed to access %s: "دسترسی به "%s" ناموفق بود!"
+ Failed to access %s: "دسترسی به \"%s"\ ناموفق بود!"
  Filename manipulation detected: "دستکاری نام فایل شناسایی شد"
  Filesize limit exceeded: "اندازه فایل از حد مجاز فراتر رفت"
  Filetype blacklisted: "نوع فایل در لیست سیاه قرار گرفت"
@@ -78,7 +78,7 @@ response:
  Missing filename: "نام فایل موجود نیست"
  No problems found: "مشکلی پیدا نشد."
  Only image files are permitted: "فقط فایل های تصویری مجاز هستند"
- Quarantined as: "به عنوان "%s.qfu" قرنطینه شده است."
+ Quarantined as: "به عنوان \"%s.qfu\" قرنطینه شده است."
  Recursion depth limit exceeded: "تکرار بازگشتی از حد عمق تکرار بیشتر شد"
  Signature file missing: "فایل امضا وجود ندارد"
  Started: "آغاز شده"

@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Hindi language data (last modified: 2026.09.05).
+# This file: Hindi language data (last modified: 2026.10.27).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -52,7 +52,7 @@ grammar_spacer: " "
 response:
  %s chameleon attack detected: "%s गिरगिट के हमले का पता चला"
  %s does not exist: "%s मौजूद नहीं है"
- Checking %s: ""%s" की जाँच हो रही है।"
+ Checking %s: "\"%s"\ की जाँच हो रही है।"
  Command injection attempt detected: "कमान इंजेक्शन प्रयास का पता चला"
  Complete: "पूर्ण"
  Data not available: "डेटा उपलब्ध नहीं।"
@@ -63,7 +63,7 @@ response:
  Detected potentially dangerous file tampering: "संभावित खतरनाक फाइल छेड़छाड़ की गई"
  Error: "त्रुटि"
  Failed (missing required extensions): "अनुत्तीर्ण होना (आवश्यक एक्सटेंशन लापता)!"
- Failed to access %s: ""%s" तक पहुँचने में विफल!"
+ Failed to access %s: "\"%s"\ तक पहुँचने में विफल!"
  Filename manipulation detected: "फाइलनाम हेरफेर का पता चला"
  Filesize limit exceeded: "फाइल आकार सीमा पार हो गई"
  Filetype blacklisted: "काली सूची पर फाइल प्रकार"
@@ -75,7 +75,7 @@ response:
  Missing filename: "गुम फाइल नाम"
  No problems found: "कोई समस्या नहीं मिली।"
  Only image files are permitted: "केवल छवियों की अनुमति है"
- Quarantined as: ""%s.qfu" के रूप में क्वारंटाइन।"
+ Quarantined as: "\"%s.qfu\" के रूप में क्वारंटाइन।"
  Recursion depth limit exceeded: "पुनरावर्ती गहराई सीमा पार हो गई"
  Signature file missing: "हस्ताक्षर फाइल लापता है"
  Started: "शुरू कर दिया है"

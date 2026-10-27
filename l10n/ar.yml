@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Arabic language data (last modified: 2025.03.29).
+# This file: Arabic language data (last modified: 2026.09.24).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -50,7 +50,7 @@ grammar_spacer: " "
 response:
  %s chameleon attack detected: "الكشف هجوم الحرباء %s"
  %s does not exist: "لا يوجد %s"
- Checking %s: "فحص "%s"."
+ Checking %s: "فحص \"%s\"."
  Command injection attempt detected: "الكشف محاولة حقن القيادة"
  Complete: "تم الانتهاء من"
  Data not available: "البيانات غير متوفرة."
@@ -61,7 +61,7 @@ response:
  Detected potentially dangerous file tampering: "الكشف العبث ملف يحتمل أن تكون خطرة"
  Error: "خطأ"
  Failed (missing required extensions): "فشل (مفقود ملحقات المطلوبة)!"
- Failed to access %s: "فشل في الوصول إلى "%s"!"
+ Failed to access %s: "فشل في الوصول إلى \"%s\"!"
  Filename manipulation detected: "الكشف تلاعب اسم الملف"
  Filesize limit exceeded: "تجاوز حد حجم ملف"
  Filetype blacklisted: "نوع الملف في القائمة السوداء"
@@ -73,7 +73,7 @@ response:
  Missing filename: "مفقود اسم الملف"
  No problems found: "الكشف لا مشاكل."
  Only image files are permitted: "يسمح بملفات الصور فقط"
- Quarantined as: "الحجر الصحي بأنه "%s.qfu"."
+ Quarantined as: "الحجر الصحي بأنه \"%s.qfu\"."
  Recursion depth limit exceeded: "تجاوزت الحد عمق العودية"
  Signature file missing: "مفقود ملف التوقيع"
  Started: "بدأت"

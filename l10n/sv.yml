@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Swedish language data (last modified: 2025.03.29).
+# This file: Swedish language data (last modified: 2026.09.24).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -50,7 +50,7 @@ grammar_spacer: " "
 response:
  %s chameleon attack detected: "%s-kameleonattack upptäckt"
  %s does not exist: "%s finns inte"
- Checking %s: "Kontrollerar "%s"."
+ Checking %s: "Kontrollerar \"%s\"."
  Command injection attempt detected: "Kommandoinjektionsförsök upptäckt"
  Complete: "Komplett"
  Data not available: "Data inte tillgängliga."
@@ -61,7 +61,7 @@ response:
  Detected potentially dangerous file tampering: "Upptäckt potentiellt farligt fil manipulering"
  Error: "Fel"
  Failed (missing required extensions): "Misslyckades (saknas obligatoriska tillägg)!"
- Failed to access %s: "Det gick inte att komma åt "%s"!"
+ Failed to access %s: "Det gick inte att komma åt \"%s\"!"
  Filename manipulation detected: "Filnamn manipulation upptäckt"
  Filesize limit exceeded: "Filstorleksgränsen överskred"
  Filetype blacklisted: "Filtyp svartlistad"
@@ -73,7 +73,7 @@ response:
  Missing filename: "Filnamn saknas"
  No problems found: "Inga problem hittades."
  Only image files are permitted: "Endast bildfiler är tillåtna"
- Quarantined as: "Placerad i karantän som "%s.qfu"."
+ Quarantined as: "Placerad i karantän som \"%s.qfu\"."
  Recursion depth limit exceeded: "Rekursionsdjupgränsen överskred"
  Signature file missing: "Signaturfil saknas"
  Started: "Börjat"

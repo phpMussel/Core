@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Gujarati language data (last modified: 2025.03.29).
+# This file: Gujarati language data (last modified: 2026.10.27).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -50,7 +50,7 @@ grammar_spacer: " "
 response:
  %s chameleon attack detected: "%s કાચંડો હુમલો મળ્યો"
  %s does not exist: "%s અસ્તિત્વમાં નથી"
- Checking %s: ""%s" તપાસી રહ્યું છે."
+ Checking %s: "\"%s"\ તપાસી રહ્યું છે."
  Command injection attempt detected: "કમાન્ડ ઈન્જેક્શનનો પ્રયાસ મળ્યો"
  Complete: "પૂર્ણ"
  Data not available: "ડેટા ઉપલબ્ધ નથી."
@@ -61,7 +61,7 @@ response:
  Detected potentially dangerous file tampering: "સંભવિત ખતરનાક ફાઇલ સાથે ચેડાં થયાનું જણાયું"
  Error: "ભૂલ"
  Failed (missing required extensions): "નિષ્ફળ (જરૂરી એક્સ્ટેંશન ખૂટે છે)!"
- Failed to access %s: ""%s" ને ઍક્સેસ કરવામાં નિષ્ફળ!"
+ Failed to access %s: "\"%s"\ ને ઍક્સેસ કરવામાં નિષ્ફળ!"
  Filename manipulation detected: "ફાઇલનામમાં ચાલાકી મળ્યો"
  Filesize limit exceeded: "ફાઇલ કદ મર્યાદા ઓળંગી"
  Filetype blacklisted: "ફાઇલ પ્રકાર બ્લેકલિસ્ટેડ"
@@ -73,7 +73,7 @@ response:
  Missing filename: "ફાઇલનામ ખૂટે છે"
  No problems found: "કોઈ સમસ્યા મળી નથી."
  Only image files are permitted: "માત્ર ઇમેજ ફાઇલોને જ મંજૂરી છે"
- Quarantined as: ""%s.qfu" તરીકે સંસર્ગનિષેધમાં."
+ Quarantined as: "\"%s.qfu\" તરીકે સંસર્ગનિષેધમાં."
  Recursion depth limit exceeded: "પુનરાવર્તન ઊંડાઈ મર્યાદા ઓળંગાઈ"
  Signature file missing: "સિગ્નેચર ફાઇલ ખૂટે છે"
  Started: "શરૂ કર્યું"

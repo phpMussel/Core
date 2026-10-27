@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Croatian language data (last modified: 2025.05.01).
+# This file: Croatian language data (last modified: 2026.10.27).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -53,7 +53,7 @@ grammar_spacer: " "
 response:
  %s chameleon attack detected: "Otkriven je %s kameleonski napad"
  %s does not exist: "%s ne postoji"
- Checking %s: "Provjeravam "%s"."
+ Checking %s: "Provjeravam \"%s\"."
  Command injection attempt detected: "Otkriven je pokušaj ubacivanja naredbe"
  Complete: "Kompletan"
  Data not available: "Podaci nisu dostupni."
@@ -64,7 +64,7 @@ response:
  Detected potentially dangerous file tampering: "Otkriveno je potencijalno opasno petljanje datoteke"
  Error: "Greška"
  Failed (missing required extensions): "Nije uspjelo (nedostaju potrebne ekstenzije)!"
- Failed to access %s: "Pristup "%s" nije uspio!"
+ Failed to access %s: "Pristup \"%s"\ nije uspio!"
  Filename manipulation detected: "Otkrivena je manipulacija imenom datoteke"
  Filesize limit exceeded: "Premašeno ograničenje veličine datoteke"
  Filetype blacklisted: "Vrsta datoteke na crnoj listi"
@@ -76,7 +76,7 @@ response:
  Missing filename: "Nedostaje naziv datoteke"
  No problems found: "Nisam našao nikakve probleme."
  Only image files are permitted: "Dopuštene su samo slikovne datoteke"
- Quarantined as: "U karanteni kao "%s.qfu"."
+ Quarantined as: "U karanteni kao \"%s.qfu\"."
  Recursion depth limit exceeded: "Ograničenje dubine rekurzije premašeno"
  Signature file missing: "Nedostaje datoteka s potpisom"
  Started: "Započelo"

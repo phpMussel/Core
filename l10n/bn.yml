@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Bangla language data (last modified: 2025.03.29).
+# This file: Bangla language data (last modified: 2026.10.27).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -50,7 +50,7 @@ grammar_spacer: " "
 response:
  %s chameleon attack detected: "%s বহুরুপী(chameleon) আক্রমণ সনাক্ত হয়েছে।"
  %s does not exist: "%s অস্তিত্ব নেই"
- Checking %s: ""%s" পরীক্ষা করা হচ্ছে।"
+ Checking %s: "\"%s"\ পরীক্ষা করা হচ্ছে।"
  Command injection attempt detected: "কমান্ড ইনজেকশন প্রচেষ্টা সনাক্ত হয়েছে"
  Complete: "সম্পূর্ণ"
  Data not available: "ডেটা উপলব্ধ নেই।"
@@ -61,7 +61,7 @@ response:
  Detected potentially dangerous file tampering: "সম্ভাব্য বিপজ্জনক ফাইল টিমপারিং সনাক্ত হয়েছে"
  Error: "ত্রুটি"
  Failed (missing required extensions): "ব্যর্থ (অনুপস্থিত প্রয়োজনীয় এক্সটেনশনগুলি)!"
- Failed to access %s: ""%s" অ্যাক্সেস করতে ব্যর্থ হয়েছে!"
+ Failed to access %s: "\"%s"\ অ্যাক্সেস করতে ব্যর্থ হয়েছে!"
  Filename manipulation detected: "ফাইলনেম ম্যানিপুলেশন সনাক্ত হয়েছে"
  Filesize limit exceeded: "ফাইলের আকার সীমা অতিক্রম করেছে"
  Filetype blacklisted: "ফাইলের ধরন কালো তালিকাতে রয়েছে।"
@@ -73,7 +73,7 @@ response:
  Missing filename: "অনুপস্থিত ফাইলের নাম"
  No problems found: "কোন সমস্যা খুঁজে পাওয়া যায়নি।"
  Only image files are permitted: "কেবলমাত্র ইমেজ ফাইলগুলির অনুমতি রয়েছে"
- Quarantined as: "সংগ্রাহক মধ্যে "%s.qfu" হিসাবে।"
+ Quarantined as: "সংগ্রাহক মধ্যে \"%s.qfu\" হিসাবে।"
  Recursion depth limit exceeded: "পুনরাবৃত্তি গভীরতা সীমা অতিক্রম করেছে"
  Signature file missing: "স্বাক্ষর ফাইলটি অনুপস্থিত"
  Started: "শুরু হয়েছে"

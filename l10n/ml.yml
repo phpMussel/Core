@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Malayalam language data (last modified: 2025.03.29).
+# This file: Malayalam language data (last modified: 2026.10.27).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -52,7 +52,7 @@ grammar_spacer: " "
 response:
  %s chameleon attack detected: "%s ചാമിലിയൻ ആക്രമണം കണ്ടെത്തി"
  %s does not exist: "%s നിലവിലില്ല"
- Checking %s: ""%s" പരിശോധിക്കുന്നു."
+ Checking %s: "\"%s"\ പരിശോധിക്കുന്നു."
  Command injection attempt detected: "കമാൻഡ് കുത്തിവയ്പ്പ് ശ്രമം കണ്ടെത്തി"
  Complete: "പൂർത്തിയാക്കുക"
  Data not available: "ഡാറ്റ ലഭ്യമല്ല."
@@ -63,7 +63,7 @@ response:
  Detected potentially dangerous file tampering: "അപകടകരമായേക്കാവുന്ന ഫയൽ കൃത്രിമത്വം കണ്ടെത്തി"
  Error: "പിശക്"
  Failed (missing required extensions): "പരാജയപ്പെട്ടു (ആവശ്യമായ വിപുലീകരണങ്ങൾ നഷ്‌ടമായി)!"
- Failed to access %s: ""%s" ആക്‌സസ് ചെയ്യാനായില്ല!"
+ Failed to access %s: "\"%s"\ ആക്‌സസ് ചെയ്യാനായില്ല!"
  Filename manipulation detected: "ഫയലിൻ്റെ പേര് കൃത്രിമത്വം കണ്ടെത്തി"
  Filesize limit exceeded: "ഫയലുകളുടെ പരിധി കവിഞ്ഞു"
  Filetype blacklisted: "ഫയൽ തരം കരിമ്പട്ടികയിൽ പെടുത്തി"
@@ -75,7 +75,7 @@ response:
  Missing filename: "ഫയലിൻ്റെ പേര് കാണുന്നില്ല"
  No problems found: "പ്രശ്നങ്ങളൊന്നും കണ്ടെത്തിയില്ല."
  Only image files are permitted: "ചിത്രങ്ങളുടെ ഫയലുകൾ മാത്രമേ അനുവദിക്കൂ"
- Quarantined as: ""%s.qfu" ആയി ക്വാറൻ്റൈൻ ചെയ്‌തു."
+ Quarantined as: "\"%s.qfu\" ആയി ക്വാറൻ്റൈൻ ചെയ്‌തു."
  Recursion depth limit exceeded: "ആവർത്തന ഡെപ്ത് പരിധി കവിഞ്ഞു"
  Signature file missing: "ഒപ്പ് ഫയൽ കാണുന്നില്ല"
  Started: "ആരംഭിച്ചു"

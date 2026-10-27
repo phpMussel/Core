@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Bosnian language data (last modified: 2025.06.10).
+# This file: Bosnian language data (last modified: 2026.10.27).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -30,7 +30,7 @@ SafeBrowseLookup:
  401: "Greška pri autorizaciji API-ja"
  503: "API usluga nije dostupna"
  999: "Nepoznata API greška"
-error_log_header: "Ako se bilo koja od sljedećih grešaka nastavi, da biste ih prijavili ili zatražili podršku, kreirajte novi problem na stranici o pitanjima phpMussel-a na GitHub-u kad imaš slobodan trenutak, sa dotičnim greškama zajedno sa svim drugim relevantnim informacijama u prilogu. Hvala."
+error_log_header: "Ako se bilo koja od sljedećih grešaka nastavi, da biste ih prijavili ili zatražili podršku, kreirajte novi problem na stranici o pitanjima phpMussel-a na GitHub-u kad imate slobodan trenutak, sa dotičnim greškama zajedno sa svim drugim relevantnim informacijama u prilogu. Hvala."
 field:
  Date: "Datum"
  Hash signatures reconstruction: "Rekonstrukcija hash potpisa"
@@ -53,7 +53,7 @@ grammar_spacer: " "
 response:
  %s chameleon attack detected: "Otkriven je %s kameleon napad"
  %s does not exist: "%s ne postoji"
- Checking %s: "Provjeravam "%s"."
+ Checking %s: "Provjeravam \"%s\"."
  Command injection attempt detected: "Otkriven je pokušaj ubrizgavanja komande"
  Complete: "Završeno"
  Data not available: "Podaci nisu dostupni."
@@ -64,7 +64,7 @@ response:
  Detected potentially dangerous file tampering: "Otkriveno je potencijalno opasno neovlašteno mijenjanje datoteka"
  Error: "Greška"
  Failed (missing required extensions): "Nije uspjelo (nedostaju potrebne ekstenzije)!"
- Failed to access %s: "Pristup "%s" nije uspio!"
+ Failed to access %s: "Pristup \"%s"\ nije uspio!"
  Filename manipulation detected: "Otkrivena je manipulacija imenom datoteke"
  Filesize limit exceeded: "Ograničenje veličine datoteke je premašeno"
  Filetype blacklisted: "Vrsta datoteke na crnoj listi"
@@ -76,7 +76,7 @@ response:
  Missing filename: "Nedostaje naziv datoteke"
  No problems found: "Nisu pronađeni problemi."
  Only image files are permitted: "Dozvoljene su samo datoteke sa slikama"
- Quarantined as: "U karantinu kao "%s.qfu"."
+ Quarantined as: "U karantinu kao \"%s.qfu\"."
  Recursion depth limit exceeded: "Prekoračena je granica dubine rekurzije"
  Signature file missing: "Nedostaje datoteke potpisa"
  Started: "Poceo"

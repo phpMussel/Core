@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Italian language data (last modified: 2025.03.29).
+# This file: Italian language data (last modified: 2026.09.24).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -50,7 +50,7 @@ grammar_spacer: " "
 response:
  %s chameleon attack detected: "Rilevato attacco camaleonte %s"
  %s does not exist: "%s non esiste"
- Checking %s: "Controllando "%s"."
+ Checking %s: "Controllando \"%s\"."
  Command injection attempt detected: "Rilevato tentativo di iniezione dei comandi"
  Complete: "Completato"
  Data not available: "Dati non disponibili."
@@ -61,7 +61,7 @@ response:
  Detected potentially dangerous file tampering: "Rilevato potenzialmente pericolosi alterazione del file"
  Error: "Errore"
  Failed (missing required extensions): "Fallito (mancano le estensioni richieste)!"
- Failed to access %s: "Impossibile accedere a "%s"!"
+ Failed to access %s: "Impossibile accedere a \"%s\"!"
  Filename manipulation detected: "Rilevata la manipolazione del nome di un file"
  Filesize limit exceeded: "Dimensione massima del file superata"
  Filetype blacklisted: "Tipo di file nella lista nera"
@@ -73,7 +73,7 @@ response:
  Missing filename: "Nome del file mancante"
  No problems found: "Nessun problema rilevato."
  Only image files are permitted: "Sono consentiti file di immagini solo"
- Quarantined as: "In quarantena come "%s.qfu"."
+ Quarantined as: "In quarantena come \"%s.qfu\"."
  Recursion depth limit exceeded: "Limite di profondità di controllo superato"
  Signature file missing: "File delle firme mancante"
  Started: "Iniziato"

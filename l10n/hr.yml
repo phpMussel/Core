@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Croatian language data (last modified: 2026.10.27).
+# This file: Croatian language data (last modified: 2026.11.13).
 #
 # Regarding translations: My native language is English. Because this is a free
 # and open-source hobby project which generates zero income, and translatable
@@ -64,7 +64,7 @@ response:
  Detected potentially dangerous file tampering: "Otkriveno je potencijalno opasno petljanje datoteke"
  Error: "Greška"
  Failed (missing required extensions): "Nije uspjelo (nedostaju potrebne ekstenzije)!"
- Failed to access %s: "Pristup \"%s"\ nije uspio!"
+ Failed to access %s: "Pristup \"%s\" nije uspio!"
  Filename manipulation detected: "Otkrivena je manipulacija imenom datoteke"
  Filesize limit exceeded: "Premašeno ograničenje veličine datoteke"
  Filetype blacklisted: "Vrsta datoteke na crnoj listi"

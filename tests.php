@@ -75,6 +75,7 @@ $Expected = [
     '14fb5b708076142cf38131ccc3827ff0a0ff28db1ee5db4583432cadafc8a4bf:658:ole_testfile.bin' => 'Detected phpMussel-Testfile.OLE.Standard (ole_testfile.bin)!',
     '4b4e349e8103d105b8dd0f5fce5ec9be0b263d203597e87abf3644089aea095f:19:hash_testfile_md5.txt' => 'Detected phpMussel-Testfile.HASH.MD5 (hash_testfile_md5.txt)!',
     '8b4413ceca5ba8b33f1af7d1ce82a108f26be2e3de9241ca9969ea47214a180a:5632:pe_sectional_testfile.exe' => 'Detected phpMussel-Testfile.PE.Sectional (pe_sectional_testfile.exe)!',
+    '8e39388e6e605902d1192aecc5ea77f9a62547eb164562266c0060cf52cb6ec9:653:embedded.txt' => 'Detected phpMussel-Testfile.General.Standard (embedded.txt)!',
     '8e39388e6e605902d1192aecc5ea77f9a62547eb164562266c0060cf52cb6ec9:653:general_standard_testfile.txt' => 'Detected phpMussel-Testfile.General.Standard (general_standard_testfile.txt)!',
     'a00178f9d85e56c8067c5d6c234a48afd6631c9e3c90fe0717f4b7330360ef3b:5632:exe_standard_testfile.exe' => 'Detected phpMussel-Testfile.EXE.Standard (exe_standard_testfile.exe)!',
     'bf059f3112049d7299f9dc39397fe721c560e790611bfdc163adadbebb4e9ca9:13:hello.txt' => '',
@@ -94,6 +95,32 @@ ksort($Actual);
 if (serialize($Actual) !== serialize($Expected)) {
     echo 'Actual scan results don\'t match the expected scan results.' . PHP_EOL;
     exit(5);
+}
+
+// Test the PDF handler directly (embedded files, scripts, and object streams).
+$Pdf = "%PDF-1.5\r" .
+    "1 0 obj\r<</Type/Catalog/AA<</O<</S/JavaScript/JS(app.alert\\(1\\))>>>>>>\rendobj\r" .
+    "2 0 obj\r<</Type/Filespec/UF(a.txt)/EF<</F 3 0 R>>>>\rendobj\r" .
+    "3 0 obj\r<</Filter[/ASCII85Decode/ASCIIHexDecode]/Length 38>>\rstream\r" .
+    "<~1cRBN2IeXT2J+^S1,(XG2J+m'2IeX%1,1r~>\rendstream\rendobj\r" .
+    "4 0 obj\r<</S/JavaScript/JS<68656c6c6f28293b>>>\rendobj\r";
+$Handler = new \phpMussel\Core\PdfHandler($Pdf);
+$Entries = [];
+while ($Handler->EntryNext()) {
+    $Entries[] = [$Handler->EntryName(), $Handler->EntryRead(), $Handler->EntryActualSize()];
+}
+if ($Handler->ErrorState !== 0 || serialize($Entries) !== serialize([
+    ['PDFJavaScript.js', 'app.alert(1)', 12],
+    ['a.txt', 'Hello, world!', 13],
+    ['PDFJavaScript.js', 'hello();', 8]
+])) {
+    echo 'The PDF handler didn\'t return the expected entries.' . PHP_EOL;
+    exit(6);
+}
+$Handler = new \phpMussel\Core\PdfHandler('Not a PDF.');
+if ($Handler->ErrorState !== 2 || $Handler->EntryNext()) {
+    echo 'The PDF handler accepted something that isn\'t a PDF.' . PHP_EOL;
+    exit(7);
 }
 
 restore_error_handler();

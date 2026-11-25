@@ -205,3 +205,7 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 
 #### Other changes.
 - [2026.11.08]: Added PHP 8.6 to workflows.
+
+### v3.8.0
+
+- [2026.11.25]: Synced the signature files used for tests with the actual latest signature files.

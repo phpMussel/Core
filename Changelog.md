@@ -210,3 +210,4 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 
 - [2026.11.25]: Synced the signature files used for tests with the actual latest signature files.
 - [2026.11.25]: Completely rewrote the PDF handler. The PDF handler should now be compliant with the relevant specification (ISO 32000-1:2008) in the context of phpMussel's PDF needs. A new test file and tests have also been added accordingly. PDFs now expose JavaScript as well as embedded files. Embedded files appear under their real names instead of `PDFStream`. Embedded files are found regardless of how the PDF's objects are laid out. `EntryIsEncrypted()` now flags any PDF that declares `/Encrypt`, which can mean new blocks when `block_encrypted_archives` is on.
+- [2026.11.26]: Added an OLE handler that exposes VBA macro source and PowerPoint embedded objects to the scanner.

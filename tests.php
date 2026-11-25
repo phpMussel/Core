@@ -123,6 +123,36 @@ if ($Handler->ErrorState !== 2 || $Handler->EntryNext()) {
     exit(7);
 }
 
+// Test the OLE handler directly (PowerPoint embedded objects, and VBA macros within them).
+$Fixture = $TestsPath . 'ole_vba_nested.ole';
+$Handler = new \phpMussel\Core\OleHandler(is_readable($Fixture) ? file_get_contents($Fixture) : '');
+$Outer = [];
+while ($Handler->EntryNext()) {
+    $Outer[] = [$Handler->EntryName(), $Handler->EntryRead()];
+}
+$Nested = [];
+if (count($Outer) === 1 && $Outer[0][0] === 'ExOleObjStg.bin') {
+    $Inner = new \phpMussel\Core\OleHandler($Outer[0][1]);
+    while ($Inner->EntryNext()) {
+        $Nested[] = [$Inner->EntryName(), $Inner->EntryRead()];
+    }
+}
+if (
+    $Handler->ErrorState !== 0 ||
+    count($Nested) !== 1 ||
+    $Nested[0][0] !== 'Module1.bas' ||
+    strpos($Nested[0][1], "Sub action()\r\n") === false ||
+    strpos($Nested[0][1], 'eicarPart2 = "C)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*"') === false
+) {
+    echo 'The OLE handler didn\'t return the expected entries.' . PHP_EOL;
+    exit(8);
+}
+$Handler = new \phpMussel\Core\OleHandler('Not an OLE file.');
+if ($Handler->ErrorState !== 2 || $Handler->EntryNext()) {
+    echo 'The OLE handler accepted something that isn\'t an OLE file.' . PHP_EOL;
+    exit(9);
+}
+
 restore_error_handler();
 
 echo 'All tests passed.' . PHP_EOL;

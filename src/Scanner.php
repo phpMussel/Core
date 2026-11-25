@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: The scanner (last modified: 2026.09.04).
+ * This file: The scanner (last modified: 2026.11.26).
  */
 
 namespace phpMussel\Core;
@@ -2988,6 +2988,10 @@ class Scanner
             $Handler = 'PdfHandler';
             $ConType = 'PdfFile';
             $this->Loader->InstanceCache['container'] = 'pdffile';
+        } elseif (\substr($Data, 0, 8) === OleHandler::SIGNATURE) {
+            $Handler = 'OleHandler';
+            $ConType = 'OleFile';
+            $this->Loader->InstanceCache['container'] = 'olefile';
         }
 
         /** Not an archive. Exit early. */
@@ -3105,6 +3109,12 @@ class Scanner
 
             /** PdfHandler can work with data directly. */
             $ArchiveObject = new PdfHandler($Data);
+        }
+
+        /** Handle OLE compound files. */
+        if ($Handler === 'OleHandler') {
+            /** OleHandler can work with data directly. */
+            $ArchiveObject = new OleHandler($Data);
         }
 
         /** Archive object has been instantiated. Let's proceed. */

@@ -1114,7 +1114,11 @@ class Scanner
          */
         if (!empty($this->Loader->InstanceCache['CheckWasLast'])) {
             /** Create a new compression object. */
-            $CompressionObject = new CompressionHandler($In);
+            $CompressionObject = new CompressionHandler(
+                $In,
+                $this->Loader->readBytes($this->Loader->Configuration['files']['max_decompressed_entry_size']),
+                $this->Loader->CachePath
+            );
 
             /** Now we'll try to decompress the file. */
             if (!$CompressionResults = $CompressionObject->TryEverything()) {
@@ -3998,7 +4002,11 @@ class Scanner
          */
         if (!empty($this->Loader->InstanceCache['CheckWasLast'])) {
             /** Create a new compression object. */
-            $CompressionObject = new CompressionHandler($Data);
+            $CompressionObject = new CompressionHandler(
+                $Data,
+                $this->Loader->readBytes($this->Loader->Configuration['files']['max_decompressed_entry_size']),
+                $this->Loader->CachePath
+            );
 
             /** Now we'll try to decompress the file. */
             if (!$CompressionResults = $CompressionObject->TryEverything()) {

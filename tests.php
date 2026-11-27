@@ -163,7 +163,7 @@ $Count = function (\phpMussel\Core\ArchiveHandler $Handler): array {
     return $Out;
 };
 if (
-    serialize($Count(new \phpMussel\Core\OleHandler($Fixture, 0, 1000))) !== serialize([]) ||
+    serialize($Count(new \phpMussel\Core\OleHandler($Fixture, 0, 1000))) !== serialize([['ExOleObjStg.bin', 1000]]) ||
     serialize($Count(new \phpMussel\Core\OleHandler($Fixture, 2000))) !== serialize([['ExOleObjStg.bin', 2000]]) ||
     serialize($Count(new \phpMussel\Core\OleHandler($Fixture, -1, -1))) !== serialize([['ExOleObjStg.bin', 4608]])
 ) {
@@ -188,6 +188,71 @@ if (
 ) {
     echo 'The decompression limit directives don\'t have the expected default values.' . PHP_EOL;
     exit(12);
+}
+
+// Test the compression handler (decompression bombs must be cut off at the limit).
+$Context = deflate_init(ZLIB_ENCODING_GZIP, ['level' => 9]);
+$Bomb = '';
+$Zeros = str_repeat("\0", 1048576);
+for ($Count = 0; $Count < 64; $Count++) {
+    $Bomb .= deflate_add($Context, $Zeros, ZLIB_NO_FLUSH);
+}
+$Bomb .= deflate_add($Context, '', ZLIB_FINISH);
+unset($Zeros, $Context);
+$Decompress = function (string $Data, int $Max = 0): array {
+    $Handler = new \phpMussel\Core\CompressionHandler($Data, $Max);
+    $Unchanged = $Handler->TryEverything();
+    return [$Unchanged, strlen($Handler->Data)];
+};
+$Layers = 'x';
+for ($Count = 0; $Count < 20; $Count++) {
+    $Layers = gzencode($Layers);
+}
+if (
+    serialize($Decompress(gzencode('Hello, world!'))) !== serialize([false, 13]) ||
+    serialize($Decompress('Hello, world!')) !== serialize([true, 13]) ||
+    serialize($Decompress($Bomb, 1000)) !== serialize([false, 1000]) ||
+    serialize($Decompress($Bomb, 1048576)) !== serialize([false, 1048576]) ||
+    $Decompress($Layers)[0] !== false ||
+    $Decompress($Layers)[1] <= 1
+) {
+    echo 'The compression handler didn\'t handle GZ data (or limit decompressing) as expected.' . PHP_EOL;
+    exit(13);
+}
+unset($Bomb, $Layers);
+$Lzf = "\x02ABC\x20\x02";
+if (
+    \phpMussel\Core\CompressionHandler::lzfPrefixLength($Lzf, 100) !== 6 ||
+    \phpMussel\Core\CompressionHandler::lzfPrefixLength($Lzf, 5) !== 4 ||
+    \phpMussel\Core\CompressionHandler::lzfPrefixLength($Lzf, 2) !== 0 ||
+    \phpMussel\Core\CompressionHandler::lzfPrefixLength("\x40\x00", 100) !== -1 ||
+    \phpMussel\Core\CompressionHandler::lzfPrefixLength("\x05AB", 100) !== -1 ||
+    \phpMussel\Core\CompressionHandler::lzfPrefixLength('Hello, world!', 100) !== -1
+) {
+    echo 'The compression handler didn\'t work out the extent of LZF data as expected.' . PHP_EOL;
+    exit(14);
+}
+if (function_exists('lzf_decompress')) {
+    $Handler = new \phpMussel\Core\CompressionHandler($Lzf);
+    $Handler->TryLzf();
+    $Limited = new \phpMussel\Core\CompressionHandler($Lzf, 5);
+    $Limited->TryLzf();
+    if ($Handler->Data !== 'ABCABC' || $Limited->Data !== 'ABC') {
+        echo 'The compression handler didn\'t handle LZF data as expected.' . PHP_EOL;
+        exit(15);
+    }
+}
+if (function_exists('bzopen')) {
+    $Hello = base64_decode('QlpoOTFBWSZTWY6adwYAAAGVgGAEAEAGBJCAIAAiA0YhADCwQeSyHz8XckU4UJCOmncG');
+    $Bomb = base64_decode('QlpoOTFBWSZTWVYC4ogAICBIAMAAAAQACCAAMMwFKaYCAbECAeLuSKcKEgrAXFEA');
+    if (
+        serialize($Decompress($Hello)) !== serialize([false, 13]) ||
+        serialize($Decompress($Bomb)) !== serialize([false, 4194304]) ||
+        serialize($Decompress($Bomb, 1000)) !== serialize([false, 1000])
+    ) {
+        echo 'The compression handler didn\'t handle BZ data (or limit decompressing) as expected.' . PHP_EOL;
+        exit(16);
+    }
 }
 
 restore_error_handler();

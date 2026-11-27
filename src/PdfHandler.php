@@ -164,8 +164,11 @@ class PdfHandler extends ArchiveHandler
         }
 
         /** Don't let decoding streams, or retaining objects, exhaust PHP's memory. */
-        $Headroom = $this->memoryHeadroom();
+        $Headroom = self::memoryHeadroom($this->MaxTotalSize * 4);
         $this->Budget = (int)\min($this->MaxTotalSize, \max(1048576, \intdiv($Headroom, 4)));
+
+        /** Scanning an entry needs several times as much memory as the entry itself takes up. */
+        $this->MaxStreamSize = (int)\min($this->MaxStreamSize, \max(1048576, \intdiv($Headroom, 8)));
         $this->MaxRecords = (int)\max(1000, \min(self::MAX_OBJECTS, \intdiv($Headroom, self::MEMORY_PER_OBJECT)));
 
         /** Build the object tree. */
@@ -269,29 +272,6 @@ class PdfHandler extends ArchiveHandler
     {
         $this->Cursor++;
         return isset($this->Entries[$this->Cursor]);
-    }
-
-    /**
-     * Works out how much memory PHP has left to work with.
-     *
-     * @return int The number of bytes (a large number if there's no limit).
-     */
-    private function memoryHeadroom(): int
-    {
-        $Limit = \trim((string)\ini_get('memory_limit'));
-        $Bytes = (int)$Limit;
-        if ($Limit === '' || $Bytes <= 0) {
-            return $this->MaxTotalSize * 4;
-        }
-        $Unit = \strtolower(\substr($Limit, -1));
-        if ($Unit === 'g') {
-            $Bytes *= 1073741824;
-        } elseif ($Unit === 'm') {
-            $Bytes *= 1048576;
-        } elseif ($Unit === 'k') {
-            $Bytes *= 1024;
-        }
-        return \max(0, $Bytes - \memory_get_usage());
     }
 
     /**

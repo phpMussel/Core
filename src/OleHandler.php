@@ -122,6 +122,11 @@ class OleHandler extends ArchiveHandler
         }
         $this->D = $Data;
         $this->ErrorState = 0;
+
+        /** Don't let exposing content exhaust PHP's memory (scanning an entry needs several times as much as the entry itself). */
+        $Headroom = self::memoryHeadroom($this->MaxTotalSize * 4);
+        $this->MaxTotalSize = (int)\min($this->MaxTotalSize, \max(1048576, \intdiv($Headroom, 4)));
+        $this->MaxEntrySize = (int)\min($this->MaxEntrySize, \max(1048576, \intdiv($Headroom, 8)), $this->MaxTotalSize);
         if (!$this->parse()) {
             /** Not a usable compound file. Nothing to expose, but it isn't a scanning failure. */
             $this->Entries = [];

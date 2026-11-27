@@ -40,6 +40,8 @@ files:
  max_recursion: 3
  block_encrypted_archives: true
  max_files_in_archives: 0
+ max_decompressed_entry_size: "32MB"
+ max_decompressed_total_size: "128MB"
  chameleon_from_php: true
  can_contain_php_file_extensions: "inc,md,phar,php*,pzp,sig,tpl,txt,tzt"
  chameleon_from_exe: true

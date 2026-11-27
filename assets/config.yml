@@ -7,7 +7,7 @@
 # License: GNU/GPLv2
 # @see LICENSE.txt
 #
-# This file: Configuration defaults file (last modified: 2025.07.08).
+# This file: Configuration defaults file (last modified: 2026.11.27).
 ##/
 
 core:
@@ -359,6 +359,12 @@ files:
  max_files_in_archives:
   type: "int"
   default: 0
+ max_decompressed_entry_size:
+  type: "kb"
+  default: "32MB"
+ max_decompressed_total_size:
+  type: "kb"
+  default: "128MB"
  chameleon_from_php:
   type: "bool"
   default: true

@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: Pdf handler (last modified: 2026.11.25).
+ * This file: Pdf handler (last modified: 2026.11.27).
  */
 
 namespace phpMussel\Core;
@@ -56,14 +56,14 @@ class PdfHandler extends ArchiveHandler
     private const MAX_ELEMENTS = 100000;
 
     /**
-     * @var int Maximum size (in bytes) any single stream may decode to.
+     * @var int Default maximum size (in bytes) any single stream may decode to.
      */
-    private const MAX_STREAM_SIZE = 33554432;
+    public const DEFAULT_MAX_STREAM_SIZE = 33554432;
 
     /**
-     * @var int Maximum total size (in bytes) that all streams may decode to.
+     * @var int Default maximum total size (in bytes) that all streams may decode to.
      */
-    private const MAX_TOTAL_SIZE = 134217728;
+    public const DEFAULT_MAX_TOTAL_SIZE = 134217728;
 
     /**
      * @var string Whitespace characters (PDF specification, section 7.2.2).
@@ -84,6 +84,16 @@ class PdfHandler extends ArchiveHandler
      * @var int How many more bytes may be spent decoding streams.
      */
     private $Budget = 0;
+
+    /**
+     * @var int Maximum size (in bytes) any single stream may decode to.
+     */
+    private $MaxStreamSize = self::DEFAULT_MAX_STREAM_SIZE;
+
+    /**
+     * @var int Maximum total size (in bytes) that all streams may decode to.
+     */
+    private $MaxTotalSize = self::DEFAULT_MAX_TOTAL_SIZE;
 
     /**
      * @var array Indirect objects found (num, gen, value, and stream bounds).
@@ -134,10 +144,19 @@ class PdfHandler extends ArchiveHandler
      * Construct the instance.
      *
      * @param string $File The PDF data.
+     * @param int $MaxStreamSize Maximum size (in bytes) any single stream may decode to (zero or less for the default).
+     * @param int $MaxTotalSize Maximum total size (in bytes) all streams may decode to (zero or less for the default).
      * @return void
      */
-    public function __construct(string $File)
+    public function __construct(string $File, int $MaxStreamSize = 0, int $MaxTotalSize = 0)
     {
+        if ($MaxStreamSize > 0) {
+            $this->MaxStreamSize = $MaxStreamSize;
+        }
+        if ($MaxTotalSize > 0) {
+            $this->MaxTotalSize = $MaxTotalSize;
+        }
+
         /** Guard against the wrong type of file being used as pointer. */
         if (\substr($File, 0, 4) !== "\x25PDF") {
             $this->ErrorState = 2;
@@ -146,7 +165,7 @@ class PdfHandler extends ArchiveHandler
 
         /** Don't let decoding streams, or retaining objects, exhaust PHP's memory. */
         $Headroom = $this->memoryHeadroom();
-        $this->Budget = (int)\max(1048576, \min(self::MAX_TOTAL_SIZE, \intdiv($Headroom, 4)));
+        $this->Budget = (int)\min($this->MaxTotalSize, \max(1048576, \intdiv($Headroom, 4)));
         $this->MaxRecords = (int)\max(1000, \min(self::MAX_OBJECTS, \intdiv($Headroom, self::MEMORY_PER_OBJECT)));
 
         /** Build the object tree. */
@@ -262,7 +281,7 @@ class PdfHandler extends ArchiveHandler
         $Limit = \trim((string)\ini_get('memory_limit'));
         $Bytes = (int)$Limit;
         if ($Limit === '' || $Bytes <= 0) {
-            return self::MAX_TOTAL_SIZE * 4;
+            return $this->MaxTotalSize * 4;
         }
         $Unit = \strtolower(\substr($Limit, -1));
         if ($Unit === 'g') {
@@ -1037,7 +1056,7 @@ class PdfHandler extends ArchiveHandler
         $Parameters = \is_array($Parameters) ? ($Parameters[0] === 'a' ? $Parameters[1] : [$Parameters]) : [];
         foreach ($Filters as $I => $Filter) {
             $Params = isset($Parameters[$I]) && \is_array($Parameters[$I]) && $Parameters[$I][0] === 'd' ? $Parameters[$I][1] : [];
-            $Max = \min(self::MAX_STREAM_SIZE, $this->Budget);
+            $Max = \min($this->MaxStreamSize, $this->Budget);
             if ($Max < 1) {
                 break;
             }

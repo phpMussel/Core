@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: OLE handler (last modified: 2026.11.26).
+ * This file: OLE handler (last modified: 2026.11.27).
  */
 
 namespace phpMussel\Core;
@@ -49,11 +49,11 @@ class OleHandler extends ArchiveHandler
     /** The maximum number of PowerPoint records that will be visited. */
     private const MAX_RECORDS = 500000;
 
-    /** The maximum size of any one exposed entry. */
-    private const MAX_ENTRY_SIZE = 33554432;
+    /** The default maximum size of any one exposed entry. */
+    public const DEFAULT_MAX_ENTRY_SIZE = 33554432;
 
-    /** The maximum combined size of all exposed entries. */
-    private const MAX_TOTAL_SIZE = 134217728;
+    /** The default maximum combined size of all exposed entries. */
+    public const DEFAULT_MAX_TOTAL_SIZE = 134217728;
 
     /** Sector values with special meanings. */
     private const MAX_REGULAR_SECTOR = 0xFFFFFFFA;
@@ -67,6 +67,12 @@ class OleHandler extends ArchiveHandler
 
     /** @var int Running total of exposed data. */
     private $Total = 0;
+
+    /** @var int The maximum size of any one exposed entry. */
+    private $MaxEntrySize = self::DEFAULT_MAX_ENTRY_SIZE;
+
+    /** @var int The maximum combined size of all exposed entries. */
+    private $MaxTotalSize = self::DEFAULT_MAX_TOTAL_SIZE;
 
     /** @var string The compound file. */
     private $D = '';
@@ -99,9 +105,17 @@ class OleHandler extends ArchiveHandler
      * Construct the object.
      *
      * @param string $Data The content of the compound file.
+     * @param int $MaxEntrySize Maximum size (in bytes) of any one exposed entry (zero or less for the default).
+     * @param int $MaxTotalSize Maximum combined size (in bytes) of all exposed entries (zero or less for the default).
      */
-    public function __construct(string $Data)
+    public function __construct(string $Data, int $MaxEntrySize = 0, int $MaxTotalSize = 0)
     {
+        if ($MaxEntrySize > 0) {
+            $this->MaxEntrySize = $MaxEntrySize;
+        }
+        if ($MaxTotalSize > 0) {
+            $this->MaxTotalSize = $MaxTotalSize;
+        }
         if (\substr($Data, 0, 8) !== self::SIGNATURE || \strlen($Data) < 512) {
             $this->ErrorState = 2;
             return;
@@ -217,7 +231,7 @@ class OleHandler extends ArchiveHandler
         if ($Len === 0) {
             return true;
         }
-        if (\count($this->Entries) >= self::MAX_ENTRIES || $this->Total + $Len > self::MAX_TOTAL_SIZE) {
+        if (\count($this->Entries) >= self::MAX_ENTRIES || $this->Total + $Len > $this->MaxTotalSize) {
             return false;
         }
         $this->Total += $Len;
@@ -432,7 +446,7 @@ class OleHandler extends ArchiveHandler
     private function streamData(int $Index): string
     {
         $E = $this->Directory[$Index];
-        $Size = \min($E['Size'], self::MAX_ENTRY_SIZE);
+        $Size = \min($E['Size'], $this->MaxEntrySize);
         if ($E['Size'] < $this->MiniCutoff) {
             return $this->readChain($E['Start'], $this->MiniFat, $this->MiniSectorSize, $this->MiniStream, 0, $Size);
         }
@@ -443,9 +457,10 @@ class OleHandler extends ArchiveHandler
      * Decompresses MS-OVBA compressed data.
      *
      * @param string $In The compressed data (including the leading signature byte).
+     * @param int $Max The maximum number of bytes to return.
      * @return string The decompressed data (as much as could be recovered).
      */
-    public static function decompressVba(string $In): string
+    public static function decompressVba(string $In, int $Max = self::DEFAULT_MAX_ENTRY_SIZE): string
     {
         $Len = \strlen($In);
         if ($Len < 1 || $In[0] !== "\x01") {
@@ -453,7 +468,7 @@ class OleHandler extends ArchiveHandler
         }
         $Out = '';
         $I = 1;
-        while ($I + 2 <= $Len && \strlen($Out) < self::MAX_ENTRY_SIZE) {
+        while ($I + 2 <= $Len && \strlen($Out) < $Max) {
             $Header = self::u16($In, $I);
             $End = \min($I + ($Header & 0x0FFF) + 3, $Len);
             $Flag = ($Header >> 15) & 1;
@@ -492,7 +507,7 @@ class OleHandler extends ArchiveHandler
                 }
             }
         }
-        return $Out;
+        return \strlen($Out) > $Max ? \substr($Out, 0, $Max) : $Out;
     }
 
     /**
@@ -504,7 +519,7 @@ class OleHandler extends ArchiveHandler
      */
     private function extractVba(int $Storage, array $Members): bool
     {
-        $Dir = self::decompressVba($this->streamData($Members['dir']));
+        $Dir = self::decompressVba($this->streamData($Members['dir']), $this->MaxEntrySize);
         $Len = \strlen($Dir);
         $I = 0;
         $Modules = [];
@@ -537,7 +552,7 @@ class OleHandler extends ArchiveHandler
                 continue;
             }
             $Raw = $this->streamData($Members[$Key]);
-            $Source = self::decompressVba(\substr($Raw, $Module['Offset']));
+            $Source = self::decompressVba(\substr($Raw, $Module['Offset']), $this->MaxEntrySize);
             $Name = \preg_replace('~[^\x20-\x7E]|[\\\\/]~', '_', $Module['Name']);
             if (!$this->addEntry($Name . '.bas', $Source, \strlen($Raw))) {
                 return false;
@@ -579,7 +594,7 @@ class OleHandler extends ArchiveHandler
                 $Stored = \substr($Data, $Body + 4, $BodyEnd - $Body - 4);
                 if (($VerInstance >> 4) === 1) {
                     $Declared = self::u32($Data, $Body);
-                    $Stored = $this->inflate($Stored, \min(\max($Declared, 1), self::MAX_ENTRY_SIZE));
+                    $Stored = $this->inflate($Stored, \min(\max($Declared, 1), $this->MaxEntrySize));
                 }
                 if (!$this->addEntry('ExOleObjStg.bin', $Stored, $BodyEnd - $Body - 4)) {
                     return;

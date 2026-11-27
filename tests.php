@@ -153,6 +153,43 @@ if ($Handler->ErrorState !== 2 || $Handler->EntryNext()) {
     exit(9);
 }
 
+// Test that the decompression limits are respected (and that zero or less means "use the default").
+$Fixture = file_get_contents($TestsPath . 'ole_vba_nested.ole');
+$Count = function (\phpMussel\Core\ArchiveHandler $Handler): array {
+    $Out = [];
+    while ($Handler->EntryNext()) {
+        $Out[] = [$Handler->EntryName(), strlen($Handler->EntryRead())];
+    }
+    return $Out;
+};
+if (
+    serialize($Count(new \phpMussel\Core\OleHandler($Fixture, 0, 1000))) !== serialize([]) ||
+    serialize($Count(new \phpMussel\Core\OleHandler($Fixture, 2000))) !== serialize([['ExOleObjStg.bin', 2000]]) ||
+    serialize($Count(new \phpMussel\Core\OleHandler($Fixture, -1, -1))) !== serialize([['ExOleObjStg.bin', 4608]])
+) {
+    echo 'The OLE handler didn\'t respect its decompression limits.' . PHP_EOL;
+    exit(10);
+}
+$Compressed = gzcompress(str_repeat('A', 2000));
+$Pdf = "%PDF-1.5\r2 0 obj\r<</Type/Filespec/UF(b.txt)/EF<</F 3 0 R>>>>\rendobj\r" .
+    "3 0 obj\r<</Filter/FlateDecode/Length " . strlen($Compressed) . ">>\rstream\r" . $Compressed . "\rendstream\rendobj\r";
+if (
+    serialize($Count(new \phpMussel\Core\PdfHandler($Pdf))) !== serialize([['b.txt', 2000]]) ||
+    serialize($Count(new \phpMussel\Core\PdfHandler($Pdf, 10))) !== serialize([['b.txt', 10]]) ||
+    serialize($Count(new \phpMussel\Core\PdfHandler($Pdf, 0, 500))) !== serialize([['b.txt', 500]]) ||
+    serialize($Count(new \phpMussel\Core\PdfHandler($Pdf, -1, -1))) !== serialize([['b.txt', 2000]])
+) {
+    echo 'The PDF handler didn\'t respect its decompression limits.' . PHP_EOL;
+    exit(11);
+}
+if (
+    $Loader->readBytes($Loader->Configuration['files']['max_decompressed_entry_size']) !== 33554432 ||
+    $Loader->readBytes($Loader->Configuration['files']['max_decompressed_total_size']) !== 134217728
+) {
+    echo 'The decompression limit directives don\'t have the expected default values.' . PHP_EOL;
+    exit(12);
+}
+
 restore_error_handler();
 
 echo 'All tests passed.' . PHP_EOL;

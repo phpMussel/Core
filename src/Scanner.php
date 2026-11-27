@@ -439,7 +439,7 @@ class Scanner
         $k = \strlen($Key);
         $FileSize = \strlen($In);
         $Head = "\xA1phpMussel\x21" . $this->Loader->hexSafe(\hash('md5', $In)) . \pack('l*', $FileSize) . "\1";
-        $In = gzdeflate($In, 9);
+        $In = \gzdeflate($In, 9);
         $Out = '';
         $i = 0;
         while ($i < $FileSize) {

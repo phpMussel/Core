@@ -8,7 +8,7 @@
  * License: GNU/GPLv2
  * @see LICENSE.txt
  *
- * This file: Tar handler (last modified: 2026.03.17).
+ * This file: Tar handler (last modified: 2026.11.27).
  */
 
 namespace phpMussel\Core;
@@ -135,7 +135,7 @@ class TarHandler extends ArchiveHandler
      */
     public function EntryName(): string
     {
-        return \preg_replace('/[^\x20-\xff]/', '', \substr($this->Data, $this->Offset, 100));
+        return \preg_replace('/[^\x20-\xFF]/', '', \substr($this->Data, $this->Offset, 100));
     }
 
     /**

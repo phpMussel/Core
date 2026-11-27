@@ -78,7 +78,7 @@ class CompressionHandler
     public function TryGz(): int
     {
         /** Guard. */
-        if (\substr($this->Data, 0, 2) !== "\x1f\x8b") {
+        if (\substr($this->Data, 0, 2) !== "\x1F\x8B") {
             return 2;
         }
 
@@ -94,7 +94,7 @@ class CompressionHandler
     public function TryBz(): int
     {
         /** Guard. */
-        if (\substr($this->Data, 0, 3) !== "\x42\x5a\x68") {
+        if (\substr($this->Data, 0, 3) !== "\x42\x5A\x68") {
             return 2;
         }
 

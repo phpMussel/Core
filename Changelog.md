@@ -222,3 +222,4 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 - [2026.11.27]: GZ, BZ and LZF decompression is now limited in size (using `max_decompressed_entry_size`), to guard against decompression bombs.
 - [2026.11.27]: The limits used by the PDF, OLE and compression handlers are now reduced automatically when PHP has little memory available.
 - [2026.11.27]: GZ decompression now decodes every member of a multi-member GZ file.
+- [2026.11.27]: Normalised casing for hex escapes.

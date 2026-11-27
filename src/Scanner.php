@@ -3338,6 +3338,7 @@ class Scanner
         }
         $xt = \strtolower(\substr($OriginalFilename, ($decPos + 1)));
         $xts = \substr($xt, 0, 3) . '*';
+        $gzxts = $gzxt = '-';
         if (\strtolower(\substr($OriginalFilename, -3)) === '.gz') {
             $OriginalFilenameNoGZ = \substr($OriginalFilename, 0, ($OriginalFilenameLen - 3));
             $decPosNoGZ = \strrpos($OriginalFilenameNoGZ, '.');
@@ -3345,8 +3346,6 @@ class Scanner
                 $gzxt = \strtolower(\substr($OriginalFilenameNoGZ, ($decPosNoGZ + 1)));
                 $gzxts = \substr($gzxt, 0, 3) . '*';
             }
-        } else {
-            $gzxts = $gzxt = '-';
         }
         return [$xt, $xts, $gzxt, $gzxts];
     }

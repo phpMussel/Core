@@ -214,6 +214,11 @@ __*Why "v3.0.0" instead of "v1.0.0?"*__ Prior to phpMussel v3, the "phpMussel Co
 
 ### v3.9.0
 
+#### Security.
+- [2026.11.27]: Fixed a bug where scan targets named `.gz` (with no other extension) were skipped without being scanned if `filetype_whitelist` was empty.
+
+#### Other changes.
 - [2026.11.27]: Decompression limits for PDF and OLE content are now configurable (`max_decompressed_entry_size` and `max_decompressed_total_size`).
 - [2026.11.27]: GZ, BZ and LZF decompression is now limited in size (using `max_decompressed_entry_size`), to guard against decompression bombs.
 - [2026.11.27]: The limits used by the PDF, OLE and compression handlers are now reduced automatically when PHP has little memory available.
+- [2026.11.27]: GZ decompression now decodes every member of a multi-member GZ file.

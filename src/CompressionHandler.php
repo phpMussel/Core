@@ -193,7 +193,7 @@ class CompressionHandler
     }
 
     /**
-     * Decompresses GZ data (the first member), up to the size limit.
+     * Decompresses GZ data (every member), up to the size limit.
      *
      * @return int 0 = Success. 1 = Missing prerequisite. 2 = Failure.
      */
@@ -211,20 +211,33 @@ class CompressionHandler
         });
         $Out = '';
         $Finished = false;
-        if (($Context = \inflate_init(\ZLIB_ENCODING_GZIP)) !== false) {
-            for ($Offset = 0, $Len = \strlen($this->Data); $Offset < $Len; $Offset += self::CHUNK) {
+        $Start = 0;
+        $Len = \strlen($this->Data);
+
+        /** GZ data can consist of several members in a row (decompressing all of them is what gunzip, 7-Zip, etc would do). */
+        while ($Start < $Len && \strlen($Out) < $Max && ($Context = \inflate_init(\ZLIB_ENCODING_GZIP)) !== false) {
+            $Ended = false;
+            for ($Offset = $Start; $Offset < $Len; $Offset += self::CHUNK) {
                 $Piece = \inflate_add($Context, \substr($this->Data, $Offset, self::CHUNK));
                 if ($Piece === false) {
                     break;
                 }
                 $Out .= \strlen($Out) + \strlen($Piece) > $Max ? \substr($Piece, 0, $Max - \strlen($Out)) : $Piece;
                 if (\inflate_get_status($Context) === \ZLIB_STREAM_END) {
-                    $Finished = true;
+                    $Ended = true;
                     break;
                 }
                 if (\strlen($Out) >= $Max) {
                     break;
                 }
+            }
+            if (!$Ended) {
+                break;
+            }
+            $Finished = true;
+            $Start += \inflate_get_read_len($Context);
+            if (\substr($this->Data, $Start, 2) !== "\x1F\x8B") {
+                break;
             }
         }
         \restore_error_handler();

@@ -77,6 +77,7 @@ $Expected = [
     '8b4413ceca5ba8b33f1af7d1ce82a108f26be2e3de9241ca9969ea47214a180a:5632:pe_sectional_testfile.exe' => 'Detected phpMussel-Testfile.PE.Sectional (pe_sectional_testfile.exe)!',
     '8e39388e6e605902d1192aecc5ea77f9a62547eb164562266c0060cf52cb6ec9:653:embedded.txt' => 'Detected phpMussel-Testfile.General.Standard (embedded.txt)!',
     '8e39388e6e605902d1192aecc5ea77f9a62547eb164562266c0060cf52cb6ec9:653:general_standard_testfile.txt' => 'Detected phpMussel-Testfile.General.Standard (general_standard_testfile.txt)!',
+    '8e39388e6e605902d1192aecc5ea77f9a62547eb164562266c0060cf52cb6ec9:653:gz_testfile' => 'Detected phpMussel-Testfile.General.Standard (gz_testfile)!',
     'a00178f9d85e56c8067c5d6c234a48afd6631c9e3c90fe0717f4b7330360ef3b:5632:exe_standard_testfile.exe' => 'Detected phpMussel-Testfile.EXE.Standard (exe_standard_testfile.exe)!',
     'bf059f3112049d7299f9dc39397fe721c560e790611bfdc163adadbebb4e9ca9:13:hello.txt' => '',
     'c845b950f38399ae7fe4b3107cab5b46ac7c3e184dddfec97d4d164c00cb584a:491:coex_testfile.rtf' => 'Detected phpMussel-Testfile.CoEx (coex_testfile.rtf)!',
@@ -211,6 +212,10 @@ for ($Count = 0; $Count < 20; $Count++) {
 if (
     serialize($Decompress(gzencode('Hello, world!'))) !== serialize([false, 13]) ||
     serialize($Decompress('Hello, world!')) !== serialize([true, 13]) ||
+    serialize($Decompress(gzencode('AAAA') . gzencode('BBBBBB'))) !== serialize([false, 10]) ||
+    serialize($Decompress(gzencode('AAAA') . gzencode('BBBBBB') . 'junk')) !== serialize([false, 10]) ||
+    serialize($Decompress(gzencode('AAAA') . gzencode('BBBBBB'), 7)) !== serialize([false, 7]) ||
+    serialize($Decompress(gzencode('AAAA') . 'junk')) !== serialize([false, 4]) ||
     serialize($Decompress($Bomb, 1000)) !== serialize([false, 1000]) ||
     serialize($Decompress($Bomb, 1048576)) !== serialize([false, 1048576]) ||
     $Decompress($Layers)[0] !== false ||
